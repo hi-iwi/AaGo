@@ -29,13 +29,13 @@ func String(d interface{}, errs ...error) string {
 		case int64:
 			return strconv.FormatInt(v, 10)
 		case uint:
-			return strconv.FormatInt(int64(v), 10)
+			return strconv.FormatUint(uint64(v), 10)
 		case uint16:
-			return strconv.Itoa(int(v))
+			return strconv.FormatUint(uint64(v), 10)
 		case uint32:
-			return strconv.Itoa(int(v))
+			return strconv.FormatUint(uint64(v), 10)
 		case uint64:
-			return strconv.Itoa(int(v))
+			return strconv.FormatUint(v, 10)
 		case float32:
 			return strconv.FormatFloat(float64(v), 'f', -1, 64)
 		case float64:
@@ -137,6 +137,39 @@ func Int64(d interface{}, errs ...error) (int64, error) {
 		}
 	}
 	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> int64")
+}
+
+func Uint64(d interface{}, errs ...error) (uint64, error) {
+	if (len(errs) == 0 || errs[0] == nil) && d != nil {
+		switch v := d.(type) {
+		case bool:
+			if v {
+				return uint64(1), nil
+			}
+			return uint64(0), nil
+		case byte:
+			return uint64(v), nil
+		case string:
+			return strconv.ParseUint(v, 10, 64)
+		case int:
+			return uint64(v), nil
+		case int8:
+			return uint64(v), nil
+		case int16:
+			return uint64(v), nil
+		case int32:
+			return uint64(v), nil
+		case int64:
+			return uint64(v), nil
+		case float32:
+			return uint64(v), nil
+		case float64:
+			return uint64(v), nil
+		default:
+			return strconv.ParseUint(String(v), 10, 64)
+		}
+	}
+	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> uint64")
 }
 
 func Float64(d interface{}, errs ...error) (float64, error) {

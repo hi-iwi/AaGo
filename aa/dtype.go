@@ -44,7 +44,9 @@ func (p *Dtype) Int() (int, error) {
 func (p *Dtype) Int64() (int64, error) {
 	return dtype.Int64(p.Value)
 }
-
+func (p *Dtype) Uint64() (uint64, error) {
+	return dtype.Uint64(p.Value)
+}
 func (p *Dtype) Float64() (float64, error) {
 	return dtype.Float64(p.Value)
 }
