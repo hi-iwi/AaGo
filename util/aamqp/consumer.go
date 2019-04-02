@@ -164,7 +164,7 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 							c.currentStatus.Store(false)
 						}
 					}).Catch(func(e try.E) {
-						log.Println("delivery failed: %s", e)
+						log.Printf("delivery failed: %s\n", e)
 					})
 				}
 			}()
@@ -178,7 +178,7 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 			for {
 				deliveries, err = c.Reconnect(cp, que, qos, bindings...)
 				if err != nil {
-					log.Println("reconnecting failed: %s", err)
+					log.Printf("reconnecting failed: %s\n", err)
 					retryTime++
 				} else {
 					log.Println("reconnecting success")
