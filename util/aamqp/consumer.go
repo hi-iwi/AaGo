@@ -102,6 +102,9 @@ func (c *Consumer) Reconnect(cp ConsumeParams, que Queue, qos *BasicQos, binding
 // ConsumeQueue
 // 同一个连接，可以进行多个 ConsumeQueue。对于相同订阅的， 同一条消息，只有其中一个 ConsumeQueue 可以接收到消息。
 func (c *Consumer) ConsumeQueue(cp ConsumeParams, que Queue, qos *BasicQos, bindings ...QueueBinding) (<-chan amqp.Delivery, error) {
+	if c.channel == nil {
+		return nil, fmt.Errorf("no connected channel")
+	}
 	queue, err := c.channel.QueueDeclare(
 		que.Name,
 		que.Durable,
