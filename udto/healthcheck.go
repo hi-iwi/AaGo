@@ -17,9 +17,9 @@ type AmqpConnectionHealth struct {
 	TLS          bool   `json:"tls"`
 	ReadTimeout  int    `json:"read_timeout"`
 	WriteTimeout int    `json:"write_timeout"`
-	Status       string `json:"status"`
-	Msg          string `json:"msg"`
+	ErrMsg       string `json:"errmsg"`
 }
+
 type MysqlConnectionHealth struct {
 	Name         string `json:"name"`
 	Scheme       string `json:"scheme"`
@@ -29,18 +29,17 @@ type MysqlConnectionHealth struct {
 	TLS          bool   `json:"tls"`
 	ReadTimeout  int    `json:"read_timeout"`
 	WriteTimeout int    `json:"write_timeout"`
-	Status       string `json:"status"`
-	Msg          string `json:"msg"`
+	ErrMsg       string `json:"errmsg"`
 }
+
 type RedisConnectionHealth struct {
 	Name         string `json:"name"`
 	Scheme       string `json:"scheme"`
 	Host         string `json:"host"`
 	Port         string `json:"port"`
-	Db           int    `json:"db"`
+	Db           string `json:"db"`
 	TLS          bool   `json:"tls"`
 	ReadTimeout  int    `json:"read_timeout"`
 	WriteTimeout int    `json:"write_timeout"`
-	Status       string `json:"status"`
-	Msg          string `json:"msg"`
+	ErrMsg       string `json:"errmsg"`
 }
