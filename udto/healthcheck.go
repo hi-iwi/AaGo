@@ -9,6 +9,7 @@ type Health struct {
 }
 
 type AmqpConnectionHealth struct {
+	Name         string `json:"name"`
 	Scheme       string `json:"scheme"`
 	Host         string `json:"host"`
 	Port         string `json:"port"`
@@ -20,6 +21,7 @@ type AmqpConnectionHealth struct {
 	Msg          string `json:"msg"`
 }
 type MysqlConnectionHealth struct {
+	Name         string `json:"name"`
 	Scheme       string `json:"scheme"`
 	Host         string `json:"host"`
 	Port         string `json:"port"`
@@ -31,6 +33,7 @@ type MysqlConnectionHealth struct {
 	Msg          string `json:"msg"`
 }
 type RedisConnectionHealth struct {
+	Name         string `json:"name"`
 	Scheme       string `json:"scheme"`
 	Host         string `json:"host"`
 	Port         string `json:"port"`
