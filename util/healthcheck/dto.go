@@ -1,12 +1,13 @@
 package healthcheck
 
 type Health struct {
-	Time           string        `json:"time"`
-	TimezoneID     string        `json:"timezone_id"`     // e.g. Asia/Shanghai
-	TimezoneOffset int           `json:"timezone_offset"` // seconds, e.g. +8 == 28800
-	Service        string        `json:"service"`
-	ServerID       string        `json:"server_id"`
-	Connections    []interface{} `json:"connections"`
+	Time           string            `json:"time"`
+	TimezoneID     string            `json:"timezone_id"`     // e.g. Asia/Shanghai
+	TimezoneOffset int               `json:"timezone_offset"` // seconds, e.g. +8 == 28800
+	Service        string            `json:"service"`
+	ServerID       string            `json:"server_id"`
+	Connections    []interface{}     `json:"connections"`
+	RunnerTime     map[string]string `json:"runner_time"` // {co1: "2019-05-01 00:00:00", co2: ""}
 }
 
 type AmqpConnHealth struct {
