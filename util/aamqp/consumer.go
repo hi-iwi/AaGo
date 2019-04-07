@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"sync/atomic"
 	"time"
 
@@ -173,8 +174,7 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 			}()
 		}
 
-		// Go into reconnect loop when
-		// c.done is passed non nil values
+		// Go into reconnect loop when c.done is passed non nil values
 		if <-c.done != nil {
 			c.currentStatus.Store(false)
 			retryTime := 1
@@ -190,5 +190,8 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 				time.Sleep(time.Duration(15+rand.Intn(60)+2*retryTime) * time.Second)
 			}
 		}
+
+		time.Sleep(time.Second)
+		runtime.Gosched()
 	}
 }
