@@ -16,6 +16,8 @@ import (
 type health struct {
 	app       *aa.Aa
 	ConfigFmt string
+	mtx       sync.RWMutex
+	h         Health
 }
 
 var (
@@ -24,27 +26,40 @@ var (
 )
 
 func NewHealth(app *aa.Aa) *health {
+	now := time.Now()
+	zone, offset := now.Zone()
+
 	newHealthOnce.Do(func() {
 		healthSvc = &health{
 			app:       app,
 			ConfigFmt: "conn.%s",
+			h: Health{
+				TimezoneID:     zone,
+				TimezoneOffset: offset,
+				Service:        app.Config.Get("service").String(),
+				ServerID:       app.Config.Get("server_id").String(),
+			},
 		}
 	})
 	return healthSvc
 }
 
-func (s *health) Check(connections ...interface{}) Health {
-	now := time.Now()
-	zone, offset := now.Zone()
-	return Health{
-		Time:           now.Format("2006-01-02 15:04:05"),
-		TimezoneID:     zone,
-		TimezoneOffset: offset,
-		Service:        s.app.Config.Get("service").String(),
-		ServerID:       s.app.Config.Get("server_id").String(),
-		Connections:    connections,
-	}
+func (s *health) UpdateRunner(name string) {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	s.h.Runners[name] = time.Now().Format("2006-01-02 15:04:05")
 }
+
+func (s *health) Check(connections ...interface{}) Health {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+
+	s.h.Time = time.Now().Format("2006-01-02 15:04:05")
+	s.h.Connections = connections
+	return s.h
+}
+
 func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	cf := s.app.Config
 	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()

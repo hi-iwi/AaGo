@@ -7,7 +7,7 @@ type Health struct {
 	Service        string            `json:"service"`
 	ServerID       string            `json:"server_id"`
 	Connections    []interface{}     `json:"connections"`
-	RunnerTime     map[string]string `json:"runner_time"` // {co1: "2019-05-01 00:00:00", co2: ""}
+	Runners        map[string]string `json:"runners"` // {co1: "2019-05-01 00:00:00", co2: ""} 每个死循环运行的协程，都必须经常更新时间到这里
 }
 
 type AmqpConnHealth struct {
