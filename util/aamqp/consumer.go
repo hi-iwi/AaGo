@@ -17,6 +17,7 @@ import (
 const RECOVER_INTERVAL_TIME = 6 * 60
 
 type Consumer struct {
+	cc      ConnectionConfig
 	conn    *amqp.Connection
 	channel *amqp.Channel
 	done    chan error
@@ -29,12 +30,18 @@ type Consumer struct {
 	currentStatus   atomic.Value
 }
 
-func NewConsumer(tag, uri string, ex Exchange) *Consumer {
+func NewConsumer(tag, uri string, ex Exchange, ccs ...ConnectionConfig) *Consumer {
 	name, err := os.Hostname()
 	if err != nil {
 		name = ex.Name + ex.Kind
 	}
+	var cc ConnectionConfig
+	if len(ccs) > 0 {
+		cc = ccs[0]
+	}
+
 	consumer := &Consumer{
+		cc:              cc.withDefault(),
 		Tag:             fmt.Sprintf("%s-%s", tag, name),
 		uri:             uri,
 		exchange:        ex,
@@ -46,7 +53,16 @@ func NewConsumer(tag, uri string, ex Exchange) *Consumer {
 }
 
 func (c *Consumer) Connect() (err error) {
-	c.conn, err = amqp.Dial(c.uri)
+	ac := amqp.Config{
+		Properties: amqp.Table{
+			"product": defaultProduct,
+			"version": defaultVersion,
+		},
+		Heartbeat: c.cc.Heartbeat,
+		Locale:    c.cc.Locale,
+		Dial:      amqp.DefaultDial(c.cc.Timeout),
+	}
+	c.conn, err = amqp.DialConfig(c.uri, ac)
 
 	if err != nil {
 		return fmt.Errorf("Dial: %s", err)
@@ -145,6 +161,8 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 
 	var err error
 	for {
+
+		// 当 deliveries 置空后，这些协程将会被全部自动回收
 		for i := 0; i < threads; i++ {
 			go func() {
 				for msg := range deliveries {
@@ -171,6 +189,7 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 						log.Printf("delivery failed: %s\n", e)
 					})
 				}
+				log.Println("Consumer coroutine destroyed")
 			}()
 		}
 
@@ -181,6 +200,7 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 			c.currentStatus.Store(false)
 			retryTime := 1
 			for {
+				log.Printf("reconnecting %dth time\n", retryTime)
 				deliveries, err = c.Reconnect(cp, que, qos, bindings...)
 				if err != nil {
 					log.Printf("reconnecting failed: %s\n", err)

@@ -1,6 +1,37 @@
 package aamqp
 
-import "github.com/streadway/amqp"
+import (
+	"time"
+
+	"github.com/streadway/amqp"
+)
+
+const (
+	defaultProduct           = "https://github.com/luexu/AaGo"
+	defaultVersion           = "Aario"
+	defaultConnectionTimeout = 5 * time.Second
+	defaultHeartbeat         = 10 * time.Second
+	defaultLocale            = "en_US"
+)
+
+type ConnectionConfig struct {
+	Timeout   time.Duration
+	Heartbeat time.Duration
+	Locale    string
+}
+
+func (cc ConnectionConfig) withDefault() ConnectionConfig {
+	if cc.Locale == "" {
+		cc.Locale = defaultLocale
+	}
+	if cc.Timeout <= 0*time.Second {
+		cc.Timeout = defaultConnectionTimeout
+	}
+	if cc.Heartbeat <= 0*time.Second {
+		cc.Heartbeat = defaultHeartbeat
+	}
+	return cc
+}
 
 type Exchange struct {
 	Name       string
