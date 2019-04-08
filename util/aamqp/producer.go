@@ -9,6 +9,7 @@ import (
 )
 
 type Producer struct {
+	cc      ConnectionConfig
 	conn    *amqp.Connection
 	channel *amqp.Channel
 	done    chan error
@@ -17,8 +18,14 @@ type Producer struct {
 	exchange Exchange
 }
 
-func NewProducer(uri string, ex Exchange) *Producer {
+func NewProducer(uri string, ex Exchange, ccs ...ConnectionConfig) *Producer {
+	var cc ConnectionConfig
+	if len(ccs) > 0 {
+		cc = ccs[0]
+	}
+
 	producer := &Producer{
+		cc:       cc.withDefault(),
 		uri:      uri,
 		exchange: ex,
 	}
@@ -68,8 +75,16 @@ func (p *Producer) SimplePub(msg interface{}, args ...string) error {
 // @param confirm: Reliable publisher confirms require confirm.select support from the connection.
 //        e.g. func confirmOne(confirms <-chan amqp.Confirmation){if confirmed := <-confirms; confirmed.Ack{OK} else {FAIL}}
 func (p *Producer) Pub(exchange, key string, mandatory, immediate bool, msg amqp.Publishing, confirming func(<-chan amqp.Confirmation)) error {
-
-	conn, err := amqp.Dial(p.uri)
+	ac := amqp.Config{
+		Properties: amqp.Table{
+			"product": defaultProduct,
+			"version": defaultVersion,
+		},
+		Heartbeat: p.cc.Heartbeat,
+		Locale:    p.cc.Locale,
+		Dial:      amqp.DefaultDial(p.cc.Timeout),
+	}
+	conn, err := amqp.DialConfig(p.uri, ac)
 	if err != nil {
 		return fmt.Errorf("failed to connect to AMQP broker: %s", err)
 	}
