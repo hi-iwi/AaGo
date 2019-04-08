@@ -11,7 +11,10 @@ const (
 	defaultVersion           = "Aario"
 	defaultConnectionTimeout = 5 * time.Second
 	defaultHeartbeat         = 10 * time.Second
-	defaultLocale            = "en_US"
+	// Connection locale that we expect to always be en_US
+	// Even though servers must return it as per the AMQP 0-9-1 spec,
+	// we are not aware of it being used other than to satisfy the spec requirements
+	defaultLocale = "en_US"
 )
 
 type ConnectionConfig struct {
