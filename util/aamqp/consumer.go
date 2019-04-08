@@ -174,6 +174,8 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 			}()
 		}
 
+		runtime.Gosched()
+
 		// Go into reconnect loop when c.done is passed non nil values
 		if <-c.done != nil {
 			c.currentStatus.Store(false)
@@ -193,6 +195,5 @@ func (c *Consumer) Handle(deliveries <-chan amqp.Delivery, fn func([]byte) bool,
 
 		time.Sleep(time.Second)
 		log.Println("aamqp consumer re-handling...")
-		runtime.Gosched()
 	}
 }
