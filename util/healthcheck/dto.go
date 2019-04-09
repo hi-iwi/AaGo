@@ -18,6 +18,7 @@ type AmqpConnHealth struct {
 	VHost          string `json:"vhost"`
 	TLS            bool   `json:"tls"`
 	TimeoutMs      int    `json:"timeout_ms"`
+	HeartbeatMs    int    `json:"heartbeat_ms"`
 	ReadTimeoutMs  int    `json:"read_timeout_ms"`
 	WriteTimeoutMs int    `json:"write_timeout_ms"`
 	ErrMsg         string `json:"errmsg"`
