@@ -13,3 +13,9 @@ func NewReqProp(param string, data interface{}) *ReqProp {
 	p.Value = data
 	return &p
 }
+
+func (p *ReqProp) Default(v interface{}) {
+	if p.IsEmpty() {
+		p.Value = v
+	}
+}

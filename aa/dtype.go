@@ -14,6 +14,9 @@ func NewDtype(data interface{}) *Dtype {
 	}
 }
 
+func (p *Dtype) IsEmpty() bool {
+	return dtype.IsEmpty(p.Value)
+}
 func (p *Dtype) NotEmpty() bool {
 	return dtype.NotEmpty(p.Value)
 }

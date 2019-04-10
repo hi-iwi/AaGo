@@ -63,9 +63,9 @@ func (s *health) Check(connections ...interface{}) Health {
 func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	cf := s.app.Config
 	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()
-	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout", name), 0).Int()
-	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout", name), 0).Int()
-	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout", name), 0).Int()
+	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout_ms", name), 0).Int()
+	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout_ms", name), 0).Int()
+	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout_ms", name), 0).Int()
 
 	h := RedisConnHealth{
 		Name:           name,
@@ -104,9 +104,9 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 	cf := s.app.Config
 	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()
-	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout", name), 0).Int()
-	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout", name), 0).Int()
-	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout", name), 0).Int()
+	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout_ms", name), 0).Int()
+	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout_ms", name), 0).Int()
+	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout_ms", name), 0).Int()
 
 	h := MysqlConnHealth{
 		Name:           name,
@@ -142,9 +142,9 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 func (s *health) CheckAmqp(name string) (AmqpConnHealth, error) {
 	cf := s.app.Config
 	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()
-	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout", name), 0).Int()
-	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout", name), 0).Int()
-	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout", name), 0).Int()
+	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout_ms", name), 0).Int()
+	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout_ms", name), 0).Int()
+	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout_ms", name), 0).Int()
 	heartbeat, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".heartbeat", name), 0).Int()
 
 	vhost := cf.Get(fmt.Sprintf(s.ConfigFmt+".vhost", name)).String()

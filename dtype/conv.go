@@ -205,6 +205,10 @@ func Float64(d interface{}, errs ...error) (float64, error) {
 	return float64(0), errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> Float64")
 }
 
+func IsEmpty(d interface{}, errs ...error) bool {
+	return !NotEmpty(d, errs...)
+}
+
 // NotEmpty check if a value is empty
 // @warn NotEmpty(byte(0)) == false,  NotEmpty(byte('0')) == true
 //       NotEmpty(0) == false, NotEmpty(-1) == true, NotEmpty(1) == true
