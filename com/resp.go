@@ -17,7 +17,7 @@ type RespStruct struct {
 	ic          iris.Context
 	req         *Req
 	aa.Error
-	Payload interface{} `json:"payload"`
+	Payload interface{} `json:"data"`
 
 	code    int
 	headers map[string]string
@@ -155,9 +155,9 @@ func (resp RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 Write(404)
 Write(404, "Not Found")
 Write(aa.Error{})
-Write(aa.Error{}, payload)
-Write(aa.Error{}, payload)
-Write(payload)
+Write(aa.Error{}, data)
+Write(aa.Error{}, data)
+Write(data)
 */
 func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 
