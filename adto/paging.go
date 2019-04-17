@@ -3,35 +3,39 @@ package adto
 import "github.com/luexu/AaGo/com"
 
 type Paging struct {
-	Page     int `alias:"page"`
-	PageSize int `alias:"page_size"`
-	Offset   int
-	Limit    int
+	Page   int `alias:"page"`
+	Offset int `alias:"offset"`
+	Limit  int `alias:"limit"`
 }
 
 func MakePaging(r *com.Req) Paging {
 	p, _ := r.Query("page", `^\d+$`, false)
-	ps, _ := r.Query("page_size", `^\d+$`, false)
+	ofs, _ := r.Query("offset", `^\d+$`, false)
+	lmt, _ := r.Query("limit", `^\d+$`, false)
 
 	page, _ := p.Int()
-	size, _ := ps.Int()
+	offset, _ := ofs.Int()
+	limit, _ := lmt.Int()
 
-	if page < 1 {
-		page = 1
+	if limit < 1 {
+		limit = 20
+	} else if limit > 100 {
+		limit = 100
 	}
-	if size < 1 {
-		size = 20
+
+	if offset > 0 {
+		page = (offset / limit) + 1
 	} else {
-		if size > 100 {
-			size = 100
+		if page < 1 {
+			page = 1
 		}
 	}
-	limit := size
-	offset := (page - 1) * limit
+	// change ?limit=3&offset=10 to ?limit=0&offset=10
+	offset = (page - 1) * limit
+
 	return Paging{
-		Page:     page,
-		PageSize: size,
-		Offset:   offset,
-		Limit:    limit,
+		Page:   page,
+		Offset: offset,
+		Limit:  limit,
 	}
 }
