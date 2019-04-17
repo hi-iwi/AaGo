@@ -1,7 +1,7 @@
 package aa
 
 import (
-	"github.com/luexu/AaGo/dtype"
+	"github.com/luexu/dtype"
 )
 
 type Dtype struct {
