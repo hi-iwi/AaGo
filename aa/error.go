@@ -1,8 +1,10 @@
 package aa
 
 import (
+	"database/sql"
 	"fmt"
 
+	"github.com/luexu/AaGo/aa"
 	"github.com/luexu/AaGo/dict"
 )
 
@@ -27,6 +29,15 @@ func NewError(code int, msg ...interface{}) *Error {
 		Code: code,
 		Msg:  m,
 	}
+}
+
+func NewSqlError(err error) *Error {
+	if err == sql.ErrNoRows {
+		return aa.NewError(404, fmt.Sprintf("sql query not found: ", err))
+	} else if err != nil {
+		return aa.NewError(500, fmt.Sprintf("sql query error: ", err))
+	}
+	return nil
 }
 
 func (e *Error) Error() string {
