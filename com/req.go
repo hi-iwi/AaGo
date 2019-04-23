@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/kataras/iris"
-	"github.com/luexu/AaGo/aa"
+	"github.com/luexu/AaGo/ae"
 )
 
 type Req struct {
@@ -159,7 +159,7 @@ func (req *Req) Headers() map[string]interface{} {
 	return headers
 }
 
-func (req *Req) Header(param string, patterns ...interface{}) (*ReqProp, *aa.Error) {
+func (req *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
 	req.data.hlck.RLock()
 	h := req.data.header
 	req.data.hlck.RUnlock()
@@ -199,7 +199,7 @@ func (req *Req) Queries() map[string]interface{} {
 	return queries
 }
 
-func (req *Req) Query(param string, patterns ...interface{}) (*ReqProp, *aa.Error) {
+func (req *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
 	req.data.qlck.RLock()
 	q := req.data.query
 	req.data.qlck.RUnlock()
@@ -235,7 +235,7 @@ func (req *Req) loadFormBody(d url.Values) {
 		}
 	}
 }
-func (req *Req) Body(param string, patterns ...interface{}) (*ReqProp, *aa.Error) {
+func (req *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
 	ct := req.ContentType()
 	if !req.parsed {
 		// 参考 http.parsePostForm()  request.go  ParseForm()
@@ -249,10 +249,10 @@ func (req *Req) Body(param string, patterns ...interface{}) (*ReqProp, *aa.Error
 			}
 			b, e := ioutil.ReadAll(req.r.Body)
 			if e != nil {
-				return NewReqProp(param, ""), aa.NewError(500, e)
+				return NewReqProp(param, ""), ae.NewError(500, e)
 			}
 			if int64(len(b)) > maxFormSize {
-				return NewReqProp(param, ""), aa.NewError(400, "Json body is too large")
+				return NewReqProp(param, ""), ae.NewError(400, "Json body is too large")
 			}
 			req.raw = string(b)
 			req.data.blck.Lock()

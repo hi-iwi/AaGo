@@ -14,17 +14,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/luexu/AaGo/aa"
+	"github.com/luexu/AaGo/ae"
 )
 
-func (resp RespStruct) toHTTPError(err error) *aa.Error {
+func (resp RespStruct) toHTTPError(err error) *ae.Error {
 	if os.IsNotExist(err) {
-		return aa.NewError(404)
+		return ae.NewError(404)
 	}
 	if os.IsPermission(err) {
-		return aa.NewError(403)
+		return ae.NewError(403)
 	}
-	return aa.NewError(500)
+	return ae.NewError(500)
 }
 
 // The algorithm uses at most sniffLen bytes to make its decision.

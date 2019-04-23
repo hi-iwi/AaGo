@@ -4,6 +4,7 @@ import (
 	"regexp"
 
 	"github.com/luexu/AaGo/aa"
+	"github.com/luexu/AaGo/ae"
 )
 
 /*
@@ -14,7 +15,7 @@ Filter(pattern string)
 Filter(default aa.Dtype)
 
 */
-func (p *ReqProp) Filter(patterns ...interface{}) *aa.Error {
+func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
 	required := true
 	pattern := ""
 
@@ -30,13 +31,13 @@ func (p *ReqProp) Filter(patterns ...interface{}) *aa.Error {
 	}
 	if !p.NotEmpty() {
 		if required {
-			return aa.NewError(400, "Parameter `"+p.param+"` is required!")
+			return ae.NewError(400, "Parameter `"+p.param+"` is required!")
 		}
 	} else if pattern != "" {
 		re, _ := regexp.Compile(pattern)
 		m := re.FindStringSubmatch(p.String())
 		if m == nil || len(m) < 1 {
-			return aa.NewError(400, "Parameter `"+p.param+"`=`"+p.String()+"` dose not match `"+pattern+"`")
+			return ae.NewError(400, "Parameter `"+p.param+"`=`"+p.String()+"` dose not match `"+pattern+"`")
 		}
 	}
 	return nil

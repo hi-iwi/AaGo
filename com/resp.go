@@ -8,6 +8,7 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/luexu/AaGo/aa"
+	"github.com/luexu/AaGo/ae"
 	"github.com/luexu/AaGo/dict"
 )
 
@@ -16,7 +17,7 @@ type RespStruct struct {
 	writer      http.ResponseWriter
 	ic          iris.Context
 	req         *Req
-	aa.Error
+	ae.Error
 	Payload interface{} `json:"data"`
 
 	code    int
@@ -67,7 +68,7 @@ func (resp RespStruct) WriteHeader(code interface{}) {
 
 	if c, ok := code.(int); ok {
 		resp.code = c
-	} else if e, ok := code.(*aa.Error); ok {
+	} else if e, ok := code.(*ae.Error); ok {
 		if e == nil {
 			resp.code = 200
 		} else {
@@ -154,14 +155,14 @@ func (resp RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 /*
 Write(404)
 Write(404, "Not Found")
-Write(aa.Error{})
-Write(aa.Error{}, data)
-Write(aa.Error{}, data)
+Write(ae.Error{})
+Write(ae.Error{}, data)
+Write(ae.Error{}, data)
 Write(data)
 */
 func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 
-	if e, ok := a.(*aa.Error); ok {
+	if e, ok := a.(*ae.Error); ok {
 		resp.Code = e.Code
 		resp.Msg = e.Msg
 		if len(d) > 0 {
