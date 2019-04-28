@@ -6,5 +6,7 @@ import (
 )
 
 func Middleware(ictx iris.Context) {
+	defer ictx.Next()
+
 	ictx.Values().Set("traceid", randm.NewUUID().String())
 }
