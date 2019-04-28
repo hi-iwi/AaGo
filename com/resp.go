@@ -2,7 +2,6 @@ package com
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"sync"
 
@@ -180,15 +179,14 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		cs.Payload = a
 	}
 
-	traceid, _ := resp.req.Query("traceid")
 	if cs.Code >= 500 {
 		if LogHandler != nil {
 			if err := LogHandler(cs.Code, cs.Msg); err != nil {
-				log.Printf("[error] %s LogHandler error: %s\n", traceid.String(), err)
-				log.Printf("[error] %s %d %s\n", traceid.String(), cs.Code, cs.Msg)
+				Log.Emerg(resp.ic.Request().Context(), "invalid com.resp LogHandler: %s", err)
+				Log.Error(resp.ic.Request().Context(), "code %d, msg %s", cs.Code, cs.Msg)
 			}
 		} else {
-			log.Printf("[error] %s %d %s\n", traceid.String(), cs.Code, cs.Msg)
+			Log.Error(resp.ic.Request().Context(), "code %d, msg %s", cs.Code, cs.Msg)
 		}
 		resp.writeDebugInfo(cs.Msg)
 		cs.Msg = dict.Code2Msg(cs.Code)

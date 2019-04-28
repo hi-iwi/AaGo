@@ -15,6 +15,7 @@ import (
 )
 
 type Req struct {
+	ID          string
 	Method      string
 	r           *http.Request
 	contentType string
@@ -90,6 +91,7 @@ func NewReq(p interface{}) *Req {
 		req.r = r
 		req.Method = r.Method
 	} else if c, ok := p.(iris.Context); ok {
+		req.ID = c.Values().GetString("traceid")
 		req.r = c.Request()
 		req.Method = req.r.Method
 		if len(c.Params().Store) > 0 {
