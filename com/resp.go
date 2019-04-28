@@ -183,10 +183,10 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		if LogHandler != nil {
 			if err := LogHandler(cs.Code, cs.Msg); err != nil {
 				Log.Emerg(resp.ic.Request().Context(), "invalid com.resp LogHandler: %s", err)
-				Log.Error(resp.ic.Request().Context(), "code %d, msg %s", cs.Code, cs.Msg)
+				Log.Error(resp.ic.Request().Context(), "code: %d, msg: %s", cs.Code, cs.Msg)
 			}
 		} else {
-			Log.Error(resp.ic.Request().Context(), "code %d, msg %s", cs.Code, cs.Msg)
+			Log.Error(resp.ic.Request().Context(), "code: %d, msg: %s", cs.Code, cs.Msg)
 		}
 		resp.writeDebugInfo(cs.Msg)
 		cs.Msg = dict.Code2Msg(cs.Code)
