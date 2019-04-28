@@ -184,11 +184,11 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 	if resp.Code >= 500 {
 		if LogHandler != nil {
 			if err := LogHandler(resp.Code, resp.Msg); err != nil {
-				log.Println("[error] LogHandler error: ", err.Error())
-				log.Printf("[error] %d %s\n", resp.Code, resp.Msg)
+				log.Println("[error] %s LogHandler error: ", resp.ic.Values().GetString("traceid"), err.Error())
+				log.Printf("[error] %s %d %s\n", resp.ic.Values().GetString("traceid"), resp.Code, resp.Msg)
 			}
 		} else {
-			log.Printf("[error] %d %s\n", resp.Code, resp.Msg)
+			log.Printf("[error] %s %d %s\n", resp.ic.Values().GetString("traceid"), resp.Code, resp.Msg)
 		}
 		resp.writeDebugInfo(resp.Msg)
 		resp.Msg = dict.Code2Msg(resp.Code)
