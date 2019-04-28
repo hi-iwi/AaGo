@@ -17,12 +17,11 @@ type RespStruct struct {
 	writer      http.ResponseWriter
 	ic          iris.Context
 	req         *Req
-	ae.Error
-	Payload interface{} `json:"data"`
 
-	code    int
-	headers map[string]string
-	content []byte
+	code          int
+	headers       map[string]string
+	content       []byte
+	contentStruct RespContentDTO
 
 	headlck sync.RWMutex
 }
@@ -161,40 +160,41 @@ Write(ae.Error{}, data)
 Write(data)
 */
 func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
-
+	cs := RespContentDTO{}
 	if e, ok := a.(*ae.Error); ok {
-		resp.Code = e.Code
-		resp.Msg = e.Msg
+		cs.Code = e.Code
+		cs.Msg = e.Msg
 		if len(d) > 0 {
-			resp.Payload = d[0]
+			cs.Payload = d[0]
 		}
 	} else if code, ok := a.(int); ok {
-		resp.Code = code
+		cs.Code = code
 		if len(d) == 0 {
-			resp.Msg = dict.Code2Msg(code)
+			cs.Msg = dict.Code2Msg(code)
 		} else {
-			resp.Msg = aa.NewDtype(d[0]).String()
+			cs.Msg = aa.NewDtype(d[0]).String()
 		}
 	} else {
-		resp.Code = 200
-		resp.Msg = "OK"
-		resp.Payload = a
+		cs.Code = 200
+		cs.Msg = "OK"
+		cs.Payload = a
 	}
 
-	if resp.Code >= 500 {
+	traceid, _ := resp.req.Query("traceid")
+	if cs.Code >= 500 {
 		if LogHandler != nil {
-			if err := LogHandler(resp.Code, resp.Msg); err != nil {
-				log.Println("[error] %s LogHandler error: ", resp.ic.Values().GetString("traceid"), err.Error())
-				log.Printf("[error] %s %d %s\n", resp.ic.Values().GetString("traceid"), resp.Code, resp.Msg)
+			if err := LogHandler(cs.Code, cs.Msg); err != nil {
+				log.Printf("[error] %s LogHandler error: %s\n", traceid.String(), err)
+				log.Printf("[error] %s %d %s\n", traceid.String(), cs.Code, cs.Msg)
 			}
 		} else {
-			log.Printf("[error] %s %d %s\n", resp.ic.Values().GetString("traceid"), resp.Code, resp.Msg)
+			log.Printf("[error] %s %d %s\n", traceid.String(), cs.Code, cs.Msg)
 		}
-		resp.writeDebugInfo(resp.Msg)
-		resp.Msg = dict.Code2Msg(resp.Code)
+		resp.writeDebugInfo(cs.Msg)
+		cs.Msg = dict.Code2Msg(cs.Code)
 	}
-	resp.writer.WriteHeader(resp.Code)
-	b, err := json.Marshal(resp)
+	resp.writer.WriteHeader(cs.Code)
+	b, err := json.Marshal(cs)
 	if err != nil {
 		return err
 	}
