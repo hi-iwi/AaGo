@@ -2,6 +2,8 @@ package aa
 
 import (
 	"sync"
+
+	"github.com/luexu/alog"
 )
 
 type Aa struct {
@@ -11,11 +13,13 @@ type Aa struct {
 	Config Config
 	// system configuration
 	Configuration Configuration
+	Log           alog.Log
 }
 
 func New() *Aa {
 	aa := &Aa{
 		Config: &Yaml{},
+		Log:    alog.NewXlog(),
 	}
 
 	return aa
