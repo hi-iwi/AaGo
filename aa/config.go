@@ -78,5 +78,7 @@ func (a *Aa) ParseConfig(filename string) (Config, error) {
 	a.mu.Lock()
 	a.Config = conf
 	a.mu.Unlock()
+
+	a.ParseToConfiguration()
 	return conf, nil
 }
