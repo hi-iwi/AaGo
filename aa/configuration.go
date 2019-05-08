@@ -1,6 +1,7 @@
 package aa
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/luexu/AaGo/util"
@@ -27,5 +28,7 @@ func (a *Aa) ParseToConfiguration() {
 }
 
 func (c Configuration) Log() {
-	log.Printf("service `%s` (ver: %s) has started! server id: %s, env: %s, timezone id: %s, mock: %s\n", c.Service, util.GitVersion(), c.ServerID, c.Env, c.TimezoneID, c.Mock)
+	msg := fmt.Sprintf("service `%s` (ver: %s) has started! server id: %s, env: %s, timezone id: %s, mock: %s", c.Service, util.GitVersion(), c.ServerID, c.Env, c.TimezoneID, c.Mock)
+	log.Println(msg)
+	fmt.Println(msg)
 }
