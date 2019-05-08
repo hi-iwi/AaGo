@@ -1,5 +1,11 @@
 package aa
 
+import (
+	"log"
+
+	"github.com/luexu/AaGo/util"
+)
+
 type Configuration struct {
 	Service    string `yaml:"service"`
 	ServerID   string `yaml:"server_id"`
@@ -18,4 +24,8 @@ func (a *Aa) ParseToConfiguration() {
 	a.Configuration.TimezoneID = a.Config.Get("timezone_id").String()
 	mock, _ := a.Config.Get("mock").Bool()
 	a.Configuration.Mock = mock
+}
+
+func (c Configuration) Log() {
+	log.Printf("service `%s` (ver: %s) has started! server id: %s, env: %s, timezone id: %s, mock: %s\n", c.Service, util.GitVersion(), c.ServerID, c.Env, c.TimezoneID, c.Mock)
 }
