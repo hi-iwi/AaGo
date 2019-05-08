@@ -30,7 +30,7 @@ func parseDefaultValue(vs ...interface{}) interface{} {
 	if len(vs) > 0 {
 		return vs[0]
 	}
-	return nil
+	return ""
 }
 
 func (c *Yaml) Get(key string, defaultValue ...interface{}) *Dtype {
