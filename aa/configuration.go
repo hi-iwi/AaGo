@@ -28,7 +28,7 @@ func (a *Aa) ParseToConfiguration() {
 }
 
 func (c Configuration) Log() {
-	msg := fmt.Sprintf("service %s has started! env: %s, server id: %s, timezone: %s, mock: %v, git ver: %s", c.Service, c.Env, c.ServerID, c.TimezoneID, c.Mock, util.GitVersion())
+	msg := fmt.Sprintf("service %s has started! env: %s, server id: %s, timezone id: %s, mock: %v, git ver: %s", c.Service, c.Env, c.ServerID, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
 	fmt.Println(msg)
 }
