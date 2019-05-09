@@ -2,6 +2,7 @@ package aa
 
 import (
 	"sync"
+	"time"
 
 	"github.com/luexu/alog"
 )
@@ -17,9 +18,14 @@ type Aa struct {
 }
 
 func New() *Aa {
+	zone, _ := time.Now().Zone()
 	aa := &Aa{
 		Config: &Yaml{},
 		Log:    alog.NewXlog(),
+		Configuration: Configuration{
+			TimezoneID:   zone,
+			TimeLocation: time.Local,
+		},
 	}
 
 	return aa

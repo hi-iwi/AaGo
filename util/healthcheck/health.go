@@ -26,15 +26,14 @@ var (
 )
 
 func NewHealth(app *aa.Aa) *health {
-	now := time.Now()
-	zone, offset := now.Zone()
+	_, offset := time.Now().In(app.Configuration.TimeLocation).Zone()
 
 	newHealthOnce.Do(func() {
 		healthSvc = &health{
 			app:       app,
 			ConfigFmt: "conn.%s",
 			h: Health{
-				TimezoneID:     zone,
+				TimezoneID:     app.Configuration.TimezoneID,
 				TimezoneOffset: offset,
 				Service:        app.Config.Get("service").String(),
 				ServerID:       app.Config.Get("server_id").String(),
@@ -48,14 +47,14 @@ func (s *health) UpdateRunner(name string) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
-	s.h.Runners[name] = time.Now().Format("2006-01-02 15:04:05")
+	s.h.Runners[name] = time.Now().In(s.app.Configuration.TimeLocation).Format("2006-01-02 15:04:05")
 }
 
 func (s *health) Check(connections ...interface{}) Health {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
-	s.h.Time = time.Now().Format("2006-01-02 15:04:05")
+	s.h.Time = time.Now().In(s.app.Configuration.TimeLocation).Format("2006-01-02 15:04:05")
 	s.h.Connections = connections
 	return s.h
 }
