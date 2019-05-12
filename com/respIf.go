@@ -47,6 +47,10 @@ func (resp RespStruct) handlePayloadMap(u interface{}, tagname string, tags ...s
 }
 
 func (resp RespStruct) handlePayloadArray(w interface{}, tagname string, tags ...string) []map[string]interface{} {
+	t := reflect.TypeOf(w).Kind()
+	if t != reflect.Slice && t != reflect.Array {
+		return nil
+	}
 	v := reflect.ValueOf(w)
 	ret := make([]map[string]interface{}, v.Len())
 
