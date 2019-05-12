@@ -199,9 +199,15 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 			cs.Msg = aa.NewDtype(d[0]).String()
 		}
 	} else {
-		cs.Code = 200
-		cs.Msg = "OK"
-		cs.Payload = resp.handlePayload(a, "json")
+		payload, e := resp.handlePayload(a, "json")
+		if e != nil {
+			cs.Code = e.Code
+			cs.Msg = e.Msg
+		} else {
+			cs.Code = 200
+			cs.Msg = "OK"
+			cs.Payload = payload
+		}
 	}
 
 	for _, mw := range beforeSerialize {

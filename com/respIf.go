@@ -3,6 +3,8 @@ package com
 import (
 	"reflect"
 	"strings"
+
+	"github.com/luexu/AaGo/ae"
 )
 
 type RespContentDTO struct {
@@ -13,10 +15,10 @@ type RespContentDTO struct {
 
 // @TODO
 // ?_field=time,service,connections:[name,scheme],server_id,test:{a,b,c}
-func (resp RespStruct) handlePayload(a interface{}, tagname string) interface{} {
+func (resp RespStruct) handlePayload(a interface{}, tagname string) (interface{}, *ae.Error) {
 	xm, _ := resp.req.Query("_field", false)
 	if xm.IsEmpty() {
-		return a
+		return a, nil
 	}
 	m := xm.String()
 	if m[0] == '[' && m[len(m)-1] == ']' {
@@ -25,7 +27,7 @@ func (resp RespStruct) handlePayload(a interface{}, tagname string) interface{} 
 	return resp.handlePayloadMap(a, tagname, strings.Split(m, ",")...)
 }
 
-func (resp RespStruct) handlePayloadMap(u interface{}, tagname string, tags ...string) map[string]interface{} {
+func (resp RespStruct) handlePayloadMap(u interface{}, tagname string, tags ...string) (map[string]interface{}, *ae.Error) {
 	ret := make(map[string]interface{}, 0)
 	t := reflect.TypeOf(u)
 	var found bool
@@ -43,20 +45,22 @@ func (resp RespStruct) handlePayloadMap(u interface{}, tagname string, tags ...s
 			ret[tag] = nil
 		}
 	}
-	return ret
+	return ret, nil
 }
 
-func (resp RespStruct) handlePayloadArray(w interface{}, tagname string, tags ...string) []map[string]interface{} {
+func (resp RespStruct) handlePayloadArray(w interface{}, tagname string, tags ...string) (ret []map[string]interface{}, e *ae.Error) {
 	t := reflect.TypeOf(w).Kind()
 	if t != reflect.Slice && t != reflect.Array {
-		return nil
+		return nil, ae.NewError(401, "invalid `_field`, not an array")
 	}
 	v := reflect.ValueOf(w)
-	ret := make([]map[string]interface{}, v.Len())
-
+	ret = make([]map[string]interface{}, v.Len())
 	for i := 0; i < v.Len(); i++ {
-		ret[i] = resp.handlePayloadMap(v.Index(i).Interface(), tagname, tags...)
+		ret[i], e = resp.handlePayloadMap(v.Index(i).Interface(), tagname, tags...)
+		if e != nil {
+			return nil, e
+		}
 	}
 
-	return ret
+	return ret, nil
 }
