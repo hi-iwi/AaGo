@@ -43,5 +43,5 @@ func (a *Aa) ParseToConfiguration() {
 func (c Configuration) Log() {
 	msg := fmt.Sprintf("service %s has started! env: %s, server id: %s, timezone id: %s, mock: %v, git ver: %s", c.Service, c.Env, c.ServerID, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
-	fmt.Printf("%s %s", time.Now().In(c.TimeLocation).Format("2006-01-02 15:04:05"), msg)
+	fmt.Printf("%s %s\n", time.Now().In(c.TimeLocation).Format("2006-01-02 15:04:05"), msg)
 }

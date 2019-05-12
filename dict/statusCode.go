@@ -14,7 +14,9 @@ var statusCodes = map[int]string{
 	206: "Partial Content",
 	300: "Multiple Choices",
 	301: "Moved Permanently",
-	302: "Found",
+	302: "Found",              // 大部分浏览器会将POST请求转为GET
+	303: "See Other",          // 强制规定POST请求转为GET
+	307: "Temporary Redirect", // 能跳转POST内容
 	304: "Not Modified",
 	400: "Bad Request",
 	401: "Unauthorized",

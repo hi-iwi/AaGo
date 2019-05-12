@@ -12,10 +12,12 @@ import (
 )
 
 type RespStruct struct {
-	beforeFlush []func(*RespStruct)
-	writer      http.ResponseWriter
-	ic          iris.Context
-	req         *Req
+	beforeFlush     []func(*RespStruct)
+	beforeSerialize []func(*RespContentDTO)
+	afterSerialize  []func([]byte) []byte
+	writer          http.ResponseWriter
+	ic              iris.Context
+	req             *Req
 
 	code          int
 	headers       map[string]string
@@ -26,19 +28,24 @@ type RespStruct struct {
 }
 
 var (
-	beforeFlush       = make([]func(*RespStruct), 3)
-	LogHandler        func(code int, msg string) error
+	HideServerErrMsg  = true
+	beforeSerialize   []func(*RespContentDTO)
+	afterSerialize    []func([]byte) []byte
+	beforeFlush       []func(*RespStruct)
 	RespDebugableFunc func(req *Req) bool
 )
 
 func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
 	resp.code = 200
-	resp.headers = make(map[string]string, 5)
-	for i := 0; i < len(as); i++ {
-		if r, ok := as[i].(*Req); ok {
+	for _, a := range as {
+		if r, ok := a.(*Req); ok {
 			resp.req = r
-		} else if mws, ok := as[i].([]func(*RespStruct)); ok {
-			resp.beforeFlush = mws
+		} else if mw, ok := a.(func(*RespStruct)); ok {
+			resp.beforeFlush = append(resp.beforeFlush, mw)
+		} else if mw, ok := a.(func(*RespContentDTO)); ok {
+			resp.beforeSerialize = append(resp.beforeSerialize, mw)
+		} else if mw, ok := a.(func([]byte) []byte); ok {
+			resp.afterSerialize = append(resp.afterSerialize, mw)
 		}
 	}
 
@@ -55,11 +62,32 @@ func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
 	return
 }
 
-func AddGlbRespMidwares(mws ...func(*RespStruct)) {
-	beforeFlush = append(beforeFlush, mws...)
+func AddGlbRespMidwares(mws ...interface{}) {
+	for _, a := range mws {
+		if mw, ok := a.(func(*RespStruct)); ok {
+			beforeFlush = append(beforeFlush, mw)
+		} else if mw, ok := a.(func(*RespContentDTO)); ok {
+			beforeSerialize = append(beforeSerialize, mw)
+		} else if mw, ok := a.(func([]byte) []byte); ok {
+			afterSerialize = append(afterSerialize, mw)
+		} else {
+			panic("undefined global response middleware")
+		}
+	}
 }
-func (resp RespStruct) AddMidwares(mws ...func(*RespStruct)) {
-	resp.beforeFlush = append(resp.beforeFlush, mws...)
+
+func (resp RespStruct) AddMidwares(mws ...interface{}) {
+	for _, a := range mws {
+		if mw, ok := a.(func(*RespStruct)); ok {
+			resp.beforeFlush = append(resp.beforeFlush, mw)
+		} else if mw, ok := a.(func(*RespContentDTO)); ok {
+			resp.beforeSerialize = append(resp.beforeSerialize, mw)
+		} else if mw, ok := a.(func([]byte) []byte); ok {
+			resp.afterSerialize = append(resp.afterSerialize, mw)
+		} else {
+			panic("undefined global response middleware")
+		}
+	}
 }
 
 func (resp RespStruct) WriteHeader(code interface{}) {
@@ -101,16 +129,12 @@ func (resp RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 		}
 	}
 
-	for i := 0; i < len(beforeFlush); i++ {
-		if w := beforeFlush[i]; w != nil {
-			w(&resp)
-		}
+	for _, mw := range beforeFlush {
+		mw(&resp)
 	}
 
-	for i := 0; i < len(resp.beforeFlush); i++ {
-		if w := resp.beforeFlush[i]; w != nil {
-			w(&resp)
-		}
+	for _, mw := range resp.beforeFlush {
+		mw(&resp)
 	}
 
 	if resp.code == 403 {
@@ -138,7 +162,7 @@ func (resp RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 	// @TODO 这里设置Content-Length之后，iris Gzip 就会异常
 	//w.Header().Set("Content-Length", strconv.Itoa(len(resp.content)))
 
-	w.WriteHeader(resp.code)
+	//w.WriteHeader(resp.code)
 
 	if resp.req.Method != "HEAD" {
 		if len(resp.content) > 0 {
@@ -179,22 +203,29 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		cs.Payload = a
 	}
 
-	if cs.Code >= 500 {
-		if LogHandler != nil {
-			if err := LogHandler(cs.Code, cs.Msg); err != nil {
-				Log.Emerg(resp.ic, "invalid com.resp LogHandler: %s", err)
-				Log.Error(resp.ic, "code: %d, msg: %s", cs.Code, cs.Msg)
-			}
-		} else {
-			Log.Error(resp.ic, "code: %d, msg: %s", cs.Code, cs.Msg)
-		}
+	for _, mw := range beforeSerialize {
+		mw(&cs)
+	}
+	for _, mw := range resp.beforeSerialize {
+		mw(&cs)
+	}
+
+	if HideServerErrMsg && cs.Code >= 500 {
+		Log.Error(resp.ic, "code: %d, msg: %s", cs.Code, cs.Msg)
 		resp.writeDebugInfo(cs.Msg)
 		cs.Msg = dict.Code2Msg(cs.Code)
 	}
-	resp.writer.WriteHeader(cs.Code)
+
 	b, err := json.Marshal(cs)
 	if err != nil {
 		return err
+	}
+
+	for _, mw := range afterSerialize {
+		b = mw(b)
+	}
+	for _, mw := range resp.afterSerialize {
+		b = mw(b)
 	}
 
 	resp.SetHeader("Content-Type", "application/json")
