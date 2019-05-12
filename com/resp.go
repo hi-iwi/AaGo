@@ -37,6 +37,7 @@ var (
 
 func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
 	resp.code = 200
+	resp.headers = make(map[string]string, 0)
 	for _, a := range as {
 		if r, ok := a.(*Req); ok {
 			resp.req = r
@@ -200,7 +201,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 	} else {
 		cs.Code = 200
 		cs.Msg = "OK"
-		cs.Payload = a
+		cs.Payload = resp.handlePayload(a)
 	}
 
 	for _, mw := range beforeSerialize {

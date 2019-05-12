@@ -204,9 +204,8 @@ func (resp RespStruct) checkIfRange(modtime time.Time) condResult {
 		etg, e := resp.req.Header("Etag")
 		if e == nil && etagStrongMatch(etag, etg.String()) {
 			return condTrue
-		} else {
-			return condFalse
 		}
+		return condFalse
 	}
 	// The If-Range value is typically the ETag value, but it may also be
 	// the modtime date. See golang.org/issue/8367.
@@ -241,10 +240,9 @@ func (resp RespStruct) checkPreconditions(modtime time.Time) (done bool, rangeHe
 		if r.Method == "GET" || r.Method == "HEAD" {
 			resp.code = 403
 			return true, ""
-		} else {
-			resp.code = 412
-			return true, ""
 		}
+		resp.code = 412
+		return true, ""
 	case condNone:
 		if resp.checkIfModifiedSince(modtime) == condFalse {
 			resp.code = 403
