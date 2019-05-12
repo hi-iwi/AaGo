@@ -12,9 +12,9 @@ type RespContentDTO struct {
 }
 
 // @TODO
-// ?_map=time,service,connections:[name,scheme],server_id,test:{a,b,c}
+// ?_field=time,service,connections:[name,scheme],server_id,test:{a,b,c}
 func (resp RespStruct) handlePayload(a interface{}, tagname string) interface{} {
-	xm, _ := resp.req.Query("_map", false)
+	xm, _ := resp.req.Query("_field", false)
 	if xm.IsEmpty() {
 		return a
 	}
