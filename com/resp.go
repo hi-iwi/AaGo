@@ -201,7 +201,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 	} else {
 		cs.Code = 200
 		cs.Msg = "OK"
-		cs.Payload = resp.handlePayload(a)
+		cs.Payload = resp.handlePayload(a, "json")
 	}
 
 	for _, mw := range beforeSerialize {
