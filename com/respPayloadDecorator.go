@@ -1,7 +1,6 @@
 package com
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/luexu/dtype"
@@ -56,6 +55,5 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	}
-	fmt.Println(payload, k)
 	return dtype.String(payload), nil
 }
