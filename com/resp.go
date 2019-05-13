@@ -199,8 +199,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 			cs.Msg = aa.NewDtype(d[0]).String()
 		}
 	} else {
-		payload, e := resp.handlePayload(a, "json")
-		if e != nil {
+		if payload, e := resp.handlePayload(a, "json"); e != nil {
 			cs.Code = e.Code
 			cs.Msg = e.Msg
 		} else {
