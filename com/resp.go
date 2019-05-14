@@ -3,6 +3,7 @@ package com
 import (
 	"encoding/json"
 	"net/http"
+	"reflect"
 	"sync"
 
 	"github.com/kataras/iris"
@@ -185,7 +186,11 @@ Write(data)
 */
 func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 	cs := RespContentDTO{}
-	if e, ok := a.(*ae.Error); ok {
+	v := reflect.ValueOf(a)
+	if a == nil || (v.Kind() == reflect.Ptr && v.IsNil()) {
+		cs.Code = 200
+		cs.Msg = "OK"
+	} else if e, ok := a.(*ae.Error); ok {
 		cs.Code = e.Code
 		cs.Msg = e.Msg
 		if len(d) > 0 {
