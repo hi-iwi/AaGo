@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris"
 )
 
-func ReqResp(ctx iris.Context) (*Req, RespStruct) {
-	r := NewReq(ctx)
-	return r, Resp(ctx, r)
+func ReqResp(ictx iris.Context) (*Req, RespStruct) {
+	r := NewReq(ictx)
+	return r, Resp(ictx, r)
 }

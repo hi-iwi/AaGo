@@ -2,8 +2,11 @@ package com
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
+	"runtime"
+	"strings"
 	"sync"
 
 	"github.com/kataras/iris"
@@ -222,7 +225,9 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 	}
 
 	if HideServerErrMsg && cs.Code >= 500 {
-		Log.Error(resp.ic, "code: %d, msg: %s", cs.Code, cs.Msg)
+		_, file, line, _ := runtime.Caller(1)
+		a := strings.Split(file, "/")
+		Log.Error(resp.ic, "file: %s, code: %d, msg: %s", fmt.Sprintf("%s:%d ", a[len(a)-1], line), cs.Code, cs.Msg)
 		resp.writeDebugInfo(cs.Msg)
 		cs.Msg = dict.Code2Msg(cs.Code)
 	}
