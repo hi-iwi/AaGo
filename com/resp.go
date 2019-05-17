@@ -20,7 +20,7 @@ type RespStruct struct {
 	beforeSerialize []func(*RespContentDTO)
 	afterSerialize  []func([]byte) []byte
 	writer          http.ResponseWriter
-	ic              iris.Context
+	ictx            iris.Context
 	req             *Req
 
 	code          int
@@ -32,12 +32,20 @@ type RespStruct struct {
 }
 
 var (
-	HideServerErrMsg  = true
-	beforeSerialize   []func(*RespContentDTO)
-	afterSerialize    []func([]byte) []byte
-	beforeFlush       []func(*RespStruct)
-	RespDebugableFunc func(req *Req) bool
+	HideServerErr   = defaultHideServerErr
+	beforeSerialize []func(*RespContentDTO)
+	afterSerialize  []func([]byte) []byte
+	beforeFlush     []func(*RespStruct)
 )
+
+func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
+	if cs.Code >= 500 {
+		_, file, line, _ := runtime.Caller(1)
+		a := strings.Split(file, "/")
+		Log.Error(ictx, "file: %s, code: %d, msg: %s", fmt.Sprintf("%s:%d ", a[len(a)-1], line), cs.Code, cs.Msg)
+		cs.Msg = dict.Code2Msg(cs.Code)
+	}
+}
 
 func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
 	resp.code = 200
@@ -57,7 +65,7 @@ func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
 	if w, ok := p.(http.ResponseWriter); ok {
 		resp.writer = w
 	} else if c, ok := p.(iris.Context); ok {
-		resp.ic = c
+		resp.ictx = c
 		resp.writer = c.ResponseWriter()
 		if resp.req == nil {
 			resp.req = NewReq(c)
@@ -112,8 +120,8 @@ func (resp RespStruct) WriteHeader(code interface{}) {
 func (resp RespStruct) writeNotModified() {
 	w := resp.writer
 
-	if resp.ic != nil {
-		resp.ic.StatusCode(403)
+	if resp.ictx != nil {
+		resp.ictx.StatusCode(403)
 	} else {
 		resp.DelHeader("Content-Type")
 		resp.DelHeader("Content-Length")
@@ -224,13 +232,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		mw(&cs)
 	}
 
-	if HideServerErrMsg && cs.Code >= 500 {
-		_, file, line, _ := runtime.Caller(1)
-		a := strings.Split(file, "/")
-		Log.Error(resp.ic, "file: %s, code: %d, msg: %s", fmt.Sprintf("%s:%d ", a[len(a)-1], line), cs.Code, cs.Msg)
-		resp.writeDebugInfo(cs.Msg)
-		cs.Msg = dict.Code2Msg(cs.Code)
-	}
+	HideServerErr(resp.ictx, &cs, resp.req)
 
 	b, err := json.Marshal(cs)
 	if err != nil {
@@ -249,12 +251,4 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 
 	resp.WriteRaw()
 	return nil
-}
-
-func (resp RespStruct) writeDebugInfo(info string) {
-	if RespDebugableFunc != nil {
-		if RespDebugableFunc(resp.req) {
-			resp.writer.Header().Set("Debug", info)
-		}
-	}
 }
