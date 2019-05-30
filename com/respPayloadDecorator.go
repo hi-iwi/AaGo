@@ -26,6 +26,7 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 	t := reflect.TypeOf(payload)
 	v := reflect.ValueOf(payload)
 	k := t.Kind()
+
 	if k == reflect.Slice || k == reflect.Array {
 		p := make([]interface{}, v.Len())
 		for i := 0; i < v.Len(); i++ {
@@ -46,9 +47,9 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	} else if k == reflect.Map {
-		p := make(map[interface{}]interface{}, v.Len())
+		p := make(map[string]interface{}, v.Len())
 		for _, key := range v.MapKeys() {
-			p[key], e = stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
+			p[key.String()], e = stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}
