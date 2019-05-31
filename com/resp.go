@@ -214,6 +214,9 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		} else {
 			cs.Msg = aa.NewDtype(d[0]).String()
 		}
+	} else if (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) && v.Len() == 0 {
+		cs.Code = 404
+		cs.Msg = dict.Code2Msg(cs.Code)
 	} else {
 		if payload, e := resp.handlePayload(a, "json"); e != nil {
 			cs.Code = e.Code
