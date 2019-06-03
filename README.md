@@ -6,7 +6,7 @@
 
 ```json
 
-//  DELETE /user/jack     删除用户名为jack的用户
+//  DELETE /user/jack     deleter user record `jack`
 {
     "code": 200,
     "msg": "OK",
@@ -14,7 +14,7 @@
 }
 
 
-// GET /users/3000      获取第300页用户列表
+// GET /users/3000      show users on page 3000
 {
     "code": 204,
     "msg": "No Content",
@@ -44,9 +44,18 @@
 
 ## 通用参数说明
 
+目前支持用户上传数据为json或form表单数据，客户端可根据自己习惯自行选择
+
+### 通用HEADER
+
+* 请求BODY参数：（Content-Type:application/json  JSON 体数据 或 Content-Type: application/x-www-form-urlencoded 表单数据）
+
+### 通用参数
+
 ```txt
 分页：
-    users/{page:int}     每页20，第N页
+    users/{page:int}                第N页，每页最多20条
+    users/{page:int}?pagesize=100   第N页，每页最多100条
     users?offset=200&limit=100     从第offset（200）条数据开始，选择limit（100）条
 
 搜索：
@@ -62,7 +71,7 @@
 
 ```
 
-### 客户端使用接口映射，不想要太多无关紧要的字段
+### 客户端使用接口映射，不想要太多无关紧要的字段，或者为了防止日后接口减少字段而导致崩溃
 
 可以在添加url param : _field=需要的字段名（逗号隔开）
 
@@ -73,10 +82,10 @@ GET http://host/users  获取用户所有属性列表（数组）
 GET http://host/users?_field=[name,age]  用户列表（数组）只保留name和age字段
 ```
 
-### 弱类型语言，需要加 _weak=1
+### 弱类型语言，需要加 _stringify=1
 
 服务端设计了大量uint64格式数据，超过了JS Number.MAX_VALUE，会出现数据失真的情况。故无法处理uint64的客户端，需要强制数据返回全是string类型
 
 ```txt
-GET http://host/user?_weak=1
+GET http://host/user?_stringify=1
 ```
