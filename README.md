@@ -50,15 +50,15 @@
     users?offset=200&limit=100     从第offset（200）条数据开始，选择limit（100）条
 
 搜索：
-    name=Aario                                                          找到 name=Aario
-    name=%Aario%                                                        name 包含Aario
-    name=%Aario                                                         name 以Aario结尾
-    name=Aario%                                                         name 以Aario开头
-    name=Aario,Tom                                                      name=Aario || name=Tom
-    create_at=2019-06-01 00:00:00                                       create_at = 2019-06-01 00:00:00
-    create_at=2019-06-01 00:00:00~2019-06-01 01:00:00                   create_at >= 2019-06-01 00:00:00 && create_at < 2019-06-01 00:00:00
-    create_at=2019-06-01 00:00:00~                                      create_at >= 2019-06-01 00:00:00
-    create_at=~2019-06-01 01:00:00                                      create_at < 2019-06-01 00:00:00
+    name=Aario                                          name=Aario
+    name=:%Aario%                                       name likes Aario
+    name=:%Aario                                        name ends with Aario
+    name=:Aario%                                        name starts Aario
+    name=:Aario,Tom                                     name in [Aario, Tom]
+    create_at=2019-06-01 00:00:00                       create_at = 2019-06-01 00:00:00
+    create_at=:2019-06-01 00:00:00~2019-06-01 01:00:00  create_at >= 2019-06-01 00:00:00 && create_at < 2019-06-01 00:00:00
+    create_at=:2019-06-01 00:00:00~                     create_at >= 2019-06-01 00:00:00
+    create_at=:~2019-06-01 01:00:00                     create_at < 2019-06-01 00:00:00
 
 ```
 
