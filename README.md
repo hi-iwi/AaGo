@@ -53,12 +53,12 @@
 ### 通用参数
 
 ```txt
-分页：
+Pagination:
     users/{page:int}                第N页，每页最多20条
     users/{page:int}?pagesize=100   第N页，每页最多100条
     users?offset=200&limit=100     从第offset（200）条数据开始，选择limit（100）条
 
-搜索：
+Search: (start with `:`)
     name=Aario                                          name=Aario
     name=:%Aario%                                       name likes Aario
     name=:%Aario                                        name ends with Aario
