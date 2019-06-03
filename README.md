@@ -55,7 +55,7 @@
 ```txt
 Pagination:
     users/{page:int}                第N页，每页最多20条
-    users/{page:int}?pagesize=100   第N页，每页最多100条
+    users/{page:int}?limit=100      第N页，每页最多100条
     users?offset=200&limit=100     从第offset（200）条数据开始，选择limit（100）条
 
 Search: (start with `:`)

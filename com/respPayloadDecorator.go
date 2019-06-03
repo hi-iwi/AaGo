@@ -8,9 +8,9 @@ import (
 	"github.com/luexu/AaGo/ae"
 )
 
-// ?_weak=1  weak language, turn all fields into string
+// ?_stringify=1  weak language, turn all fields into string
 func (resp RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
-	xweak, _ := resp.req.Query("_weak", `^[01]$`, false)
+	xweak, _ := resp.req.Query("_stringify", `^[01]$`, false)
 	if xweak.IsEmpty() || payload == nil {
 		return payload, nil
 	}
