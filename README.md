@@ -60,9 +60,9 @@ Pagination:
 
 Search: (start with `:`)
     name=Aario                                          name=Aario
-    name=:^Aario^                                       name likes Aario
-    name=:^Aario                                        name ends with Aario
-    name=:Aario^                                        name starts Aario
+    name=::Aario:                                       name likes Aario
+    name=::Aario                                        name ends with Aario
+    name=:Aario:                                        name starts Aario
     name=:Aario,Tom                                     name in [Aario, Tom]
     create_at=2019-06-01 00:00:00                       create_at = 2019-06-01 00:00:00
     create_at=:2019-06-01 00:00:00~2019-06-01 01:00:00  create_at >= 2019-06-01 00:00:00 && create_at < 2019-06-01 00:00:00
