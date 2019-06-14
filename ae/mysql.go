@@ -30,7 +30,7 @@ func NewSqlError(err error) *Error {
 	case sql.ErrTxDone:
 		return NewError(500, fmt.Sprintf("sql tx done: %s", err))
 	case sql.ErrNoRows:
-		return NewError(404, fmt.Sprintf("sql query not found: %s", err))
+		return NewError(404)
 	}
 
 	return NewError(500, fmt.Sprintf("sql: %s", err))

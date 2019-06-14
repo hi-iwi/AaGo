@@ -89,9 +89,3 @@ GET http://host/users?_field=[name,age]  用户列表（数组）只保留name�
 ```txt
 GET http://host/user?_stringify=1
 ```
-
-## 默认值
-
-* 日期默认值：1000-01-01 00:00:00   表示空日期
-  * MySQL 8.0 datetime 区间 ['1000-01-01 00:00:00.000000', '9999-12-31 23:59:59.999999']
-  * https://dev.mysql.com/doc/refman/8.0/en/datetime.html
