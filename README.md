@@ -44,7 +44,9 @@
 
 ## 通用参数说明
 
-目前支持用户上传数据为json或form表单数据，客户端可根据自己习惯自行选择
+目前支持用户上传数据为json或form表单数据，客户端可根据自己习惯自行选择；习惯使用json数据，需要带上 `Content-Type:application/json` 头；习惯form表单，客户端需要带上头 `Content-Type: application/x-www-form-urlencoded`
+
+> 上传数据是不区分数据类型的，如 "uid": 10086 或 "uid": "10086" 都可以
 
 ### 通用HEADER
 
