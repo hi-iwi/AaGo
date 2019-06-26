@@ -25,11 +25,11 @@ func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
 			pattern = s
 		} else if b, ok := pat.(bool); ok {
 			required = b
-		} else if d, ok := pat.(*aa.Dtype); ok && !p.NotEmpty() {
+		} else if d, ok := pat.(*aa.Dtype); ok && p.String() == "" {
 			p.Value = d.Value
 		}
 	}
-	if !p.NotEmpty() {
+	if p.String() == "" {
 		if required {
 			return ae.NewError(400, "Parameter `"+p.param+"` is required!")
 		}
