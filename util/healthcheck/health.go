@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -14,10 +15,9 @@ import (
 )
 
 type health struct {
-	app       *aa.Aa
-	ConfigFmt string
-	mtx       sync.RWMutex
-	h         Health
+	app *aa.Aa
+	mtx sync.RWMutex
+	h   Health
 }
 
 var (
@@ -30,8 +30,7 @@ func NewHealth(app *aa.Aa) *health {
 
 	newHealthOnce.Do(func() {
 		healthSvc = &health{
-			app:       app,
-			ConfigFmt: "conn.%s",
+			app: app,
 			h: Health{
 				TimezoneID:     app.Configuration.TimezoneID,
 				TimezoneOffset: offset,
@@ -69,24 +68,20 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	scheme := s.getConf(name, "scheme", "tcp").String()
 	host := s.getConf(name, "host").String()
 	db := s.getConf(name, "db", "0").String()
+	auth := s.getConf(name, "auth").String()
 
-	ct, rt, wt, _ := s.app.ParseTimeout("conn.redis1_timeout")
+	ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := RedisConnHealth{
-		Name:           name,
-		Scheme:         scheme,
-		Host:           host,
-		Port:           cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), "6379").String(),
-		Db:             db,
-		TLS:            tls,
-		TimeoutMs:      connTimeout,
-		ReadTimeoutMs:  readTimeout,
-		WriteTimeoutMs: writeTimeout,
+		Name:    name,
+		Scheme:  scheme,
+		Host:    host,
+		Db:      db,
+		TLS:     tls,
+		Timeout: s.getConf(name, "timeout").String(),
 	}
 
-	auth := cf.Get(fmt.Sprintf(s.ConfigFmt+".auth", name)).String()
-
-	c, err := redis.DialTimeout(h.Scheme, h.Host+":"+h.Port, time.Duration(writeTimeout)*time.Millisecond, time.Duration(writeTimeout)*time.Millisecond, time.Duration(writeTimeout)*time.Millisecond)
+	c, err := redis.DialTimeout(h.Scheme, host, ct, rt, wt)
 
 	if err != nil {
 		h.ErrMsg = fmt.Sprintf("redis dial error: %s", err)
@@ -107,37 +102,36 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 }
 
 func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
-	cf := s.app.Config
-	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()
-	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout_ms", name), 0).Int()
-	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout_ms", name), 0).Int()
-	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout_ms", name), 0).Int()
+
+	tls, _ := s.getConf(name, "tls", false).Bool()
+	scheme := s.getConf(name, "scheme", "tcp").String()
+	host := s.getConf(name, "host").String()
+	db := s.getConf(name, "db").String()
+	user := s.getConf(name, "user").String()
+	password := s.getConf(name, "password").String()
+	loc := s.app.Config.Get("timezone_id", "UTC").String()
+
+	ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := MysqlConnHealth{
-		Name:           name,
-		Scheme:         cf.Get(fmt.Sprintf(s.ConfigFmt+".scheme", name), "tcp").String(),
-		Host:           cf.Get(fmt.Sprintf(s.ConfigFmt+".host", name)).String(),
-		Port:           cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), "3306").String(),
-		Db:             cf.Get(fmt.Sprintf(s.ConfigFmt+".db", name)).String(),
-		TLS:            tls,
-		TimeoutMs:      connTimeout,
-		ReadTimeoutMs:  readTimeout,
-		WriteTimeoutMs: writeTimeout,
+		Name:    name,
+		Scheme:  scheme,
+		Host:    host,
+		Db:      db,
+		TLS:     tls,
+		Timeout: s.getConf(name, "timeout").String(),
 	}
 
-	user := cf.Get(fmt.Sprintf(s.ConfigFmt+".user", name)).String()
-	password := cf.Get(fmt.Sprintf(s.ConfigFmt+".password", name)).String()
-	timezoneID := cf.Get("timezone_id", "UTC").String()
-	src := fmt.Sprintf("%s:%s@%s(%s:%s)/%s?loc=%s&timeout=%dms&readTimeout=%dms&writeTimeout=%dms", user, password, h.Scheme, h.Host, h.Port, h.Db, url.QueryEscape(timezoneID), h.TimeoutMs, h.ReadTimeoutMs, h.WriteTimeoutMs)
+	src := fmt.Sprintf("%s:%s@%s(%s)/%s?loc=%s&timeout=%dms&readTimeout=%dms&writeTimeout=%dms", user, password, scheme, host, db, url.QueryEscape(strings.ToLower(loc)), ct/time.Millisecond, rt/time.Millisecond, wt/time.Millisecond)
 
-	db, err := sql.Open("mysql", src)
+	conn, err := sql.Open("mysql", src)
 	if err != nil {
 		return h, fmt.Errorf("mysql connection(%s) open error: %s", src, err)
 	}
-	defer db.Close()
+	defer conn.Close()
 
 	// Open doesn't open a connection. Validate DSN data:
-	if err = db.Ping(); err != nil {
+	if err = conn.Ping(); err != nil {
 		return h, fmt.Errorf("mysql connection(%s) ping error: %s", src, err)
 	}
 
@@ -145,36 +139,29 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 }
 
 func (s *health) CheckAmqp(name string) (AmqpConnHealth, error) {
-	cf := s.app.Config
-	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()
-	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout_ms", name), 0).Int()
-	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout_ms", name), 0).Int()
-	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout_ms", name), 0).Int()
-	heartbeat, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".heartbeat", name), 0).Int()
+	tls, _ := s.getConf(name, "tls", false).Bool()
+	scheme := s.getConf(name, "scheme", "tcp").String()
+	host := s.getConf(name, "host").String()
+	vhost := s.getConf(name, "vhost").String()
+	user := s.getConf(name, "user").String()
+	password := s.getConf(name, "password").String()
 
-	vhost := cf.Get(fmt.Sprintf(s.ConfigFmt+".vhost", name)).String()
+	//ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
 
 	if vhost[0] == byte('/') {
 		vhost = vhost[1:]
 	}
 
 	h := AmqpConnHealth{
-		Name:           name,
-		Scheme:         cf.Get(fmt.Sprintf(s.ConfigFmt+".scheme", name), "tcp").String(),
-		Host:           cf.Get(fmt.Sprintf(s.ConfigFmt+".host", name)).String(),
-		Port:           cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), "5672").String(),
-		VHost:          vhost,
-		TLS:            tls,
-		TimeoutMs:      connTimeout,
-		HeartbeatMs:    heartbeat,
-		ReadTimeoutMs:  readTimeout,
-		WriteTimeoutMs: writeTimeout,
+		Name:    name,
+		Scheme:  scheme,
+		Host:    host,
+		VHost:   vhost,
+		TLS:     tls,
+		Timeout: s.getConf(name, "timeout").String(),
 	}
 
-	user := cf.Get(fmt.Sprintf(s.ConfigFmt+".user", name)).String()
-	password := cf.Get(fmt.Sprintf(s.ConfigFmt+".password", name)).String()
-
-	url := fmt.Sprintf("amqp://%s:%s@%s:%s/%s", user, password, h.Host, h.Port, h.VHost)
+	url := fmt.Sprintf("amqp://%s:%s@%s/%s", user, password, host, vhost)
 
 	conn, err := amqp.Dial(url)
 	if err != nil {
