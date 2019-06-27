@@ -31,7 +31,20 @@ func parseToDuration(d string) time.Duration {
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
 // 10s, 1000ms
-func (a *Aa) ParseTimeout(key string) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
+func (a *Aa) ParseTimeout(key string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
+	for i, t := range defaultTimeouts {
+		switch i {
+		case 0:
+			conn = t
+		case 1:
+			read = t
+		case 2:
+			write = t
+		case 3:
+			heartbeat = t
+		}
+	}
+
 	ts := strings.Split(strings.Replace(a.Config.Get(key).String(), " ", "", -1), ",")
 	for i, t := range ts {
 		switch i {

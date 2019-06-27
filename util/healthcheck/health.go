@@ -59,19 +59,25 @@ func (s *health) Check(connections ...interface{}) Health {
 	return s.h
 }
 
+func (s *health) getConf(name string, suffix string, defaultValue ...interface{}) *aa.Dtype {
+	k := fmt.Sprintf("conn.%s_%s", name, suffix)
+	return s.app.Config.Get(k, defaultValue...)
+}
+
 func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
-	cf := s.app.Config
-	tls, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), false).Bool()
-	connTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".timeout_ms", name), 0).Int()
-	readTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".read_timeout_ms", name), 0).Int()
-	writeTimeout, _ := cf.Get(fmt.Sprintf(s.ConfigFmt+".write_timeout_ms", name), 0).Int()
+	tls, _ := s.getConf(name, "tls", false).Bool()
+	scheme := s.getConf(name, "scheme", "tcp").String()
+	host := s.getConf(name, "host").String()
+	db := s.getConf(name, "db", "0").String()
+
+	ct, rt, wt, _ := s.app.ParseTimeout("conn.redis1_timeout")
 
 	h := RedisConnHealth{
 		Name:           name,
-		Scheme:         cf.Get(fmt.Sprintf(s.ConfigFmt+".scheme", name), "tcp").String(),
-		Host:           cf.Get(fmt.Sprintf(s.ConfigFmt+".host", name)).String(),
+		Scheme:         scheme,
+		Host:           host,
 		Port:           cf.Get(fmt.Sprintf(s.ConfigFmt+".port", name), "6379").String(),
-		Db:             cf.Get(fmt.Sprintf(s.ConfigFmt+".db", name)).String(),
+		Db:             db,
 		TLS:            tls,
 		TimeoutMs:      connTimeout,
 		ReadTimeoutMs:  readTimeout,
