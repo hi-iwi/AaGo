@@ -1,21 +1,49 @@
 package aa
 
 import (
-	"io/ioutil"
-	"path/filepath"
+	"path"
+	"strconv"
 	"strings"
-	"sync"
-
-	"gopkg.in/yaml.v2"
+	"time"
 )
 
 type Config interface {
 	Get(key string, defaultValue ...interface{}) *Dtype
 }
 
-type Yaml struct {
-	mu   sync.RWMutex
-	data map[interface{}]interface{}
+func parseToDuration(d string) time.Duration {
+	if len(d) < 2 {
+		return 0
+	}
+	var t int
+	if d[len(d)-2:] == "ms" {
+		t, _ = strconv.Atoi(d[0 : len(d)-2])
+		return time.Duration(t) * time.Millisecond
+	}
+
+	if d[len(d)-1:] == "s" {
+		t, _ = strconv.Atoi(d[0 : len(d)-1])
+	} else {
+		t, _ = strconv.Atoi(d)
+	}
+	return time.Duration(t) * time.Second
+}
+
+// ParseTimeout connection timeout, r/w timeout, heartbeat interval
+// 10s, 1000ms
+func (a *Aa) ParseTimeout(key string) (conn time.Duration, rw time.Duration, heartbeat time.Duration) {
+	ts := strings.Split(strings.Replace(a.Config.Get(key).String(), " ", "", -1), ",")
+	for i, t := range ts {
+		switch i {
+		case 0:
+			conn = parseToDuration(t)
+		case 1:
+			rw = parseToDuration(t)
+		case 2:
+			heartbeat = parseToDuration(t)
+		}
+	}
+	return
 }
 
 func splitDots(keys ...string) []string {
@@ -33,52 +61,20 @@ func parseDefaultValue(vs ...interface{}) interface{} {
 	return ""
 }
 
-func (c *Yaml) Get(key string, defaultValue ...interface{}) *Dtype {
-	keys := splitDots(key)
-	dv := parseDefaultValue(defaultValue...)
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	var v interface{}
-	var d = c.data
-	var ok bool
-	for i, key := range keys {
-		if v, ok = d[key]; ok {
-			if i == len(keys)-1 {
-				break
-			}
-			if d, ok = v.(map[interface{}]interface{}); !ok {
-				return NewDtype(dv)
-			}
-		} else {
-			return NewDtype(dv)
-		}
-	}
-	return NewDtype(v)
-}
-
-func (a *Aa) ParseConfig(filename string) (Config, error) {
-	var conf = &Yaml{}
-	yamlAbsPath, err := filepath.Abs(filename)
-	if err != nil {
-		return nil, err
-	}
-	data, err := ioutil.ReadFile(yamlAbsPath)
-	if err != nil {
-		return nil, err
+func (a *Aa) ParseConfig(filename string) error {
+	switch path.Ext(filename) {
+	case ".ini", ".conf":
+		a.ParseIni(filename)
+	case ".yml", ".yaml":
+		a.ParseYml(filename)
 	}
 
-	if err := yaml.Unmarshal(data, &conf.data); err != nil {
-		return nil, err
-	}
 	// a.mu.Lock()
 	// for k, v := range c {
 	// 	a.Config[k] = NewDtype(v)
 	// }
 	// a.mu.Unlock()
-	a.mu.Lock()
-	a.Config = conf
-	a.mu.Unlock()
 
 	a.ParseToConfiguration()
-	return conf, nil
+	return nil
 }

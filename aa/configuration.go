@@ -12,9 +12,10 @@ type Configuration struct {
 	Service      string `yaml:"service"`
 	ServerID     string `yaml:"server_id"`
 	Env          string `yaml:"env"`         // dev test preprod product
-	TimezoneID   string `yaml:"timezone_id"` // e.g. Asia/Shanghai
+	TimezoneID   string `yaml:"timezone_id"` // e.g. "Asia/Shanghai"
 	TimeLocation *time.Location
-	Mock         bool `yaml:"mock"` // using mock
+	TimeFormat   string `yaml:"time_format"` // e.g. "2006-02-01 15:04:05"
+	Mock         bool   `yaml:"mock"`        // using mock
 }
 
 func (a *Aa) ParseToConfiguration() {
