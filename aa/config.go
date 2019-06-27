@@ -31,7 +31,6 @@ func parseToDuration(d string) time.Duration {
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
 // 10s, 1000ms
-// c,rw,h ;  c,r,w,h
 func (a *Aa) ParseTimeout(key string) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
 	ts := strings.Split(strings.Replace(a.Config.Get(key).String(), " ", "", -1), ",")
 	for i, t := range ts {
@@ -40,13 +39,8 @@ func (a *Aa) ParseTimeout(key string) (conn time.Duration, read time.Duration, w
 			conn = parseToDuration(t)
 		case 1:
 			read = parseToDuration(t)
-			write = read
 		case 2:
-			if len(ts) == 3 {
-				heartbeat = parseToDuration(t)
-			} else {
-				write = parseToDuration(t)
-			}
+			write = parseToDuration(t)
 		case 3:
 			heartbeat = parseToDuration(t)
 		}
