@@ -3,8 +3,6 @@ package healthcheck
 import (
 	"database/sql"
 	"fmt"
-	"net/url"
-	"strings"
 	"sync"
 	"time"
 
@@ -109,7 +107,7 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 	db := s.getConf(name, "db").String()
 	user := s.getConf(name, "user").String()
 	password := s.getConf(name, "password").String()
-	loc := s.app.Config.Get("timezone_id", "UTC").String()
+	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").String())
 
 	ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
 
@@ -122,7 +120,7 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 		Timeout: s.getConf(name, "timeout").String(),
 	}
 
-	src := fmt.Sprintf("%s:%s@%s(%s)/%s?loc=%s&timeout=%dms&readTimeout=%dms&writeTimeout=%dms", user, password, scheme, host, db, url.QueryEscape(strings.ToLower(loc)), ct/time.Millisecond, rt/time.Millisecond, wt/time.Millisecond)
+	src := fmt.Sprintf("%s:%s@%s(%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms", user, password, scheme, host, db, ct/time.Millisecond, rt/time.Millisecond, wt/time.Millisecond)
 
 	conn, err := sql.Open("mysql", src)
 	if err != nil {
