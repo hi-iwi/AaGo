@@ -81,8 +81,8 @@ func (a *Aa) ParseConfig(filename string) error {
 	switch path.Ext(filename) {
 	case ".ini", ".conf":
 		a.ParseIni(filename)
-	case ".yml", ".yaml":
-		a.ParseYml(filename)
+		// case ".yml", ".yaml":
+		// 	a.ParseYml(filename)
 	}
 
 	// a.mu.Lock()
