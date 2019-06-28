@@ -2,7 +2,9 @@ package healthcheck
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -57,7 +59,7 @@ func (s *health) Check(connections ...interface{}) Health {
 }
 
 func (s *health) getConf(name string, suffix string, defaultValue ...interface{}) *aa.Dtype {
-	k := fmt.Sprintf("conn.%s_%s", name, suffix)
+	k := "conn." + name + "_" + suffix
 	return s.app.Config.Get(k, defaultValue...)
 }
 
@@ -68,7 +70,7 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	db := s.getConf(name, "db", "0").String()
 	auth := s.getConf(name, "auth").String()
 
-	ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
+	ct, rt, wt, _ := s.app.ParseTimeout("conn."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := RedisConnHealth{
 		Name:    name,
@@ -82,7 +84,7 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	c, err := redis.DialTimeout(h.Scheme, host, ct, rt, wt)
 
 	if err != nil {
-		h.ErrMsg = fmt.Sprintf("redis dial error: %s", err)
+		h.ErrMsg = "redis dial error: " + err.Error()
 		return h, err
 	}
 	defer c.Close()
@@ -92,7 +94,7 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	}
 
 	if _, err := redis.String(c.Do("PING")); err != nil {
-		h.ErrMsg = fmt.Sprintf("redis ping error: %s", err)
+		h.ErrMsg = "redis ping error: " + err.Error()
 		return h, err
 	}
 
@@ -110,7 +112,7 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").String())
 	charset := s.getConf(name, "charset", "utf8mb4").String()
 
-	ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
+	ct, rt, wt, _ := s.app.ParseTimeout("conn."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := MysqlConnHealth{
 		Name:    name,
@@ -121,17 +123,20 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 		Timeout: s.getConf(name, "timeout").String(),
 	}
 
-	src := fmt.Sprintf("%s:%s@%s(%s)/%s?charset=%s&timeout=%dms&readTimeout=%dms&writeTimeout=%dms", user, password, scheme, host, db, charset, ct/time.Millisecond, rt/time.Millisecond, wt/time.Millisecond)
+	ctn := strconv.Itoa(int(ct / time.Millisecond))
+	rtn := strconv.Itoa(int(rt / time.Millisecond))
+	wtn := strconv.Itoa(int(wt / time.Millisecond))
+	src := user + ":" + password + "@" + scheme + "(" + host + ")/" + db + "?charset=" + charset + "&timeout=" + ctn + "ms&readTimeout=" + rtn + "ms&writeTimeout=" + wtn + "ms"
 
 	conn, err := sql.Open("mysql", src)
 	if err != nil {
-		return h, fmt.Errorf("mysql connection(%s) open error: %s", src, err)
+		return h, errors.New("mysql connection(" + src + ") open error: " + err.Error())
 	}
 	defer conn.Close()
 
 	// Open doesn't open a connection. Validate DSN data:
 	if err = conn.Ping(); err != nil {
-		return h, fmt.Errorf("mysql connection(%s) ping error: %s", src, err)
+		return h, errors.New("mysql connection(" + src + ") ping error: " + err.Error())
 	}
 
 	return h, nil
@@ -144,8 +149,6 @@ func (s *health) CheckAmqp(name string) (AmqpConnHealth, error) {
 	vhost := s.getConf(name, "vhost").String()
 	user := s.getConf(name, "user").String()
 	password := s.getConf(name, "password").String()
-
-	//ct, rt, wt, _ := s.app.ParseTimeout(fmt.Sprintf("conn.%s_timeout", name), 3*time.Second, 3*time.Second, 3*time.Second)
 
 	if vhost[0] == byte('/') {
 		vhost = vhost[1:]
@@ -160,7 +163,7 @@ func (s *health) CheckAmqp(name string) (AmqpConnHealth, error) {
 		Timeout: s.getConf(name, "timeout").String(),
 	}
 
-	url := fmt.Sprintf("amqp://%s:%s@%s/%s", user, password, host, vhost)
+	url := "amqp://" + user + ":" + password + "@" + host + "/" + vhost
 
 	conn, err := amqp.Dial(url)
 	if err != nil {

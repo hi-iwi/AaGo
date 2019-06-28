@@ -1,7 +1,7 @@
 package ae
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/luexu/AaGo/dict"
 )
@@ -30,5 +30,5 @@ func NewError(code int, msg ...interface{}) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("code %d, msg %s", e.Code, e.Msg)
+	return "code " + strconv.Itoa(e.Code) + ", msg " + e.Msg
 }

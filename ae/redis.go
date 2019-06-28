@@ -1,7 +1,5 @@
 package ae
 
-import "fmt"
-
 func NewRedisError(err error) *Error {
 	if err == nil {
 		return nil
@@ -11,6 +9,6 @@ func NewRedisError(err error) *Error {
 
 	}
 
-	return NewError(500, fmt.Sprintf("redis: %s", err))
+	return NewError(500, "redis error: "+err.Error())
 
 }

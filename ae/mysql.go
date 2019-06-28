@@ -3,43 +3,43 @@ package ae
 import (
 	"database/sql"
 	"database/sql/driver"
-	"fmt"
 	"regexp"
 )
 
 func NewSqlError(err error) *Error {
-
 	if err == nil {
 		return nil
 	}
+	m := err.Error()
+
 	switch err {
 	case driver.ErrBadConn:
-		NewError(500, fmt.Sprintf("sql bad conn: %s", err))
+		NewError(500, "sql bad conn: "+m)
 	case driver.ErrSkip:
 		// ErrSkip may be returned by some optional interfaces' methods to
 		// indicate at runtime that the fast path is unavailable and the sql
 		// package should continue as if the optional interface was not
 		// implemented. ErrSkip is only supported where explicitly
 		// documented.
-		NewError(500, fmt.Sprintf("sql skip: %s", err))
+		NewError(500, "sql skip: "+m)
 	case driver.ErrRemoveArgument:
-		NewError(500, fmt.Sprintf("sql remove argument: %s", err))
+		NewError(500, "sql remove argument: "+m)
 	case sql.ErrConnDone:
 		// ErrConnDone is returned by any operation that is performed on a connection
 		// that has already been returned to the connection pool.
-		NewError(500, fmt.Sprintf("sql conn done: %s", err))
+		NewError(500, "sql conn done: "+m)
 	case sql.ErrTxDone:
-		return NewError(500, fmt.Sprintf("sql tx done: %s", err))
+		return NewError(500, "sql tx done: "+m)
 	case sql.ErrNoRows:
 		return NewError(404)
 	}
 
-	m := err.Error()
 	dupExp := regexp.MustCompile(`Error\s\d+:\s+Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)
 	dupMatches := dupExp.FindAllStringSubmatch(m, -1)
 	if dupMatches != nil && len(dupMatches) > 0 && len(dupMatches[0]) == 3 {
-		return NewError(400, fmt.Sprintf("duplicate entry `%s` for parameter `%s`", dupMatches[0][1], dupMatches[0][2]))
+		m = "duplicate entry `" + dupMatches[0][1] + "` for parameter `" + dupMatches[0][2] + "`"
+		return NewError(400, m)
 	}
 
-	return NewError(500, fmt.Sprintf("sql: %s", m))
+	return NewError(500, "sql error: "+m)
 }

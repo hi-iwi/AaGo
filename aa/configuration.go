@@ -29,7 +29,7 @@ func (a *Aa) ParseToConfiguration() {
 	if tz := a.Config.Get("timezone_id").String(); tz != "" {
 		loc, err := time.LoadLocation(tz)
 		if err != nil {
-			log.Printf("invalid timezone: %s, error: %v", tz, err)
+			log.Println("invalid timezone: " + tz + ", error: " + err.Error())
 		} else {
 			a.Configuration.TimezoneID = tz
 			a.Configuration.TimeLocation = loc
@@ -44,5 +44,5 @@ func (a *Aa) ParseToConfiguration() {
 func (c Configuration) Log() {
 	msg := fmt.Sprintf("service %s has started! env: %s server_id: %s timezone_id: %s mock: %v git_ver: %s", c.Service, c.Env, c.ServerID, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
-	fmt.Printf("%s %s\n", time.Now().In(c.TimeLocation).Format("2006-01-02 15:04:05"), msg)
+	fmt.Println(msg)
 }

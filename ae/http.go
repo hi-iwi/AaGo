@@ -1,7 +1,5 @@
 package ae
 
-import "fmt"
-
 func NewHttpError(err error) *Error {
 	if err == nil {
 		return nil
@@ -11,6 +9,6 @@ func NewHttpError(err error) *Error {
 
 	}
 
-	return NewError(500, fmt.Sprintf("http: %s", err))
+	return NewError(500, "http: "+err.Error())
 
 }

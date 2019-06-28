@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
 func (l *Log) caller() string {
 	_, file, line, _ := runtime.Caller(2)
 	a := strings.Split(file, "/")
-	return fmt.Sprintf("%s:%d ", a[len(a) - 1], line)
+	return a[len(a)-1] + ":" + strconv.Itoa(line)
 }
 
 func (l *Log) Printf(msg string, args ...interface{}) {
-	log.Printf(l.caller() + msg + "\n", args...)
+	log.Printf(l.caller()+msg+"\n", args...)
 }
 
 func (l *Log) Println(msg ...interface{}) {
@@ -23,7 +24,7 @@ func (l *Log) Println(msg ...interface{}) {
 
 // 紧急情况，需要立即通知技术人员。
 func (l *Log) Emerg(msg string, args ...interface{}) {
-	log.Printf("[emerg] " + l.caller() + msg + "\n", args...)
+	log.Printf("[emerg] "+l.caller()+msg+"\n", args...)
 }
 
 // 应该被立即改正的问题，如系统数据库被破坏，ISP连接丢失。
@@ -31,7 +32,7 @@ func (l *Log) Alert(msg string, args ...interface{}) {
 	if l.priority > LogAlert {
 		return
 	}
-	log.Printf("[alert] " + l.caller() + msg + "\n", args...)
+	log.Printf("[alert] "+l.caller()+msg+"\n", args...)
 
 }
 
@@ -40,7 +41,7 @@ func (l *Log) Crit(msg string, args ...interface{}) {
 	if l.priority > LogCrit {
 		return
 	}
-	log.Printf("[crit] " + l.caller() + msg + "\n", args...)
+	log.Printf("[crit] "+l.caller()+msg+"\n", args...)
 
 }
 
@@ -49,7 +50,7 @@ func (l *Log) Error(msg string, args ...interface{}) {
 	if l.priority > LogErr {
 		return
 	}
-	log.Printf("[error] " + l.caller() + msg + "\n", args...)
+	log.Printf("[error] "+l.caller()+msg+"\n", args...)
 }
 
 // 警告信息，不是错误，比如系统磁盘使用了85%等。
@@ -57,7 +58,7 @@ func (l *Log) Warn(msg string, args ...interface{}) {
 	if l.priority > LogWarning {
 		return
 	}
-	log.Printf("[warning] " + l.caller() + msg + "\n", args...)
+	log.Printf("[warning] "+l.caller()+msg+"\n", args...)
 
 }
 
@@ -66,7 +67,7 @@ func (l *Log) Notice(msg string, args ...interface{}) {
 	if l.priority > LogNotice {
 		return
 	}
-	log.Printf("[warning] " + l.caller() + msg + "\n", args...)
+	log.Printf("[warning] "+l.caller()+msg+"\n", args...)
 
 }
 
@@ -75,7 +76,7 @@ func (l *Log) Info(msg string, args ...interface{}) {
 	if l.priority > LogInfo {
 		return
 	}
-	log.Printf("[info] " + l.caller() + msg + "\n", args...)
+	log.Printf("[info] "+l.caller()+msg+"\n", args...)
 }
 
 // 包含详细的开发情报的信息，通常只在调试一个程序时使用
@@ -83,5 +84,5 @@ func (l *Log) Debug(msg string, args ...interface{}) {
 	if l.priority > LogDebug {
 		return
 	}
-	log.Printf("[debug] " + l.caller() + msg + "\n", args...)
+	log.Printf("[debug] "+l.caller()+msg+"\n", args...)
 }

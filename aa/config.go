@@ -79,7 +79,7 @@ func parseDefaultValue(vs ...interface{}) interface{} {
 
 func (a *Aa) ParseConfig(filename string) error {
 	switch path.Ext(filename) {
-	case ".ini", ".conf":
+	case ".ini":
 		a.ParseIni(filename)
 		// case ".yml", ".yaml":
 		// 	a.ParseYml(filename)
