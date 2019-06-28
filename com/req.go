@@ -254,7 +254,7 @@ func (req *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error
 				return NewReqProp(param, ""), ae.NewError(500, e)
 			}
 			if int64(len(b)) > maxFormSize {
-				return NewReqProp(param, ""), ae.NewError(400, "Json body is too large")
+				return NewReqProp(param, ""), ae.NewError(413, "Json body is too large")
 			}
 			req.raw = string(b)
 			req.data.blck.Lock()
