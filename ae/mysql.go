@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"regexp"
 )
 
 func NewSqlError(err error) *Error {
@@ -33,5 +34,12 @@ func NewSqlError(err error) *Error {
 		return NewError(404)
 	}
 
-	return NewError(500, fmt.Sprintf("sql: %s", err))
+	m := err.Error()
+	dupExp := regexp.MustCompile(`Error\s\d+:\s+Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)
+	dupMatches := dupExp.FindAllStringSubmatch(m, -1)
+	if dupMatches != nil && len(dupMatches) > 0 && len(dupMatches[0]) == 3 {
+		return NewError(400, fmt.Sprintf("duplicate entry `%s` for parameter `%s`", dupMatches[0][1], dupMatches[0][2]))
+	}
+
+	return NewError(500, fmt.Sprintf("sql: %s", m))
 }
