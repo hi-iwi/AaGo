@@ -27,7 +27,7 @@ func (a *Aa) ParseIni(filename string) error {
 
 func (c *Ini) Get(key string, defaultValue ...interface{}) *Dtype {
 	keys := splitDots(key)
-	dv := parseDefaultValue(defaultValue...)
+
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -36,12 +36,12 @@ func (c *Ini) Get(key string, defaultValue ...interface{}) *Dtype {
 		if s = c.data.Section(""); s.HasKey(key) {
 			return NewDtype(s.Key(key).String())
 		}
-		return NewDtype(dv)
+		return defaultDtype(key, defaultValue...)
 	}
 
 	k := strings.Join(keys[1:], "_")
 	if s = c.data.Section(keys[0]); s.HasKey(k) {
 		return NewDtype(s.Key(k).String())
 	}
-	return NewDtype(dv)
+	return defaultDtype(key, defaultValue...)
 }

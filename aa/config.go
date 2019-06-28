@@ -1,6 +1,7 @@
 package aa
 
 import (
+	"log"
 	"path"
 	"strconv"
 	"strings"
@@ -68,6 +69,14 @@ func splitDots(keys ...string) []string {
 		n = append(n, strings.Split(key, ".")...)
 	}
 	return n
+}
+
+func defaultDtype(key string, defaultValue ...interface{}) *Dtype {
+	dv := parseDefaultValue(defaultValue...)
+	if len(defaultValue) == 0 {
+		log.Println("not found config " + key)
+	}
+	return NewDtype(dv)
 }
 
 func parseDefaultValue(vs ...interface{}) interface{} {

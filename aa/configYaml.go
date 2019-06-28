@@ -30,7 +30,6 @@ func (a *Aa) ParseYml(filename string) error {
 
 func (c *Yaml) Get(key string, defaultValue ...interface{}) *Dtype {
 	keys := splitDots(key)
-	dv := parseDefaultValue(defaultValue...)
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	var v interface{}
@@ -42,11 +41,11 @@ func (c *Yaml) Get(key string, defaultValue ...interface{}) *Dtype {
 				break
 			}
 			if d, ok = v.(map[interface{}]interface{}); !ok {
-				return NewDtype(dv)
+				return defaultDtype(key, defaultValue...)
 			}
 		} else {
-			return NewDtype(dv)
+			return defaultDtype(key, defaultValue...)
 		}
 	}
-	return NewDtype(v)
+	return defaultDtype(key, defaultValue...)
 }
