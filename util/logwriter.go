@@ -2,10 +2,12 @@ package util
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -13,16 +15,31 @@ var onceLogWriter sync.Once
 var logWriter *LogWriter
 
 type LogWriter struct {
-	dir     string
-	file    *os.File
-	logName string
-	sync    sync.Mutex
+	filename string
+	file     *os.File
+	logName  string
+	sync     sync.Mutex
+}
+
+func RedirectLog(logfile string, crashfile string, mode os.FileMode) {
+	os.MkdirAll(path.Dir(logfile), mode)
+	os.MkdirAll(path.Dir(crashfile), mode)
+
+	logfile, _ = filepath.Abs(logfile)
+
+	file, err := os.OpenFile(crashfile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModePerm)
+	if err == nil {
+		syscall.Dup2(int(file.Fd()), 2)
+	}
+
+	log.SetOutput(NewLogWriter(logfile))
+	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate | log.Lmicroseconds)
 }
 
 func (lw *LogWriter) Write(p []byte) (n int, err error) {
-
+	dir := path.Dir(lw.filename)
 	tm := time.Now()
-	newLogFile, _ := filepath.Abs(path.Join(path.Dir(lw.app.Config.Get("app.log_path").String()), tm.Format("2006-01-02")+".bak.log"))
+	newLogFile := path.Join(dir, tm.Format("2006-01-02")+".bak.log")
 	file := lw.file
 	var linkName string
 	lw.sync.Lock()
@@ -36,7 +53,7 @@ func (lw *LogWriter) Write(p []byte) (n int, err error) {
 			}
 			lw.file = f
 			file = f
-			linkName, _ = filepath.Abs(lw.app.Config.Get("app.log_path").String())
+			linkName = lw.filename
 		} else {
 			fmt.Println(err)
 		}
@@ -47,7 +64,7 @@ func (lw *LogWriter) Write(p []byte) (n int, err error) {
 	var oldLogName string
 	for i := 90; i < 180; i++ {
 		tim = tm.Add(-time.Hour * 24 * time.Duration(i))
-		oldLogName, _ = filepath.Abs(path.Join(path.Dir(lw.app.Config.Get("app.log_path").String()), tim.Format("2006-01-02")+".bak.log"))
+		oldLogName = path.Join(dir, tim.Format("2006-01-02")+".bak.log")
 		os.Remove(oldLogName)
 	}
 
@@ -61,11 +78,11 @@ func (lw *LogWriter) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-func NewLogWriter(dir string) *LogWriter {
+func NewLogWriter(logfile string) *LogWriter {
 
 	onceLogWriter.Do(func() {
 		logWriter = &LogWriter{
-			dir: dir,
+			filename: logfile,
 		}
 	})
 	return logWriter
