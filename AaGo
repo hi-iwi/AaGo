@@ -1,0 +1,58 @@
+#!/bin/bash
+
+
+Proj=""
+while getopts ':p:' opt
+do
+    case $opt in
+    p)
+        Proj=${OPTARG}
+    ;;
+    h)
+        cat << EOF
+Usage: AaGo [\$options]
+    -p <dir>   : new project
+EOF
+        exit 0
+    ;;
+    ?)
+        echo "未知参数"
+        exit 1
+    ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+initProject() {
+    dir="$1"
+    if [ ! -d "$dir" ]; then
+        echo "Project directory $dir is not found"
+        exit 1
+    fi
+    mkdir -p $dir'/app/controller'
+    mkdir -p $dir'/app/dto'         # 展示层与服务层之间的数据传输对象
+    mkdir -p $dir'/app/entity'
+    mkdir -p $dir'/app/router/middleware'
+    mkdir -p $dir'/app/model'
+    mkdir -p $dir'/app/service'
+    mkdir -p $dir'/app/rservice/rpci'    # 内部服务，别的服务的接口interface
+    mkdir -p $dir'/app/public/asset'
+    mkdir -p $dir'/app/register'
+
+    mkdir -p $dir'/bootstrap'
+    mkdir -p $dir'/conf'            # 放置.ini和.go配置
+    mkdir -p $dir'/dic'
+    mkdir -p $dir'/driver'
+    mkdir -p $dir'/enum'
+    mkdir -p $dir'/job'             # 定时任务/后台任务   cron/daemon     listener 需要后缀为 Listener.go
+    mkdir -p $dir'/console'          # 调试控制台、自定义命令（如Go自动生成文件指令）
+    mkdir -p $dir'/storage/logs'
+    mkdir -p $dir'/storage/docs'
+    mkdir -p $dir'/tests'
+    mkdir -p $dir'/helper'
+
+    touch $dir'/main.go'
+}
+
+initProject $Proj
