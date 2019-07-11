@@ -22,9 +22,26 @@ func (resp RespStruct) filterPayload(a interface{}, tagname string) (interface{}
 }
 
 func filterPayloadMap(u interface{}, tagname string, tags ...string) (map[string]interface{}, *ae.Error) {
+	var found bool
 	ret := make(map[string]interface{}, 0)
 	t := reflect.TypeOf(u)
-	var found bool
+	if t.Kind() == reflect.Map {
+		for _, tag := range tags {
+			found = false
+			iter := reflect.ValueOf(u).MapRange()
+			for iter.Next() {
+				if iter.Key().String() == tag {
+					found = true
+					ret[tag] = iter.Value().Interface()
+				}
+			}
+			if !found {
+				ret[tag] = nil
+			}
+		}
+		return ret, nil
+	}
+
 	for _, tag := range tags {
 		found = false
 		for i := 0; i < t.NumField(); i++ {
