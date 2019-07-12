@@ -59,7 +59,7 @@ func (s *health) Check(connections ...interface{}) Health {
 }
 
 func (s *health) getConf(name string, suffix string, defaultValue ...interface{}) *aa.Dtype {
-	k := "conn." + name + "_" + suffix
+	k := "driver." + name + "_" + suffix
 	return s.app.Config.Get(k, defaultValue...)
 }
 
@@ -70,7 +70,7 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	db := s.getConf(name, "db", "0").String()
 	auth := s.getConf(name, "auth").String()
 
-	ct, rt, wt, _ := s.app.ParseTimeout("conn."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
+	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := RedisConnHealth{
 		Name:    name,
@@ -112,7 +112,7 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").String())
 	charset := s.getConf(name, "charset", "utf8mb4").String()
 
-	ct, rt, wt, _ := s.app.ParseTimeout("conn."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
+	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := MysqlConnHealth{
 		Name:    name,
