@@ -39,13 +39,25 @@ func (p *Dtype) String() string {
 func (p *Dtype) Bytes() []byte {
 	return dtype.Bytes(p.Value)
 }
-
+func (p *Dtype) Int8() (int8, error) {
+	return dtype.Int8(p.Value)
+}
+func (p *Dtype) Int16() (int16, error) {
+	return dtype.Int16(p.Value)
+}
 func (p *Dtype) Int() (int, error) {
 	return dtype.Int(p.Value)
 }
 
 func (p *Dtype) Int64() (int64, error) {
 	return dtype.Int64(p.Value)
+}
+
+func (p *Dtype) Uint8() (uint8, error) {
+	return dtype.Uint8(p.Value)
+}
+func (p *Dtype) Uint16() (uint16, error) {
+	return dtype.Uint16(p.Value)
 }
 func (p *Dtype) Uint() (uint, error) {
 	return dtype.Uint(p.Value)
