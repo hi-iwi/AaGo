@@ -11,6 +11,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/luexu/AaGo/aa"
+	"github.com/luexu/dtype"
 	"github.com/streadway/amqp"
 )
 
@@ -58,7 +59,7 @@ func (s *health) Check(connections ...interface{}) Health {
 	return s.h
 }
 
-func (s *health) getConf(name string, suffix string, defaultValue ...interface{}) *aa.Dtype {
+func (s *health) getConf(name string, suffix string, defaultValue ...interface{}) *dtype.Dtype {
 	k := "driver." + name + "_" + suffix
 	return s.app.Config.Get(k, defaultValue...)
 }

@@ -4,6 +4,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/luexu/dtype"
 	"gopkg.in/ini.v1"
 )
 
@@ -25,7 +26,7 @@ func (a *Aa) ParseIni(filename string) error {
 	return nil
 }
 
-func (c *Ini) Get(key string, defaultValue ...interface{}) *Dtype {
+func (c *Ini) Get(key string, defaultValue ...interface{}) *dtype.Dtype {
 	keys := splitDots(key)
 
 	c.mu.RLock()
@@ -34,14 +35,14 @@ func (c *Ini) Get(key string, defaultValue ...interface{}) *Dtype {
 	var s *ini.Section
 	if len(keys) == 1 {
 		if s = c.data.Section(""); s.HasKey(key) {
-			return NewDtype(s.Key(key).String())
+			return dtype.New(s.Key(key).String())
 		}
 		return defaultDtype(key, defaultValue...)
 	}
 
 	k := strings.Join(keys[1:], "_")
 	if s = c.data.Section(keys[0]); s.HasKey(k) {
-		return NewDtype(s.Key(k).String())
+		return dtype.New(s.Key(k).String())
 	}
 	return defaultDtype(key, defaultValue...)
 }

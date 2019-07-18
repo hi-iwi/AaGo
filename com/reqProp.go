@@ -1,9 +1,9 @@
 package com
 
-import "github.com/luexu/AaGo/aa"
+import "github.com/luexu/dtype"
 
 type ReqProp struct {
-	aa.Dtype
+	dtype.Dtype
 	param string
 }
 

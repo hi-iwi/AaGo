@@ -3,8 +3,8 @@ package com
 import (
 	"regexp"
 
-	"github.com/luexu/AaGo/aa"
 	"github.com/luexu/AaGo/ae"
+	"github.com/luexu/dtype"
 )
 
 /*
@@ -12,7 +12,7 @@ import (
 Filter(pattern string, required bool)
 Filter(required bool)
 Filter(pattern string)
-Filter(default aa.Dtype)
+Filter(default dtype.Dtype)
 
 */
 func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
@@ -25,7 +25,7 @@ func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
 			pattern = s
 		} else if b, ok := pat.(bool); ok {
 			required = b
-		} else if d, ok := pat.(*aa.Dtype); ok && p.String() == "" {
+		} else if d, ok := pat.(*dtype.Dtype); ok && p.String() == "" {
 			p.Value = d.Value
 		}
 	}

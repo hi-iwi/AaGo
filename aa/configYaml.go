@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"sync"
 
+	"github.com/luexu/dtype"
 	"gopkg.in/yaml.v2"
 )
 
@@ -28,7 +29,7 @@ func (a *Aa) ParseYml(filename string) error {
 	return nil
 }
 
-func (c *Yaml) Get(key string, defaultValue ...interface{}) *Dtype {
+func (c *Yaml) Get(key string, defaultValue ...interface{}) *dtype.Dtype {
 	keys := splitDots(key)
 	c.mu.RLock()
 	defer c.mu.RUnlock()

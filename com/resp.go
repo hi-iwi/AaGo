@@ -10,9 +10,9 @@ import (
 	"sync"
 
 	"github.com/kataras/iris"
-	"github.com/luexu/AaGo/aa"
 	"github.com/luexu/AaGo/ae"
 	"github.com/luexu/AaGo/dict"
+	"github.com/luexu/dtype"
 )
 
 type RespStruct struct {
@@ -212,7 +212,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		if len(d) == 0 {
 			cs.Msg = dict.Code2Msg(code)
 		} else {
-			cs.Msg = aa.NewDtype(d[0]).String()
+			cs.Msg = dtype.New(d[0]).String()
 		}
 	} else if (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) && v.Len() == 0 {
 		cs.Code = 204

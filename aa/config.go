@@ -6,10 +6,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/luexu/dtype"
 )
 
 type Config interface {
-	Get(key string, defaultValue ...interface{}) *Dtype
+	Get(key string, defaultValue ...interface{}) *dtype.Dtype
 }
 
 func parseToDuration(d string) time.Duration {
@@ -71,12 +73,12 @@ func splitDots(keys ...string) []string {
 	return n
 }
 
-func defaultDtype(key string, defaultValue ...interface{}) *Dtype {
+func defaultDtype(key string, defaultValue ...interface{}) *dtype.Dtype {
 	dv := parseDefaultValue(defaultValue...)
 	if len(defaultValue) == 0 {
 		log.Println("not found config " + key)
 	}
-	return NewDtype(dv)
+	return dtype.New(dv)
 }
 
 func parseDefaultValue(vs ...interface{}) interface{} {
