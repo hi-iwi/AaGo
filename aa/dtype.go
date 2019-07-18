@@ -1,6 +1,8 @@
 package aa
 
 import (
+	"database/sql"
+
 	"github.com/luexu/dtype"
 )
 
@@ -12,6 +14,20 @@ func NewDtype(data interface{}) *Dtype {
 	return &Dtype{
 		Value: data,
 	}
+}
+
+func (p *Dtype) SqlNullString() sql.NullString {
+	return sql.NullString{String: p.String(), Valid: p.NotEmpty()}
+}
+
+func (p *Dtype) SqlNullInt64() sql.NullInt64 {
+	v, _ := p.Int64()
+	return sql.NullInt64{Int64: v, Valid: p.NotEmpty()}
+}
+
+func (p *Dtype) SqlNullFloat64() sql.NullFloat64 {
+	v, _ := p.Float64()
+	return sql.NullFloat64{Float64: v, Valid: p.NotEmpty()}
 }
 
 func (p *Dtype) IsEmpty() bool {
