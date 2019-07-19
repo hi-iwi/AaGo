@@ -1,5 +1,78 @@
 # AaGo
 
+## 建议的项目文件夹结构
+
+```txt
+AaGo
+    + aa
+    + adto
+    + ae
+    + cnf    备用
+    + com    通信
+    + crypt  编码加密
+    + dict    系统字典
+    + docs
+    + format
+    + queue
+    + util
+      + healthcheck
+    + lib
+    + infr   infrastructure 基础设施
+
+Application
+    + app
+        + cache                         # 缓存
+        + module                        # 提高微服务特性，module仅用于区分客户端、服务端、CMS端
+            + ss                        # Service/Server 对服务端的接口
+            + cms                       # 管理后台
+            + bs                        # B/S架构，Browser/Server
+                + controller
+                + dto                   # 对外开放的
+                + model
+        + entity
+        + register
+        + router
+                + middleware
+        + service
+        + rservice
+                + rpci                  # rpc interface ，对内提供的
+    + grpc
+        + gboot
+        + protos                    # .proto
+        + pb                        # protos 生成的文件
+        + gservice
+
+    + public
+        + resource
+        + asset
+
+
+    + bootstrap     # 系统启动初始化
+    + conf          # .go 配置文件 .ini 配置文件，cert.pem 文件
+    + dic           # 放置翻译文件；
+    + enum          # 放常量、枚举
+    + job           # 定时任务/后台任务   cron/daemon     listener 需要后缀为 Listener.go
+    + console       # 调试控制台、自定义命令（如Go自动生成文件指令）
+    + storage
+        + docs
+        + logs
+    + tests                     #  测试
+
+    + build
+    + base
+
+    + src
+    + dst
+    + common
+  
+    + sdk
+
+    + register
+    + helper
+    + facility
+    + biz
+```
+
 ## 错误说明
 
 ### 错误码
