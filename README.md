@@ -42,13 +42,14 @@ Application
         + pb                        # protos 生成的文件
         + gservice
 
-    + public
-        + resource
-        + asset
-
-
     + bootstrap     # 系统启动初始化
-    + conf          # .go 配置文件 .ini 配置文件，cert.pem 文件
+    + conf          # .go 配置文件
+    + deploy
+        + config      # .ini 配置文件，cert.pem 文件
+        + public
+            + asset
+        + views      # 模版文件
+
     + dic           # 放置翻译文件；
     + enum          # 放常量、枚举
     + job           # 定时任务/后台任务   cron/daemon     listener 需要后缀为 Listener.go
@@ -72,6 +73,10 @@ Application
     + facility
     + biz
 ```
+
+## 相关文档
+
+* [iris wiki](https://github.com/kataras/iris/wiki)
 
 ## 错误说明
 
