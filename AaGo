@@ -56,7 +56,7 @@ depEnsureAdd() {
             cd $r
             git pull origin master
         else
-            if [ "${repo}:0:11}" == "github.com/" ]; then
+            if [ "${repo:0:11}" == "github.com/" ]; then
                 echo "git clone https://${repo}.git $r"
                 git clone "https://${repo}.git" $r
             else
