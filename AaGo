@@ -1,29 +1,5 @@
 #!/bin/bash
 
-
-Proj=""
-while getopts ':p:' opt
-do
-    case $opt in
-    p)
-        Proj=${OPTARG}
-    ;;
-    h)
-        cat << EOF
-Usage: AaGo [\$options]
-    -p <dir>   : new project
-EOF
-        exit 0
-    ;;
-    ?)
-        echo "未知参数"
-        exit 1
-    ;;
-    esac
-done
-
-shift $((OPTIND-1))
-
 initProject() {
     dir="$1"
     if [ ! -d "$dir" ]; then
@@ -59,4 +35,47 @@ initProject() {
     touch $dir'/main.go'
 }
 
-initProject $Proj
+# 临时方案不用包管理，防止一些网络条件差情况下，dep 包管理总是超时问题；
+depEnsureAdd() {
+    p=$(pwd)
+    repo="$1"
+    if [ -n "$repo" ]; then
+        if [ ! -d "${p}/vendor" ]; then
+            echo "vendor not found"
+            exit 1
+        fi
+        r="${p}/vendor/${repo}"
+        if [ -d "${r}/.git" ]; then
+            cd $r
+            git pull origin master
+        else
+            echo "git clone https://${repo}.git $r"
+            git clone "https://${repo}.git" $r
+        fi
+    fi
+}
+
+while getopts ':p:d:' opt
+do
+    case $opt in
+    d)
+        depEnsureAdd ${OPTARG}
+    ;;
+    p)
+        initProject ${OPTARG}
+    ;;
+    h)
+        cat << EOF
+Usage: AaGo [\$options]
+    -p <dir>   : new project
+EOF
+        exit 0
+    ;;
+    ?)
+        echo "未知参数"
+        exit 1
+    ;;
+    esac
+done
+
+shift $((OPTIND-1))
