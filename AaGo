@@ -67,7 +67,24 @@ depEnsureAdd() {
     fi
 }
 
-while getopts ':p:d:' opt
+updateLuexu() {
+    l="${GOPATH}/src/github.com/luexu"
+    cd $l
+    repos="AaGo aenum dtype aorm"
+    for repo in $repos; do
+        r="${l}/${repo}"
+        if [ -d "${r}/.git" ]; then
+            cd "${r}"
+            git pull origin master
+        else
+            echo "git clone https://github.com/luexu/${repo}.git ${r}"
+            git clone "https://github.com/luexu/${repo}.git" "${r}"
+        fi
+        echo $r
+    done
+}
+
+while getopts ':p:d:u' opt
 do
     case $opt in
     d)
@@ -82,6 +99,9 @@ Usage: AaGo [\$options]
     -p <dir>   : new project
 EOF
         exit 0
+    ;;
+    u)
+        updateLuexu
     ;;
     ?)
         echo "未知参数"
