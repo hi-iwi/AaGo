@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gomodule/redigo/redis"
 	"github.com/luexu/AaGo/aa"
 	"github.com/luexu/dtype"
 	"github.com/streadway/amqp"

@@ -70,7 +70,7 @@ depEnsureAdd() {
 updateLuexu() {
     l="${GOPATH}/src/github.com/luexu"
     cd $l
-    repos="AaGo aenum dtype aorm"
+    repos="AaGo aenum dtype aorm aamqp randm alog godlock"
     for repo in $repos; do
         r="${l}/${repo}"
         if [ -d "${r}/.git" ]; then
