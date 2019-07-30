@@ -44,13 +44,25 @@ depEnsureAdd() {
             echo "vendor not found"
             exit 1
         fi
-        r="${p}/vendor/${repo}"
+
+        # Luexu 的一律放到$GOPATH下共用
+        if [ "${repo:0:17}" == "github.com/luexu/" ]; then 
+            r="${GOPATH}/src/${repo}"
+        else
+            r="${p}/vendor/${repo}"
+        fi
+
         if [ -d "${r}/.git" ]; then
             cd $r
             git pull origin master
         else
-            echo "git clone https://${repo}.git $r"
-            git clone "https://${repo}.git" $r
+            if [ "${repo}:0:11}" == "github.com/" ]; then
+                echo "git clone https://${repo}.git $r"
+                git clone "https://${repo}.git" $r
+            else
+                echo "git clone https://${repo} $r"
+                git clone "https://${repo}" $r
+            fi
         fi
     fi
 }
