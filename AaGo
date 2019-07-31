@@ -1,5 +1,7 @@
 #!/bin/bash
 
+readonly LuexuRepos="AaGo aenum dtype aorm aamqp randm alog godlock"
+
 initProject() {
     dir="$1"
     if [ ! -d "$dir" ]; then
@@ -35,11 +37,30 @@ initProject() {
     touch $dir'/main.go'
 }
 
+goGetLuexu() {
+    update=1
+    if [ -z "$1" ]; then
+        update=0
+    fi
+    l="${GOPATH}/src/github.com/luexu"
+    cd $l
+    for repo in $LuexuRepos; do
+        if [ $update -eq 1 ]; then
+            go get -u -v "github.com/luexu/${repo}"
+        else
+            go get -v "github.com/luexu/${repo}"
+        fi
+        echo $r
+    done
+}
+
 # 临时方案不用包管理，防止一些网络条件差情况下，dep 包管理总是超时问题；
 depEnsureAdd() {
     p=$(pwd)
     repo="$1"
-    if [ -n "$repo" ]; then
+    if [ -z "$repo" ]; then
+        goGetLuexu 0
+    else
         if [ ! -d "${p}/vendor" ]; then
             echo "vendor not found"
             exit 1
@@ -67,16 +88,6 @@ depEnsureAdd() {
     fi
 }
 
-updateLuexu() {
-    l="${GOPATH}/src/github.com/luexu"
-    cd $l
-    repos="AaGo aenum dtype aorm aamqp randm alog godlock"
-    for repo in $repos; do
-        go get -u -v "github.com/luexu/${repo}"
-        echo $r
-    done
-}
-
 while getopts ':p:d:u' opt
 do
     case $opt in
@@ -94,7 +105,7 @@ EOF
         exit 0
     ;;
     u)
-        updateLuexu
+        goGetLuexu 1
     ;;
     ?)
         echo "未知参数"
