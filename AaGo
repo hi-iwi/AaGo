@@ -58,7 +58,7 @@ depEnsureAdd() {
     p=$(pwd)
     repo="$1"
     if [ "$repo" == "luexu" ]; then
-        goGetLuexu 0
+        goGetLuexu
     else
         if [ ! -d "${p}/vendor" ]; then
             echo "vendor not found"
