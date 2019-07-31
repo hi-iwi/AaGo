@@ -50,7 +50,6 @@ goGetLuexu() {
         else
             go get -v "github.com/luexu/${repo}"
         fi
-        echo $r
     done
 }
 
