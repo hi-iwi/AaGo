@@ -58,7 +58,7 @@ goGetLuexu() {
 depEnsureAdd() {
     p=$(pwd)
     repo="$1"
-    if [ -z "$repo" ]; then
+    if [ "$repo" == "luexu" ]; then
         goGetLuexu 0
     else
         if [ ! -d "${p}/vendor" ]; then
