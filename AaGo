@@ -39,7 +39,7 @@ initProject() {
 
 goGetLuexu() {
     update=1
-    if [ -z "$1" ]; then
+    if [ -z "$1" -o "$1" == "0" ]; then
         update=0
     fi
     l="${GOPATH}/src/github.com/luexu"
