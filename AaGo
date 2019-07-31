@@ -54,7 +54,7 @@ depEnsureAdd() {
 
         if [ -d "${r}/.git" ]; then
             cd $r
-            git pull origin master
+            git pull --ff-only
         else
             if [ "${repo:0:11}" == "github.com/" ]; then
                 echo "git clone https://${repo}.git $r"
@@ -72,14 +72,7 @@ updateLuexu() {
     cd $l
     repos="AaGo aenum dtype aorm aamqp randm alog godlock"
     for repo in $repos; do
-        r="${l}/${repo}"
-        if [ -d "${r}/.git" ]; then
-            cd "${r}"
-            git pull origin master
-        else
-            echo "git clone git@github.com:luexu/${repo}.git ${r}"
-            git clone "git@github.com:luexu/${repo}.git" "${r}"
-        fi
+        go get -u -v "github.com/luexu/${repo}"
         echo $r
     done
 }
