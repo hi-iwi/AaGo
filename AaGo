@@ -66,8 +66,14 @@ goGet() {
         exit 1
     fi
 
+    # 优先在GOPATH下找，若没有，就根据情况下载到 vendor 下
+    isInGoPath=0
+    if [ -d "${GOPATH}/src/${repo}/.git" ]; then
+        isInGoPath=1
+    fi
+
     # Luexu 的一律放到$GOPATH下共用
-    if [ "${repo:0:17}" != "github.com/luexu/" ]; then 
+    if [ isInGoPath -eq 0 -a "${repo:0:17}" != "github.com/luexu/" ]; then 
         GOPATH="${p}/vendor"
     fi
 
