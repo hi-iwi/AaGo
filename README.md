@@ -32,10 +32,11 @@ Application
         + entity
         + register
         + router
-                + middleware
+            + middleware
         + service
-        + rservice
-                + rpci                  # rpc interface ，对内提供的
+        + rservice                  # remote service 其他远程服务或第三方服务（如微信、支付宝）
+            + rpci                  # rpc interface ，对内提供的
+
     + grpc
         + gboot
         + protos                    # .proto
