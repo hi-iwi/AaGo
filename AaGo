@@ -93,8 +93,8 @@ goGet() {
 
 # 临时方案不用包管理，防止一些网络条件差情况下，dep 包管理总是超时问题；
 depEnsureAdd() {
-    repo="$1"
-    update="$2"
+    update="$1"
+    repo="$2"
     if [ "$repo" == "luexu" ]; then
         goGetLuexu $update
     else
@@ -102,11 +102,11 @@ depEnsureAdd() {
     fi
 }
 
-while getopts ':p:d:u' opt
+while getopts ':p:d:u:' opt
 do
     case $opt in
     d)
-        depEnsureAdd ${OPTARG}
+        depEnsureAdd get ${OPTARG}
     ;;
     p)
         initProject ${OPTARG}
@@ -119,7 +119,7 @@ EOF
         exit 0
     ;;
     u)
-        depEnsureAdd ${OPTARG} update
+        depEnsureAdd update ${OPTARG}
     ;;
     ?)
         echo "未知参数"
