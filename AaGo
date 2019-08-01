@@ -38,9 +38,9 @@ initProject() {
 }
 
 goGetLuexu() {
-    update=1
-    if [ -z "$1" -o "$1" == "0" ]; then
-        update=0
+    update=0
+    if [ "$1" == "update" ]; then
+        update=1
     fi
     l="${GOPATH}/src/github.com/luexu"
     cd $l
@@ -53,37 +53,42 @@ goGetLuexu() {
     done
 }
 
+goGet() {
+    p=$(pwd)
+    gopath=$GOPATH
+    repo="$1"
+    update=0
+    if [ "$2" == "update" ]; then
+        update=1
+    fi
+    if [ ! -d "${p}/vendor" ]; then
+        echo "vendor not found"
+        exit 1
+    fi
+
+    # Luexu 的一律放到$GOPATH下共用
+    if [ "${repo:0:17}" != "github.com/luexu/" ]; then 
+        GOPATH="${p}/vendor"
+    fi
+
+    if [ $update -eq 1 ]; then
+        go get -u -v $repo
+    else
+        go get -v $repo
+    fi
+
+    GOPATH=$gopath
+    # 使用 go get 可以下载相关库
+}
+
 # 临时方案不用包管理，防止一些网络条件差情况下，dep 包管理总是超时问题；
 depEnsureAdd() {
-    p=$(pwd)
     repo="$1"
+    update="$2"
     if [ "$repo" == "luexu" ]; then
-        goGetLuexu
+        goGetLuexu $update
     else
-        if [ ! -d "${p}/vendor" ]; then
-            echo "vendor not found"
-            exit 1
-        fi
-
-        # Luexu 的一律放到$GOPATH下共用
-        if [ "${repo:0:17}" == "github.com/luexu/" ]; then 
-            r="${GOPATH}/src/${repo}"
-        else
-            r="${p}/vendor/${repo}"
-        fi
-
-        if [ -d "${r}/.git" ]; then
-            cd $r
-            git pull --ff-only
-        else
-            if [ "${repo:0:11}" == "github.com/" ]; then
-                echo "git clone https://${repo}.git $r"
-                git clone "https://${repo}.git" $r
-            else
-                echo "git clone https://${repo} $r"
-                git clone "https://${repo}" $r
-            fi
-        fi
+        goGet $repo $update
     fi
 }
 
@@ -104,7 +109,7 @@ EOF
         exit 0
     ;;
     u)
-        goGetLuexu 1
+        depEnsureAdd ${OPTARG} update
     ;;
     ?)
         echo "未知参数"
