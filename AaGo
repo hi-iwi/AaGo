@@ -83,6 +83,7 @@ goGet() {
         go get -v $repo
     fi
 
+    mv ${p}/vendor/src/* ${p}/vendor/
     GOPATH=$gopath
     # 使用 go get 可以下载相关库
 }
