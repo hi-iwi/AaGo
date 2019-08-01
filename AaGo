@@ -73,7 +73,7 @@ goGet() {
     fi
 
     # Luexu 的一律放到$GOPATH下共用
-    if [ isInGoPath -eq 0 -a "${repo:0:17}" != "github.com/luexu/" ]; then 
+    if [ $isInGoPath -eq 0 -a "${repo:0:17}" != "github.com/luexu/" ]; then 
         GOPATH="${p}/vendor"
     fi
 
