@@ -77,16 +77,28 @@ goGet() {
         GOPATH="${p}/vendor"
     fi
 
+    if [ -d "${p}/vendor/src" ]; then
+        mv ${p}/vendor/src/* ${p}/vendor/
+        rm -rf ${p}/vendor/src
+    fi
+    rm -rf "${p}/vendor/pkg"
+    mkdir -p "${p}/.vendor/src"
+    mv ${p}/vendor/* "${p}/.vendor/src"
+    rm -rf "${p}/vendor"
+    mv "${p}/.vendor" "${p}/vendor"
+
+    src="${p}/vendor/src"
+
     if [ $update -eq 1 ]; then
         go get -u -v $repo
     else
         go get -v $repo
     fi
 
-    if [ -d "${p}/vendor/src" ]; then
-        mv ${p}/vendor/src/* ${p}/vendor/
-        rm -rf ${p}/vendor/src
-    fi
+    mv ${p}/vendor/src/* ${p}/vendor/
+    rm -rf ${p}/vendor/src
+    rm -rf ${p}/vendor/pkg
+    
     GOPATH=$gopath
     # 使用 go get 可以下载相关库
 }
