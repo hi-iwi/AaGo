@@ -29,6 +29,7 @@ Application
                 + controller
                 + dto                   # 对外开放的
                 + model
+                + vc                    # view controller
         + entity
         + register
         + router
