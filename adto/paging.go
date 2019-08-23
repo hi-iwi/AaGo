@@ -8,7 +8,7 @@ type Paging struct {
 	Limit  int `alias:"limit"`
 }
 
-func MakePaging(r *com.Req) Paging {
+func MakePaging(r *com.Req, args ...int) Paging {
 	p, _ := r.Query("page", `^\d+$`, false)
 	ofs, _ := r.Query("offset", `^\d+$`, false)
 	lmt, _ := r.Query("limit", `^\d+$`, false)
@@ -18,7 +18,11 @@ func MakePaging(r *com.Req) Paging {
 	limit, _ := lmt.Int()
 
 	if limit < 1 {
-		limit = 20
+		if len(args) > 0 {
+			limit = args[0]
+		} else {
+			limit = 20
+		}
 	} else if limit > 100 {
 		limit = 100
 	}
