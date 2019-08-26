@@ -1,6 +1,7 @@
 package com
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"reflect"
@@ -238,10 +239,14 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 
 	HideServerErr(resp.ictx, &cs, resp.req)
 
-	b, err := json.Marshal(cs)
-	if err != nil {
+	// json Marshal 不转译 HTML 字符
+	buf := bytes.NewBuffer([]byte{})
+	je := json.NewEncoder(buf)
+	je.SetEscapeHTML(false)
+	if err := je.Encode(d); err != nil {
 		return err
 	}
+	b := buf.Bytes()
 
 	for _, mw := range afterSerialize {
 		b = mw(b)
