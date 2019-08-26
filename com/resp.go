@@ -243,7 +243,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 	buf := bytes.NewBuffer([]byte{})
 	je := json.NewEncoder(buf)
 	je.SetEscapeHTML(false)
-	if err := je.Encode(d); err != nil {
+	if err := je.Encode(cs); err != nil {
 		return err
 	}
 	b := buf.Bytes()
