@@ -90,8 +90,10 @@ goGet() {
     src="${p}/vendor/src"
 
     if [ $update -eq 1 ]; then
+        echo "go get -u -v $repo"
         go get -u -v $repo
     else
+        echo "go get -v $repo"
         go get -v $repo
     fi
 
@@ -125,7 +127,7 @@ do
     ;;
     h)
         cat << EOF
-Usage: AaGo [\$options]
+Usage: AaGo.sh [\$options]
     -p <dir>   : new project
 EOF
         exit 0
