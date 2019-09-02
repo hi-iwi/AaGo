@@ -50,7 +50,7 @@ func (p *ImagePattern) Parse(tag string) {
 	}
 }
 
-func (p *ImagePattern) OAS(url string) string {
+func (p *ImagePattern) OasURL(url string) string {
 	// if len(style) > 0 {
 	// 	g := strings.Split(tag, ".")
 	// 	return   g[0] + "-" + style[0] + "." + g[1]
@@ -58,7 +58,7 @@ func (p *ImagePattern) OAS(url string) string {
 	return ""
 }
 
-func (p *ImagePattern) EastChina(url string) string {
+func (p *ImagePattern) EastChinaURL(url string) string {
 	style := ""
 	if p.Height > 0 && p.Width > 0 {
 		// y 超出部分要裁剪；enlarge 不足拉伸
