@@ -9,7 +9,7 @@ import (
 )
 
 // ?_stringify=1  weak language, turn all fields into string
-func (resp RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
+func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
 	xweak, _ := resp.req.Query("_stringify", `^[01]$`, false)
 	if xweak.IsEmpty() || payload == nil {
 		return payload, nil

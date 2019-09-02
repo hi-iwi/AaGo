@@ -48,9 +48,14 @@ func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 	}
 }
 
-func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
-	resp.code = 200
-	resp.headers = make(map[string]string, 0)
+func Resp(p interface{}, as ...interface{}) *RespStruct {
+	resp := &RespStruct{
+		code: 200,
+		headers: map[string]string{
+			"Content-Type": "application/json",
+		},
+	}
+
 	for _, a := range as {
 		if r, ok := a.(*Req); ok {
 			resp.req = r
@@ -73,7 +78,7 @@ func Resp(p interface{}, as ...interface{}) (resp RespStruct) {
 		}
 	}
 
-	return
+	return resp
 }
 
 func AddGlbRespMidwares(mws ...interface{}) {
@@ -90,7 +95,7 @@ func AddGlbRespMidwares(mws ...interface{}) {
 	}
 }
 
-func (resp RespStruct) AddMidwares(mws ...interface{}) {
+func (resp *RespStruct) AddMidwares(mws ...interface{}) {
 	for _, a := range mws {
 		if mw, ok := a.(func(*RespStruct)); ok {
 			resp.beforeFlush = append(resp.beforeFlush, mw)
@@ -104,7 +109,7 @@ func (resp RespStruct) AddMidwares(mws ...interface{}) {
 	}
 }
 
-func (resp RespStruct) WriteHeader(code interface{}) {
+func (resp *RespStruct) WriteHeader(code interface{}) {
 
 	if c, ok := code.(int); ok {
 		resp.code = c
@@ -118,7 +123,7 @@ func (resp RespStruct) WriteHeader(code interface{}) {
 	resp.WriteRaw()
 }
 
-func (resp RespStruct) writeNotModified() {
+func (resp *RespStruct) writeNotModified() {
 	w := resp.writer
 
 	if resp.ictx != nil {
@@ -133,7 +138,7 @@ func (resp RespStruct) writeNotModified() {
 	}
 }
 
-func (resp RespStruct) WriteRaw(ps ...interface{}) (int, error) {
+func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 	w := resp.writer
 	for i := 0; i < len(ps); i++ {
 		if bytes, ok := ps[i].([]byte); ok {
@@ -144,11 +149,11 @@ func (resp RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 	}
 
 	for _, mw := range beforeFlush {
-		mw(&resp)
+		mw(resp)
 	}
 
 	for _, mw := range resp.beforeFlush {
-		mw(&resp)
+		mw(resp)
 	}
 
 	if resp.code == 403 {
@@ -196,7 +201,7 @@ Write(ae.Error{}, data)
 Write(ae.Error{}, data)
 Write(data)
 */
-func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
+func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 	cs := RespContentDTO{}
 	v := reflect.ValueOf(a)
 	if a == nil || (v.Kind() == reflect.Ptr && v.IsNil()) {
@@ -255,9 +260,7 @@ func (resp RespStruct) Write(a interface{}, d ...interface{}) error {
 		b = mw(b)
 	}
 
-	resp.SetHeader("Content-Type", "application/json")
 	resp.content = b
-
 	resp.WriteRaw()
 	return nil
 }

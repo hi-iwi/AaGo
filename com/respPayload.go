@@ -4,7 +4,7 @@ import (
 	"github.com/luexu/AaGo/ae"
 )
 
-func (resp RespStruct) handlePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
+func (resp *RespStruct) handlePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
 	pf, e := resp.filterPayload(payload, tagname)
 	if e != nil {
 		return nil, e

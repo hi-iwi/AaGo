@@ -9,7 +9,7 @@ import (
 
 // @TODO
 // ?_field=time,service,connections:[name,scheme],server_id,test:{a,b,c}
-func (resp RespStruct) filterPayload(a interface{}, tagname string) (interface{}, *ae.Error) {
+func (resp *RespStruct) filterPayload(a interface{}, tagname string) (interface{}, *ae.Error) {
 	xm, _ := resp.req.Query("_field", false)
 	if xm.IsEmpty() {
 		return a, nil

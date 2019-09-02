@@ -15,7 +15,7 @@ func fmtLastModified(value string) string {
 	return value
 }
 
-func (resp RespStruct) Header(head string) string {
+func (resp *RespStruct) Header(head string) string {
 	vs, ok := resp.writer.Header()[head]
 	if ok && len(vs) > 0 {
 		return vs[0]
@@ -29,7 +29,7 @@ func (resp RespStruct) Header(head string) string {
 	return ""
 }
 
-func (resp RespStruct) DelHeader(head string) {
+func (resp *RespStruct) DelHeader(head string) {
 	if _, ok := resp.writer.Header()[head]; ok {
 		delete(resp.writer.Header(), head)
 	}
@@ -40,7 +40,7 @@ func (resp RespStruct) DelHeader(head string) {
 	resp.headlck.Unlock()
 }
 
-func (resp RespStruct) SetHeader(head interface{}, values ...string) RespStruct {
+func (resp *RespStruct) SetHeader(head interface{}, values ...string) {
 	var key, value string
 	if k, ok := head.(string); ok {
 		for i := 0; i < len(values); i++ {
@@ -62,5 +62,4 @@ func (resp RespStruct) SetHeader(head interface{}, values ...string) RespStruct 
 		resp.headers[key] = value
 		resp.headlck.Unlock()
 	}
-	return resp
 }

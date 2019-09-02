@@ -89,7 +89,7 @@ const (
 	condFalse
 )
 
-func (resp RespStruct) checkIfMatch() condResult {
+func (resp *RespStruct) checkIfMatch() condResult {
 	imp, e := resp.req.Header("If-Match")
 	if e != nil || !imp.NotEmpty() {
 		return condNone
@@ -121,7 +121,7 @@ func (resp RespStruct) checkIfMatch() condResult {
 	return condFalse
 }
 
-func (resp RespStruct) checkIfUnmodifiedSince(modtime time.Time) condResult {
+func (resp *RespStruct) checkIfUnmodifiedSince(modtime time.Time) condResult {
 	iusp, e := resp.req.Header("If-Unmodified-Since")
 	if e != nil || !iusp.NotEmpty() || isZeroTime(modtime) {
 		return condNone
@@ -138,7 +138,7 @@ func (resp RespStruct) checkIfUnmodifiedSince(modtime time.Time) condResult {
 	return condNone
 }
 
-func (resp RespStruct) checkIfNoneMatch() condResult {
+func (resp *RespStruct) checkIfNoneMatch() condResult {
 	inmp, e := resp.req.Header("If-None-Match")
 
 	if e != nil || !inmp.NotEmpty() {
@@ -169,7 +169,7 @@ func (resp RespStruct) checkIfNoneMatch() condResult {
 	return condTrue
 }
 
-func (resp RespStruct) checkIfModifiedSince(modtime time.Time) condResult {
+func (resp *RespStruct) checkIfModifiedSince(modtime time.Time) condResult {
 
 	if resp.req.Method != "GET" && resp.req.Method != "HEAD" {
 		return condNone
@@ -191,7 +191,7 @@ func (resp RespStruct) checkIfModifiedSince(modtime time.Time) condResult {
 	return condTrue
 }
 
-func (resp RespStruct) checkIfRange(modtime time.Time) condResult {
+func (resp *RespStruct) checkIfRange(modtime time.Time) condResult {
 	if resp.req.Method != "GET" {
 		return condNone
 	}
@@ -224,7 +224,7 @@ func (resp RespStruct) checkIfRange(modtime time.Time) condResult {
 
 // checkPreconditions evaluates request preconditions and reports whether a precondition
 // resulted in sending StatusNotModified or StatusPreconditionFailed.
-func (resp RespStruct) checkPreconditions(modtime time.Time) (done bool, rangeHeader string) {
+func (resp *RespStruct) checkPreconditions(modtime time.Time) (done bool, rangeHeader string) {
 	// This function carefully follows RFC 7232 section 6.
 	r := resp.req
 	ch := resp.checkIfMatch()

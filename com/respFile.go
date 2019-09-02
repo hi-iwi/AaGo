@@ -17,7 +17,7 @@ import (
 	"github.com/luexu/AaGo/ae"
 )
 
-func (resp RespStruct) toHTTPError(err error) *ae.Error {
+func (resp *RespStruct) toHTTPError(err error) *ae.Error {
 	if os.IsNotExist(err) {
 		return ae.NewError(404)
 	}
@@ -39,7 +39,7 @@ const sniffLen = 512
 	* check If-Modified-Since
 	* check If-Range
 */
-func (resp RespStruct) ServeFile(f string, hps ...map[string]string) error {
+func (resp *RespStruct) ServeFile(f string, hps ...map[string]string) error {
 
 	info, err := os.Stat(f)
 
@@ -60,7 +60,7 @@ func (resp RespStruct) ServeFile(f string, hps ...map[string]string) error {
 	return resp.serveContent(f, info.ModTime(), sizeFunc, fi)
 }
 
-func (resp RespStruct) serveContent(name string, modtime time.Time, sizeFunc func() (int64, error), content io.ReadSeeker) error {
+func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc func() (int64, error), content io.ReadSeeker) error {
 	resp.SetHeader("Last-Modified", modtime.UTC().Format(http.TimeFormat))
 	done, rangeReq := resp.checkPreconditions(modtime)
 	// 403, 412
