@@ -17,7 +17,6 @@ type Configuration struct {
 	TimeFormat   string `yaml:"time_format"` // e.g. "2006-02-01 15:04:05"
 	Mock         bool   `yaml:"mock"`        // using mock
 
-	CPUs int `yaml:"cpu"` // GOMAXPROCS, the maximum number of CPUs
 }
 
 func (a *Aa) ParseToConfiguration() {
@@ -40,10 +39,6 @@ func (a *Aa) ParseToConfiguration() {
 
 	mock, _ := a.Config.Get("mock").Bool()
 	a.Configuration.Mock = mock
-
-	// runtime.GOMAXPROCS(0) is same as runtime.GOMAXPROCS(runtime.NumCPU())
-	cpus, _ := a.Config.Get("cpu").Int()
-	a.Configuration.CPUs = cpus
 }
 
 func (c Configuration) Log() {
