@@ -1,9 +1,26 @@
 package util
 
 import (
+	"bytes"
+	"encoding/json"
 	"regexp"
 	"strconv"
 )
+
+type OasBimg struct {
+	//URL    string `json:"url"`
+	Path   string `json:"path"`
+	Width  uint16 `json:"width"`
+	Height uint16 `json:"height"`
+	Size   uint32 `json:"size"`
+}
+type OasBvideo struct {
+	//URL  string `json:"url"`
+	Path   string `json:"path"`
+	Width  uint16 `json:"width"`
+	Height uint16 `json:"height"`
+	Size   uint32 `json:"size"`
+}
 
 type ImagePattern struct {
 	Height      int
@@ -69,4 +86,49 @@ func (p *ImagePattern) EastChinaURL(url string) string {
 		style += strconv.Itoa(p.MaxWidth) + "x0"
 	}
 	return url + "?imageView&thumbnail=" + style
+}
+
+func OasMatchBimgs(content string) string {
+	reg, _ := regexp.Compile(`<img([^>]+)src="[^"]+"([^>]*)>`)
+	dataReg, _ := regexp.Compile(`data-([a-z]+)="([^"]+)"`)
+	matches := reg.FindAllStringSubmatch(content, -1)
+	imgs := make([]OasBimg, len(matches))
+	for i, match := range matches {
+		ni := OasBimg{}
+		data := match[1] + match[2]
+
+		dataMatches := dataReg.FindAllStringSubmatch(data, -1)
+		for _, dm := range dataMatches {
+			switch dm[1] {
+			case "width":
+				w, _ := strconv.Atoi(dm[2])
+				ni.Width = uint16(w)
+			case "height":
+				h, _ := strconv.Atoi(dm[2])
+				ni.Height = uint16(h)
+			case "size":
+				size, _ := strconv.Atoi(dm[2])
+				ni.Size = uint32(size)
+			case "path":
+				ni.Path = dm[2]
+			}
+		}
+		imgs[i] = ni
+	}
+
+	buf := bytes.NewBuffer([]byte{})
+	je := json.NewEncoder(buf)
+	je.SetEscapeHTML(false)
+	je.Encode(imgs)
+
+	return buf.String()
+}
+
+func OasMatchBvideos(content string) string {
+	videos := make([]OasBvideo, 0)
+	buf := bytes.NewBuffer([]byte{})
+	je := json.NewEncoder(buf)
+	je.SetEscapeHTML(false)
+	je.Encode(videos)
+	return buf.String()
 }
