@@ -10,12 +10,12 @@ import (
 
 // ?_stringify=1  weak language, turn all fields into string
 func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
-	xweak, _ := resp.req.Query("_stringify", `^[01]$`, false)
-	if xweak.IsEmpty() || payload == nil {
-		return payload, nil
+	stringify, _ := resp.req.Query("_stringify", `^[01]$`, false)
+	s := stringify.DefaultBool(false)
+	if !s {
+		resp.req.Cookie()
 	}
-	weak, _ := xweak.Bool()
-	if weak {
+	if stringify.DefaultBool(false) {
 		return stringifyPayloadFields(payload, tagname)
 	}
 	return payload, nil
