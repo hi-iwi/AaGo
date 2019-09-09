@@ -2,6 +2,7 @@ package com
 
 import (
 	"reflect"
+	"strconv"
 
 	"github.com/luexu/dtype"
 
@@ -13,7 +14,10 @@ func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (in
 	stringify, _ := resp.req.Query("_stringify", `^[01]$`, false)
 	s := stringify.DefaultBool(false)
 	if !s {
-		resp.req.Cookie()
+		cookie, err := resp.req.Cookie("_stringify")
+		if err == nil {
+			s, _ = strconv.ParseBool(cookie.Value)
+		}
 	}
 	if stringify.DefaultBool(false) {
 		return stringifyPayloadFields(payload, tagname)
