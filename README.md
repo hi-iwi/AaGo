@@ -61,6 +61,7 @@ Application
         + logs
     + tests                     #  测试
 
+    + vendor
     + build
     + base
 
