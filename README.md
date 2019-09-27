@@ -45,7 +45,7 @@ Application
         + gservice
 
     + bootstrap     # 系统启动初始化
-    + conf          # .go 配置文件
+    + conf          # .go 配置文件    conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
     + deploy
         + config      # .ini 配置文件，cert.pem 文件
         + public
@@ -53,7 +53,7 @@ Application
         + views      # 模版文件
 
     + dic           # 放置翻译文件；
-    + enum          # 放常量、枚举
+    + enum          # 放常量、枚举 conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
     + job           # 定时任务/后台任务   cron/daemon     listener 需要后缀为 Listener.go
     + console       # 调试控制台、自定义命令（如Go自动生成文件指令）
     + storage
