@@ -89,13 +89,15 @@ func (p *ImagePattern) EastChinaURL(url string) string {
 }
 
 func OasMatchBimgs(content string) string {
-	reg, _ := regexp.Compile(`<img([^>]+)src="[^"]+"([^>]*)>`)
+	reg, _ := regexp.Compile(`<img([^>]+)data-path="([^"]+)"([^>]*)>`)
 	dataReg, _ := regexp.Compile(`data-([a-z]+)="([^"]+)"`)
 	matches := reg.FindAllStringSubmatch(content, -1)
 	imgs := make([]OasBimg, len(matches))
 	for i, match := range matches {
-		ni := OasBimg{}
-		data := match[1] + match[2]
+		ni := OasBimg{
+			Path: match[2],
+		}
+		data := match[1] + match[3]
 
 		dataMatches := dataReg.FindAllStringSubmatch(data, -1)
 		for _, dm := range dataMatches {
@@ -109,8 +111,6 @@ func OasMatchBimgs(content string) string {
 			case "size":
 				size, _ := strconv.Atoi(dm[2])
 				ni.Size = uint32(size)
-			case "path":
-				ni.Path = dm[2]
 			}
 		}
 		imgs[i] = ni
