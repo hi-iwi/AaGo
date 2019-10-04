@@ -76,6 +76,10 @@ func (p *ImagePattern) OasURL(url string) string {
 }
 
 func (p *ImagePattern) EastChinaURL(url string) string {
+	// 网易图片处理是要收费的，尽量少用处理
+	if p.MaxWidth >= 1400 {
+		return url
+	}
 	style := ""
 	if p.Height > 0 && p.Width > 0 {
 		// y 超出部分要裁剪；enlarge 不足拉伸
