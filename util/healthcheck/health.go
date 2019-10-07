@@ -104,16 +104,16 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 
 func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 
-	tls, _ := s.getConf(name, "tls", false).Bool()
-	scheme := s.getConf(name, "scheme", "tcp").String()
-	host := s.getConf(name, "host").String()
-	db := s.getConf(name, "db").String()
-	user := s.getConf(name, "user").String()
-	password := s.getConf(name, "password").String()
+	tls, _ := s.getConf(name, "mysql_tls", false).Bool()
+	scheme := s.getConf(name, "mysql_scheme", "tcp").String()
+	host := s.getConf(name, "mysql_host").String()
+	db := s.getConf(name, "mysql_db").String()
+	user := s.getConf(name, "mysql_user").String()
+	password := s.getConf(name, "mysql_password").String()
 	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").String())
-	charset := s.getConf(name, "charset", "utf8mb4").String()
+	charset := s.getConf(name, "mysql_charset", "utf8mb4").String()
 
-	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
+	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_mysql_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
 
 	h := MysqlConnHealth{
 		Name:    name,
@@ -121,7 +121,7 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 		Host:    host,
 		Db:      db,
 		TLS:     tls,
-		Timeout: s.getConf(name, "timeout").String(),
+		Timeout: s.getConf(name, "mysql_timeout").String(),
 	}
 
 	ctn := strconv.Itoa(int(ct / time.Millisecond))
