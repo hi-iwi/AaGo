@@ -31,7 +31,7 @@ func NewSqlError(err error) *Error {
 	case sql.ErrTxDone:
 		return NewError(500, "sql tx done: "+m)
 	case sql.ErrNoRows:
-		return NewError(404)
+		return NewError(404, "sql not found")
 	}
 
 	dupExp := regexp.MustCompile(`Error\s\d+:\s+Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)
