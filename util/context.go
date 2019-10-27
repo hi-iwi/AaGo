@@ -3,9 +3,9 @@ package util
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/kataras/iris"
 	"github.com/luexu/alog"
-	"github.com/luexu/randm"
 )
 
 // CoContext a new context for coroutine
@@ -29,7 +29,7 @@ func traceID(cs ...context.Context) string {
 		tid, _ = c.Value(alog.TraceID).(string)
 	}
 	if tid == "" {
-		tid = randm.NewUUID().String()
+		tid = uuid.New().String()
 	}
 	return tid
 }
