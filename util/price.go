@@ -71,13 +71,13 @@ func (p *Price) Sub(b float64) *Price {
 
 func (p *Price) Mul(b float64) *Price {
 	v := (p.value * 100.0) * (b * 100.0)
-	p.value = p.aug(v, 1.0) / 100.0
+	p.value = p.aug(v, 1.0) / 10000.0
 	return p
 }
 
 func (p *Price) Div(b float64) *Price {
-	v := (p.value * 100.0) / (b * 100.0)
-	p.value = p.aug(v, 1.0) / 10000.0
+	v := ((p.value * 100.0) / (b * 100.0)) * 100.0
+	p.value = p.aug(v, 1.0) / 100.0
 	return p
 }
 
