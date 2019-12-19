@@ -15,6 +15,7 @@ type Error struct {
 func NewE(code int) *Error {
 	return NewError(code, dict.Code2Msg(code))
 }
+
 func NewErr(msg string, args ...interface{}) *Error {
 	return NewError(500, fmt.Sprintf(msg, args...))
 }

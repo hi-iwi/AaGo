@@ -249,9 +249,9 @@ func (req *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error
 				maxFormSize = int64(10 << 20) // 10 MB is a lot of json.
 				reader = io.LimitReader(req.r.Body, maxFormSize+1)
 			}
-			b, e := ioutil.ReadAll(req.r.Body)
-			if e != nil {
-				return NewReqProp(param, ""), ae.NewError(500, e)
+			b, err := ioutil.ReadAll(req.r.Body)
+			if err != nil {
+				return NewReqProp(param, ""), ae.NewErr(err.Error())
 			}
 			if int64(len(b)) > maxFormSize {
 				return NewReqProp(param, ""), ae.NewError(413, "Json body is too large")

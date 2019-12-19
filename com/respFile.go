@@ -19,12 +19,12 @@ import (
 
 func (resp *RespStruct) toHTTPError(err error) *ae.Error {
 	if os.IsNotExist(err) {
-		return ae.NewError(404)
+		return ae.NewE(404)
 	}
 	if os.IsPermission(err) {
-		return ae.NewError(403)
+		return ae.NewE(403)
 	}
-	return ae.NewError(500)
+	return ae.NewE(500)
 }
 
 // The algorithm uses at most sniffLen bytes to make its decision.
