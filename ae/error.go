@@ -1,6 +1,7 @@
 package ae
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/luexu/AaGo/dict"
@@ -11,21 +12,17 @@ type Error struct {
 	Msg  string `json:"msg"`
 }
 
-func NewError(code int, msg ...interface{}) *Error {
-	m := ""
-	if len(msg) == 0 {
-		m = dict.Code2Msg(code)
-	} else {
-		if s, ok := msg[0].(string); ok {
-			m = s
-		} else if e, ok := msg[0].(error); ok {
-			m = e.Error()
-		}
-	}
+func NewE(code int) *Error {
+	return NewError(code, dict.Code2Msg(code))
+}
+func NewErr(msg string, args ...interface{}) *Error {
+	return NewError(500, fmt.Sprintf(msg, args...))
+}
 
+func NewError(code int, msg string) *Error {
 	return &Error{
 		Code: code,
-		Msg:  m,
+		Msg:  msg,
 	}
 }
 
