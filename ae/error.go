@@ -28,5 +28,5 @@ func NewError(code int, msg string) *Error {
 }
 
 func (e *Error) Error() string {
-	return "code " + strconv.Itoa(e.Code) + ", msg " + e.Msg
+	return e.Msg + " [" + strconv.Itoa(e.Code) + "]"
 }
