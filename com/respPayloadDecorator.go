@@ -44,7 +44,12 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		p := make(map[string]interface{}, 0)
 		for i := 0; i < t.NumField(); i++ {
 			f := t.Field(i)
-			p[f.Tag.Get(tagname)], e = stringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
+			ks := f.Tag.Get(tagname)
+			// 忽略json/xml 里面的  -
+			if (tagname == "json" || tagname == "xml") && ks == "-" {
+				continue
+			}
+			p[ks], e = stringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}
@@ -53,7 +58,12 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 	} else if k == reflect.Map {
 		p := make(map[string]interface{}, v.Len())
 		for _, key := range v.MapKeys() {
-			p[key.String()], e = stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
+			ks := key.String()
+			// 忽略json/xml 里面的  -
+			if (tagname == "json" || tagname == "xml") && ks == "-" {
+				continue
+			}
+			p[ks], e = stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}

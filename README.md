@@ -54,7 +54,7 @@ Application
 
     + dic           # 放置翻译文件；
     + enum          # 放常量、枚举 conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
-    + job           # 定时任务/后台任务   cron/daemon     listener 需要后缀为 Listener.go
+             # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
     + console       # 调试控制台、自定义命令（如Go自动生成文件指令）
     + storage
         + docs

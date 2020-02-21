@@ -1,8 +1,7 @@
 package com
 
 import (
-	"bytes"
-	"encoding/json"
+	"github.com/luexu/AaGo/util"
 	"net/http"
 	"reflect"
 	"runtime"
@@ -245,13 +244,10 @@ func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 	HideServerErr(resp.ictx, &cs, resp.req)
 
 	// json Marshal 不转译 HTML 字符
-	buf := bytes.NewBuffer([]byte{})
-	je := json.NewEncoder(buf)
-	je.SetEscapeHTML(false)
-	if err := je.Encode(cs); err != nil {
+	b, err := util.JsonString(cs)
+	if err != nil {
 		return err
 	}
-	b := buf.Bytes()
 
 	for _, mw := range afterSerialize {
 		b = mw(b)
