@@ -191,6 +191,50 @@ func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 
 	return 0, nil
 }
+func (resp *RespStruct) WriteOK() error {
+	cs := RespContentDTO{
+		Code: 200,
+		Msg:  "OK",
+	}
+	return resp.write(cs)
+}
+func (resp *RespStruct) WriteE(e ae.Error) error {
+	cs := RespContentDTO{
+		Code: e.Code,
+		Msg:  e.Msg,
+	}
+	return resp.write(cs)
+}
+func (resp *RespStruct) WriteError(err error) error {
+	cs := RespContentDTO{
+		Code: 500,
+		Msg:  err.Error(),
+	}
+	return resp.write(cs)
+}
+
+func (resp *RespStruct) WriteErr(code int, msg string) error {
+	cs := RespContentDTO{
+		Code: code,
+		Msg:  msg,
+	}
+	return resp.write(cs)
+}
+func (resp *RespStruct) WriteCode(code int) error {
+	cs := RespContentDTO{
+		Code: code,
+		Msg:  dict.Code2Msg(code),
+	}
+	return resp.write(cs)
+}
+
+func (resp *RespStruct) WriteErrMsg(msg string) error {
+	cs := RespContentDTO{
+		Code: 500,
+		Msg:  msg,
+	}
+	return resp.write(cs)
+}
 
 /*
 Write(404)
@@ -233,6 +277,11 @@ func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 			cs.Payload = payload
 		}
 	}
+
+	return resp.write(cs)
+}
+
+func (resp *RespStruct) write(cs RespContentDTO) error {
 
 	for _, mw := range beforeSerialize {
 		mw(&cs)
