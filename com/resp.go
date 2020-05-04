@@ -198,7 +198,14 @@ func (resp *RespStruct) WriteOK() error {
 	}
 	return resp.write(cs)
 }
-func (resp *RespStruct) WriteE(e ae.Error) error {
+func (resp *RespStruct) WriteE(e *ae.Error) error {
+	if e != nil {
+		return resp.WriteSafeE(*e)
+	}
+	return resp.Write(200)
+}
+
+func (resp *RespStruct) WriteSafeE(e ae.Error) error {
 	cs := RespContentDTO{
 		Code: e.Code,
 		Msg:  e.Msg,
