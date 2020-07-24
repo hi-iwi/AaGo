@@ -13,7 +13,7 @@ type Yaml struct {
 	data map[interface{}]interface{}
 }
 
-func (a *Aa) ParseYml(filename string) error {
+func (app *Aa) ParseYml(filename string) error {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
@@ -23,9 +23,9 @@ func (a *Aa) ParseYml(filename string) error {
 	if err := yaml.Unmarshal(data, &conf.data); err != nil {
 		return err
 	}
-	a.mu.Lock()
-	a.Config = conf
-	a.mu.Unlock()
+	app.mu.Lock()
+	app.Config = conf
+	app.mu.Unlock()
 	return nil
 }
 

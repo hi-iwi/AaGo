@@ -19,26 +19,26 @@ type Configuration struct {
 
 }
 
-func (a *Aa) ParseToConfiguration() {
-	a.mu.Lock()
-	defer a.mu.Unlock()
+func (app *Aa) ParseToConfiguration() {
+	app.mu.Lock()
+	defer app.mu.Unlock()
 
-	a.Configuration.Service = a.Config.Get("service").String()
-	a.Configuration.ServerID = a.Config.Get("server_id").String()
-	a.Configuration.Env = a.Config.Get("env").String()
+	app.Configuration.Service = app.Config.Get("service").String()
+	app.Configuration.ServerID = app.Config.Get("server_id").String()
+	app.Configuration.Env = app.Config.Get("env").String()
 
-	if tz := a.Config.Get("timezone_id").String(); tz != "" {
+	if tz := app.Config.Get("timezone_id").String(); tz != "" {
 		loc, err := time.LoadLocation(tz)
 		if err != nil {
 			log.Println("invalid timezone: " + tz + ", error: " + err.Error())
 		} else {
-			a.Configuration.TimezoneID = tz
-			a.Configuration.TimeLocation = loc
+			app.Configuration.TimezoneID = tz
+			app.Configuration.TimeLocation = loc
 		}
 	}
 
-	mock, _ := a.Config.Get("mock").Bool()
-	a.Configuration.Mock = mock
+	mock, _ := app.Config.Get("mock").Bool()
+	app.Configuration.Mock = mock
 }
 
 func (c Configuration) Log() {

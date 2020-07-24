@@ -8,8 +8,8 @@ import (
 )
 
 type Aa struct {
-	mu   sync.Mutex
-	once sync.Once
+	mu sync.Mutex
+	//once sync.Once
 	// self imported configurations, e.g. parsed from ini
 	Config Config
 	// system configuration

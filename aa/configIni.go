@@ -13,16 +13,16 @@ type Ini struct {
 	data *ini.File
 }
 
-func (a *Aa) ParseIni(filename string) error {
+func (app *Aa) ParseIni(filename string) error {
 	c, err := ini.Load(filename)
 	if err != nil {
 		return err
 	}
 	var conf = &Ini{data: c}
 
-	a.mu.Lock()
-	a.Config = conf
-	a.mu.Unlock()
+	app.mu.Lock()
+	app.Config = conf
+	app.mu.Unlock()
 	return nil
 }
 

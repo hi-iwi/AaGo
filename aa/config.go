@@ -34,7 +34,7 @@ func parseToDuration(d string) time.Duration {
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
 // 10s, 1000ms
-func (a *Aa) ParseTimeout(key string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
+func (app *Aa) ParseTimeout(key string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
 	for i, t := range defaultTimeouts {
 		switch i {
 		case 0:
@@ -48,7 +48,7 @@ func (a *Aa) ParseTimeout(key string, defaultTimeouts ...time.Duration) (conn ti
 		}
 	}
 
-	ts := strings.Split(strings.Replace(a.Config.Get(key).String(), " ", "", -1), ",")
+	ts := strings.Split(strings.Replace(app.Config.Get(key).String(), " ", "", -1), ",")
 	for i, t := range ts {
 		switch i {
 		case 0:
@@ -88,10 +88,10 @@ func parseDefaultValue(vs ...interface{}) interface{} {
 	return ""
 }
 
-func (a *Aa) ParseConfig(filename string) error {
+func (app *Aa) ParseConfig(filename string) error {
 	switch path.Ext(filename) {
 	case ".ini":
-		a.ParseIni(filename)
+		app.ParseIni(filename)
 		// case ".yml", ".yaml":
 		// 	a.ParseYml(filename)
 	}
@@ -102,6 +102,6 @@ func (a *Aa) ParseConfig(filename string) error {
 	// }
 	// a.mu.Unlock()
 
-	a.ParseToConfiguration()
+	app.ParseToConfiguration()
 	return nil
 }
