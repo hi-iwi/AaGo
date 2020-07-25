@@ -9,6 +9,7 @@ import (
 )
 
 type Configuration struct {
+	SID          string // service + ':' + service id, e.g. user01:12
 	Service      string `yaml:"service"`
 	ServerID     string `yaml:"server_id"`
 	Env          string `yaml:"env"`         // dev test preprod product
@@ -22,9 +23,11 @@ type Configuration struct {
 func (app *Aa) ParseToConfiguration() {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-
-	app.Configuration.Service = app.Config.Get("service").String()
-	app.Configuration.ServerID = app.Config.Get("server_id").String()
+	svc := app.Config.Get("service").String()
+	serverID := app.Config.Get("server_id").String()
+	app.Configuration.Service = svc
+	app.Configuration.ServerID = serverID
+	app.Configuration.SID = svc + ":" + serverID
 	app.Configuration.Env = app.Config.Get("env").String()
 
 	if tz := app.Config.Get("timezone_id").String(); tz != "" {

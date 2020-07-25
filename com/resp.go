@@ -1,6 +1,7 @@
 package com
 
 import (
+	"github.com/luexu/AaGo/aa"
 	"github.com/luexu/AaGo/util"
 	"net/http"
 	"reflect"
@@ -40,11 +41,12 @@ var (
 
 func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 	if cs.Code >= 500 {
+		ctx := aa.Context(ictx)
 		cs.Msg = dict.Code2Msg(cs.Code)
 
 		_, file, line, _ := runtime.Caller(1)
 		a := strings.Split(file, "/")
-		Log.Error(ictx, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, cs.Msg)
+		Log.Error(ctx, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, cs.Msg)
 	}
 }
 
