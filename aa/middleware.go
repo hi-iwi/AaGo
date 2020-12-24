@@ -10,8 +10,8 @@ const TraceIdKey = "aa_trace_id"
 
 // tracePrefix should be captialized
 func (app *Aa) IrisMiddleware(ictx iris.Context) {
-	defer ictx.Next()                    // 这个是必须要存在的！！！
-	tracePrefix := app.Configuration.SID //  e.g. user_0:1
+	defer ictx.Next() // 这个是必须要存在的！！！
+	tracePrefix := app.Configuration.Service
 	traceId := ictx.GetHeader("X-Request-ID")
 	if traceId == "" {
 		traceId = tracePrefix + ":" + uuid.New().String()
