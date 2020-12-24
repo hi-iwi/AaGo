@@ -21,20 +21,25 @@ AaGo
 
 Application
     + app
-        + cache                         # 缓存
-        + module                        # 提高微服务特性，module仅用于区分客户端、服务端、CMS端
-            + ss                        # Service/Server 对服务端的接口
-            + cms                       # 管理后台
-            + bs                        # B/S架构，Browser/Server
-                + controller
-                + dto                   # 对外开放的
-                + model
-                + vc                    # view controller
-        + entity
+        + app_name
+            + cache                         # 缓存
+            + dic           # 放置翻译文件；   
+            + enum              APP 内enum  # 放常量、枚举 conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
+                                                       # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
+            + module                        # 提高微服务特性，module仅用于区分客户端、服务端、CMS端
+                + ss                        # Service/Server 对服务端的接口
+                + cms                       # 管理后台
+                + bs                        # B/S架构，Browser/Server
+                    + controller
+                    + dto                   # 对外开放的
+                    + model
+                    + vc                    # view controller
+            + entity
+            + service
         + register
         + router
             + middleware
-        + service
+        + lservice    不同app间，service
         + rservice                  # remote service 其他远程服务或第三方服务（如微信、支付宝）
             + rpci                  # rpc interface ，对内提供的
 
@@ -45,6 +50,7 @@ Application
         + gservice
 
     + bootstrap     # 系统启动初始化
+         + console       # 调试控制台、自定义命令（如Go自动生成文件指令）
     + conf          # .go 配置文件    conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
     + deploy
         + config      # .ini 配置文件，cert.pem 文件
@@ -52,10 +58,8 @@ Application
             + asset
         + views      # 模版文件
 
-    + dic           # 放置翻译文件；
-    + enum          # 放常量、枚举 conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
-             # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
-    + console       # 调试控制台、自定义命令（如Go自动生成文件指令）
+
+   
     + storage
         + docs
         + logs
