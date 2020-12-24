@@ -20,26 +20,35 @@ type Configuration struct {
 
 }
 
+const (
+	CkEnv        = "env"
+	CkService    = "service"
+	CkTimezoneID = "timezone_id"
+	CkTimeFormat = "time_format"
+	CkMock       = "mock"
+)
+
 func (app *Aa) ParseToConfiguration() {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	app.Configuration.Env = app.Config.Get("env").String()
-	app.Configuration.Service = app.Config.Get("service").String()
+	app.Configuration.Env = app.Config.Get(CkEnv).String()
+	app.Configuration.Service = app.Config.Get(CkService).String()
+	app.Configuration.TimeFormat = app.Config.Get(CkTimeFormat).String()
 	//serverID := app.Config.Get("server_id").String()
 	//app.Configuration.ServerID = serverID
 	//app.Configuration.SID = svc + ":" + serverID
 
-	if tz := app.Config.Get("timezone_id").String(); tz != "" {
+	if tz := app.Config.Get(CkTimezoneID).String(); tz != "" {
 		loc, err := time.LoadLocation(tz)
 		if err != nil {
-			log.Println("invalid timezone: " + tz + ", error: " + err.Error())
+			panic("invalid timezone: " + tz + ", error: " + err.Error())
 		} else {
 			app.Configuration.TimezoneID = tz
 			app.Configuration.TimeLocation = loc
 		}
 	}
 
-	mock, _ := app.Config.Get("mock").Bool()
+	mock, _ := app.Config.Get(CkMock).Bool()
 	app.Configuration.Mock = mock
 }
 
