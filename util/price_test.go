@@ -3,7 +3,7 @@ package util_test
 import (
 	"testing"
 
-	"github.com/luexu/AaGo/util"
+	"github.com/hi-iwi/AaGo/util"
 )
 
 func TestPrice(t *testing.T) {

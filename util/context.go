@@ -21,7 +21,7 @@ package util
 //		tid, _ = c.Value(alog.TraceID).(string)
 //	}
 //	if tid == "" {
-//		tid = uuid.New().String()
+//		tid = uuid.New().Name()
 //	}
 //	return tid
 //}

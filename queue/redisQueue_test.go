@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luexu/AaGo/queue"
+	"github.com/hi-iwi/AaGo/queue"
 )
 
 func TestRedisQueue(t *testing.T) {

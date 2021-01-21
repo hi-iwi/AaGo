@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/luexu/dtype"
+	"github.com/hi-iwi/dtype"
 
-	"github.com/luexu/AaGo/ae"
+	"github.com/hi-iwi/AaGo/ae"
 )
 
 // ?_stringify=1  weak language, turn all fields into string

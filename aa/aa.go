@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luexu/alog"
+	"github.com/hi-iwi/alog"
 )
 
 type Aa struct {

@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"github.com/luexu/dtype"
+	"github.com/hi-iwi/dtype"
 	"gopkg.in/yaml.v2"
 )
 

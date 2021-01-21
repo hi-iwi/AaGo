@@ -1,7 +1,7 @@
 package com
 
 import (
-	"github.com/luexu/AaGo/ae"
+	"github.com/hi-iwi/AaGo/ae"
 )
 
 func (resp *RespStruct) handlePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {

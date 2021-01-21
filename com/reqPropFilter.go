@@ -3,8 +3,8 @@ package com
 import (
 	"regexp"
 
-	"github.com/luexu/AaGo/ae"
-	"github.com/luexu/dtype"
+	"github.com/hi-iwi/AaGo/ae"
+	"github.com/hi-iwi/dtype"
 )
 
 /*

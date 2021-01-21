@@ -3,7 +3,7 @@ package com_test
 import (
 	"testing"
 
-	"github.com/luexu/AaGo/com"
+	"github.com/hi-iwi/AaGo/com"
 )
 
 func TestReqPropFilter(t *testing.T) {

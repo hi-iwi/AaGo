@@ -1,6 +1,6 @@
 package adto
 
-import "github.com/luexu/AaGo/com"
+import "github.com/hi-iwi/AaGo/com"
 
 type Paging struct {
 	Page   int `alias:"page"`

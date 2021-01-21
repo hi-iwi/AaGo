@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/luexu/AaGo/ae"
+	"github.com/hi-iwi/AaGo/ae"
 )
 
 func (resp *RespStruct) toHTTPError(err error) *ae.Error {

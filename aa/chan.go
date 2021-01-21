@@ -1,6 +1,6 @@
 package aa
 
-import "github.com/luexu/aenum"
+import "github.com/hi-iwi/aenum"
 
 type StringChanEle struct {
 	Qos     aenum.Qos

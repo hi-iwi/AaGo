@@ -5,11 +5,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/luexu/AaGo/util"
+	"github.com/hi-iwi/AaGo/util"
 )
 
 type Configuration struct {
-	//SID          string // service + ':' + service id, e.g. user01:12
+	//VID          string // service + ':' + service id, e.g. user01:12
 	Service string `yaml:"service"`
 	//ServerID     string `yaml:"server_id"`
 	Env          string `yaml:"env"`         // dev test preprod product
@@ -34,9 +34,9 @@ func (app *Aa) ParseToConfiguration() {
 	app.Configuration.Env = app.Config.Get(CkEnv).String()
 	app.Configuration.Service = app.Config.Get(CkService).String()
 	app.Configuration.TimeFormat = app.Config.Get(CkTimeFormat).String()
-	//serverID := app.Config.Get("server_id").String()
+	//serverID := app.Config.Get("server_id").Name()
 	//app.Configuration.ServerID = serverID
-	//app.Configuration.SID = svc + ":" + serverID
+	//app.Configuration.VID = svc + ":" + serverID
 
 	if tz := app.Config.Get(CkTimezoneID).String(); tz != "" {
 		loc, err := time.LoadLocation(tz)
@@ -53,7 +53,7 @@ func (app *Aa) ParseToConfiguration() {
 }
 
 func (c Configuration) Log() {
-	msg := fmt.Sprintf("service %s has started! env: %s timezone_id: %s mock: %v git_ver: %s", c.Service, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
+	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Service, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
 	fmt.Println(msg)
 }

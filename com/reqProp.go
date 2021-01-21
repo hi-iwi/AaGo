@@ -1,6 +1,6 @@
 package com
 
-import "github.com/luexu/dtype"
+import "github.com/hi-iwi/dtype"
 
 type ReqProp struct {
 	dtype.Dtype

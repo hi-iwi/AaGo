@@ -1,8 +1,8 @@
 package com
 
 import (
-	"github.com/luexu/AaGo/aa"
-	"github.com/luexu/AaGo/util"
+	"github.com/hi-iwi/AaGo/aa"
+	"github.com/hi-iwi/AaGo/util"
 	"net/http"
 	"reflect"
 	"runtime"
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/hi-iwi/AaGo/ae"
+	"github.com/hi-iwi/AaGo/dict"
+	"github.com/hi-iwi/dtype"
 	"github.com/kataras/iris"
-	"github.com/luexu/AaGo/ae"
-	"github.com/luexu/AaGo/dict"
-	"github.com/luexu/dtype"
 )
 
 type RespStruct struct {

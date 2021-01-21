@@ -10,8 +10,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gomodule/redigo/redis"
-	"github.com/luexu/AaGo/aa"
-	"github.com/luexu/dtype"
+	"github.com/hi-iwi/AaGo/aa"
+	"github.com/hi-iwi/dtype"
 	"github.com/streadway/amqp"
 )
 
@@ -110,7 +110,7 @@ func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
 	db := s.getConf(name, "mysql_db").String()
 	user := s.getConf(name, "mysql_user").String()
 	password := s.getConf(name, "mysql_password").String()
-	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").String())
+	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").Name())
 	charset := s.getConf(name, "mysql_charset", "utf8mb4").String()
 
 	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_mysql_timeout", 3*time.Second, 3*time.Second, 3*time.Second)

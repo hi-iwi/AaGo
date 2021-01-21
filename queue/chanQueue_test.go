@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luexu/AaGo/queue"
+	"github.com/hi-iwi/AaGo/queue"
 )
 
 func TestChanQueue(t *testing.T) {

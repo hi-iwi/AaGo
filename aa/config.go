@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/luexu/dtype"
+	"github.com/hi-iwi/dtype"
 )
 
 type Config interface {
@@ -34,7 +34,7 @@ func parseToDuration(d string) time.Duration {
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
 // 10s, 1000ms
-func (app *Aa) ParseTimeout(key string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
+func (app *Aa) ParseTimeout(t string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
 	for i, t := range defaultTimeouts {
 		switch i {
 		case 0:
@@ -48,7 +48,7 @@ func (app *Aa) ParseTimeout(key string, defaultTimeouts ...time.Duration) (conn 
 		}
 	}
 
-	ts := strings.Split(strings.Replace(app.Config.Get(key).String(), " ", "", -1), ",")
+	ts := strings.Split(strings.Replace(t, " ", "", -1), ",")
 	for i, t := range ts {
 		switch i {
 		case 0:

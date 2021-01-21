@@ -45,13 +45,13 @@ goGetLuexu() {
     if [ "$1" == "update" ]; then
         update=1
     fi
-    l="${GOPATH}/src/github.com/luexu"
+    l="${GOPATH}/src/github.com/hi-iwi"
     cd $l
     for repo in $LuexuRepos; do
         if [ $update -eq 1 ]; then
-            go get -u -v "github.com/luexu/${repo}"
+            go get -u -v "github.com/hi-iwi/${repo}"
         else
-            go get -v "github.com/luexu/${repo}"
+            go get -v "github.com/hi-iwi/${repo}"
         fi
     done
 }
@@ -76,7 +76,7 @@ goGet() {
     fi
 
     # Luexu 的一律放到$GOPATH下共用
-    if [ $isInGoPath -eq 0 -a "${repo:0:17}" != "github.com/luexu/" ]; then 
+    if [ $isInGoPath -eq 0 -a "${repo:0:17}" != "github.com/hi-iwi/" ]; then
         GOPATH="${p}/vendor"
     fi
 

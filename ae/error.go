@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/luexu/AaGo/dict"
+	"github.com/hi-iwi/AaGo/dict"
 )
 
 type Error struct {

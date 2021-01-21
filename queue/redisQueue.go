@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/luexu/AaGo/cnf"
+	"github.com/hi-iwi/AaGo/cnf"
 )
 
 type redisQueue struct {

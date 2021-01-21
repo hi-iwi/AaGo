@@ -2,7 +2,20 @@
 
 ## 建议的项目文件夹结构
 
-```txt
+### 服务调用
+* rservice  不能调用任何其他service, model/entity
+* service   可以调用 rservice, aservice, 所有 mservice，不能调用 model/entity
+* aservice  可以调用 rservice, 所有 model/entity
+* mservice  可以调用 rservice, aservice, 所有 model/entity
+* sdk       临时mservice之间调用，未来方便修改成RPC调用
+
+> service 是不能调用 DTO 的，只有 controller 可以调用
+> aservice, service,  都是 service，只是调用关系不同。 与 iris, model 关系紧密的，优先用 aservice；否则尽量用 service
+> rservice 仅用于远程调用或调用第三方
+
+### 文件结构
+```text
+
 AaGo
     + aa
     + adto
@@ -33,7 +46,10 @@ Application
                     + controller
                     + dto                   # 对外开放的
                     + model
-                    + vc                    # view controller
+                    + pad                    # pad view
+                    + pc                     + pc view
+                    + phone                  # phone view
+                    
             + entity
             + service
         + register
