@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 type Req struct {

@@ -3,7 +3,7 @@ package com
 import (
 	"context"
 	"github.com/hi-iwi/AaGo/aa"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 func ReqResp(ictx iris.Context, respType ...string) (*Req, *RespStruct, context.Context) {

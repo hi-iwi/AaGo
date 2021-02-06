@@ -13,7 +13,7 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/dict"
 	"github.com/hi-iwi/dtype"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 type RespStruct struct {

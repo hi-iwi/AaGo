@@ -3,7 +3,7 @@ package aa
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 const TraceIdKey = "aa_trace_id"
