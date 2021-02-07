@@ -44,12 +44,14 @@ Application
                 + cms                       # 管理后台
                 + bs                        # B/S架构，Browser/Server
                     + controller
-                    + dto                   # 对外开放的
+                        + dto                   # 对外开放的
                     + model
                     + pad                    # pad view
+                        + dto                   # 对外开放的
                     + pc                     + pc view
+                        + dto                   # 对外开放的
                     + phone                  # phone view
-                    
+                        + dto                   # 对外开放的
             + entity
             + service
         + register
