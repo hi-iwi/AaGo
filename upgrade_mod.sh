@@ -5,7 +5,15 @@
 readonly root='/data/Aa/proj/go/src/github.com/hi-iwi'
 readonly comment="${1:-'NO_COMMENT'}"
 pushAndUpgradeMod(){
-  cd $root'/'$1 || exit
+  echo "upgrading $1 ..."
+  cd "$root/$1" || exit
+
+  sed -i '/github\.com\/hi-iwi\/aenum/d' go.mod
+  sed -i '/github\.com\/hi-iwi\/code/d' go.mod
+  sed -i '/github\.com\/hi-iwi\/dtype/d' go.mod
+  sed -i '/github\.com\/hi-iwi\/AaGo/d' go.mod
+  sed -i '/github\.com\/hi-iwi\/aorm/d' go.mod
+
   go get -u
   git add -A .
   git commit -m "$comment"
@@ -15,6 +23,7 @@ pushAndUpgradeMod(){
 
 pushAndUpgradeMod 'aenum'
 pushAndUpgradeMod 'code'
+
 pushAndUpgradeMod 'dtype'
 pushAndUpgradeMod 'AaGo'  # 依赖 dtype
 pushAndUpgradeMod 'aorm'  # 依赖 AaGo
