@@ -20,7 +20,7 @@ pushAndUpgradeMod(){
 #  sed -i '/github\.com\/hi-iwi\/aorm/d' go.sum
 
   rm -f go.mod go.sum
-  
+  go mod init
   go get -u
   git add -A .
   git commit -m "$comment"
