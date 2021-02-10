@@ -3,8 +3,6 @@ package aa
 import (
 	"sync"
 	"time"
-
-	"github.com/hi-iwi/alog"
 )
 
 type Aa struct {
@@ -14,13 +12,13 @@ type Aa struct {
 	Config Config
 	// system configuration
 	Configuration Configuration
-	Log           alog.Log
+	Log            Log
 }
 
 func New() *Aa {
 	zone, _ := time.Now().Zone()
 	aa := &Aa{
-		Log: alog.NewXlog(),
+		Log: NewDefaultLog(),
 		Configuration: Configuration{
 			TimezoneID:   zone,
 			TimeLocation: time.Local,
