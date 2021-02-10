@@ -7,9 +7,8 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gomodule/redigo v1.8.3
 	github.com/google/uuid v1.2.0
-	github.com/hi-iwi/aenum v0.0.0-20210210174020-a912626d35e1
-	github.com/hi-iwi/aorm v0.0.0-20210210174103-17c55090cf8f // indirect
-	github.com/hi-iwi/code v0.0.0-20210210174031-6dfeac92e430 // indirect
+	github.com/hi-iwi/aenum v0.0.0-20210210180823-9f72b024cc5a
+	github.com/hi-iwi/code v0.0.0-20210210180909-fbe9401d943f // indirect
 	github.com/hi-iwi/dtype v0.0.0-20210210174041-6c857e53c558
 	github.com/iris-contrib/jade v1.1.4 // indirect
 	github.com/iris-contrib/schema v0.0.6 // indirect
