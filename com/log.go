@@ -1,5 +1,7 @@
 package com
 
-import "github.com/hi-iwi/alog"
+import (
+	"github.com/hi-iwi/AaGo/aa"
+ )
 
-var Log = alog.NewXlog()
+var Log = aa.NewDefaultLog()

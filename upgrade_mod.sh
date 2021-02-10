@@ -19,9 +19,18 @@ pushAndUpgradeMod(){
 #  sed -i '/github\.com\/hi-iwi\/aorm/d' go.mod
 #  sed -i '/github\.com\/hi-iwi\/aorm/d' go.sum
 
-  rm -f go.mod go.sum
+
+  rm -f go.mod
   go mod init
-  go get -u
+
+  # 私有库问题
+  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/aenum
+  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/code
+  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/dtype
+  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/AaGo
+  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/aorm
+
+  go get -u ./...
   git add -A .
   git commit -m "$comment"
   git push origin master
