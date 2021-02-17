@@ -36,7 +36,7 @@ func NewHealth(app *aa.Aa) *health {
 				TimezoneID:     app.Configuration.TimezoneID,
 				TimezoneOffset: offset,
 				Service:        app.Config.Get("service").String(),
-				ServerID:       app.Config.Get("server_id").String(),
+				ServerID:       "",
 			},
 		}
 	})
