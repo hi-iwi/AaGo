@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hi-iwi/dtype"
+	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/ini.v1"
 )
 

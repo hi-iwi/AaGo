@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/hi-iwi/dtype"
+	"github.com/hi-iwi/AaGo/dtype"
 
 	"github.com/hi-iwi/AaGo/ae"
 )

@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/dtype"
+	"github.com/hi-iwi/AaGo/dtype"
 )
 
 /*

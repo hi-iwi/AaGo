@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hi-iwi/dtype"
+	"github.com/hi-iwi/AaGo/dtype"
 )
 
 type Config interface {

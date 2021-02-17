@@ -24,11 +24,8 @@ pushAndUpgradeMod(){
   go mod init
 
   # 私有库问题
-  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/aenum
-  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/code
-  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/dtype
   env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/AaGo
-  env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/aorm
+
 
   go get -u ./...
   git add -A .
@@ -37,11 +34,7 @@ pushAndUpgradeMod(){
 }
 
 
-pushAndUpgradeMod 'aenum'
-pushAndUpgradeMod 'code'
-
-pushAndUpgradeMod 'dtype'
 pushAndUpgradeMod 'AaGo'  # 依赖 dtype
-pushAndUpgradeMod 'aorm'  # 依赖 AaGo
+
 
 

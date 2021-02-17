@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"github.com/hi-iwi/dtype"
+	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/yaml.v2"
 )
 

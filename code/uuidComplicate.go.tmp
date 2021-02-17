@@ -1,0 +1,92 @@
+package code
+
+import (
+	"sync"
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type UUID struct {
+	SeqGenerator func() uint64 // suggest Redis incr
+	mtx          sync.Mutex
+}
+
+var (
+	defaultSeq   uint64
+	uuidInstance *UUID
+	uuidOnce     sync.Once
+)
+
+func NewUUID() *UUID {
+	uuidOnce.Do(func() {
+		uuidInstance = &UUID{
+			SeqGenerator: defaultSeqGenerator,
+		}
+	})
+	return uuidInstance
+}
+
+// Uint64 shard 根据用户UID分片，如shard = UID % 2000
+func (u *UUID) Uint64(shard int) uint64 {
+	now := (time.Now().UnixNano() - epoch().UnixNano()) / int64(time.Millisecond)
+	seq := u.SeqGenerator()
+	if seq == uint64(0) {
+		seq = defaultSeqGenerator()
+	}
+
+	if shard == 0 {
+		shard = int(now % int64(8191))
+	}
+
+	id := uint64(now) << (64 - 41)
+
+	// 13bit: 0~8191
+	id |= uint64(shard%8191) << (64 - 41 - 13)
+
+	// 10 bit: 0~1024
+	id |= seq % 1024
+
+	return id
+}
+
+func (u *UUID) Uint64Medium(shard int) uint64 {
+	now := time.Now().Unix() - epoch().Unix()
+	seq := u.SeqGenerator()
+	if seq == uint64(0) {
+		seq = defaultSeqGenerator()
+	}
+
+	if shard == 0 {
+		shard = int(now % int64(8191))
+	}
+
+	id := uint64(now) << (64 - 51)
+
+	// 3bit: 0~7
+	id |= uint64(shard%7) << (64 - 51 - 3)
+
+	// 10 bit: 0~1024
+	id |= seq % 1024
+	return id
+}
+
+// Uint64Short 支持1秒钟并发1024
+func (u *UUID) Uint64Short() uint64 {
+	now := time.Now().Unix() - epoch().Unix()
+	seq := u.SeqGenerator()
+	if seq == uint64(0) {
+		seq = defaultSeqGenerator()
+	}
+
+	id := uint64(now) << (64 - 54)
+
+	// 10 bit : 0~1024
+	id |= seq % 1024
+
+	return id
+}
+
+func (u *UUID) String() string {
+	return uuid.New().String()
+}

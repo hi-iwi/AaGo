@@ -3,6 +3,7 @@ package com
 import (
 	"errors"
 	"fmt"
+	"github.com/hi-iwi/AaGo/ae"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -14,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hi-iwi/AaGo/ae"
+
 )
 
 func (resp *RespStruct) toHTTPError(err error) *ae.Error {

@@ -11,7 +11,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gomodule/redigo/redis"
 	"github.com/hi-iwi/AaGo/aa"
-	"github.com/hi-iwi/dtype"
+	"github.com/hi-iwi/AaGo/dtype"
 	"github.com/streadway/amqp"
 )
 

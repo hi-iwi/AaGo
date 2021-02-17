@@ -3,7 +3,7 @@
 # Go 必须要开启支持 vendor 功能
 
 
-readonly LuexuRepos="AaGo aenum dtype aorm aamqp randm alog godlock"
+readonly LuexuRepos="AaGo"
 
 initProject() {
     dir="$1"

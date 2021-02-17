@@ -41,7 +41,7 @@ Application
                                                        # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
             + module                        # 提高微服务特性，module仅用于区分客户端、服务端、CMS端
                 + ss                        # Service/Server 对服务端的接口
-                + cms                       # 管理后台
+                + cns                       # 控制台 console navigation system
                 + bs                        # B/S架构，Browser/Server
                     + controller
                         + dto                   # 对外开放的
