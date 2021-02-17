@@ -35,8 +35,7 @@ func NewHealth(app *aa.Aa) *health {
 			h: Health{
 				TimezoneID:     app.Configuration.TimezoneID,
 				TimezoneOffset: offset,
-				Service:        app.Config.Get("service").String(),
-				ServerID:       "",
+				Name:           app.Config.Get("name").String(),
 			},
 		}
 	})
@@ -68,7 +67,6 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 	tls, _ := s.getConf(name, "tls", false).Bool()
 	scheme := s.getConf(name, "scheme", "tcp").String()
 	host := s.getConf(name, "host").String()
-	db := s.getConf(name, "db", "0").String()
 	auth := s.getConf(name, "auth").String()
 
 	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
@@ -77,7 +75,7 @@ func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
 		Name:    name,
 		Scheme:  scheme,
 		Host:    host,
-		Db:      db,
+		Db:      name,
 		TLS:     tls,
 		Timeout: s.getConf(name, "timeout").String(),
 	}
