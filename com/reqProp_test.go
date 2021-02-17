@@ -6,9 +6,19 @@ import (
 	"github.com/hi-iwi/AaGo/com"
 )
 
+func TestSetRegExp(t *testing.T) {
+	type vt uint
+	var a, b vt
+	a = 100
+	b = 200
+	exp := com.UintsRegExp(a, b)
+	if exp != "^(100|200)$" {
+		t.Error("Uint64RegExp error: " + exp)
+	}
+}
 func TestReqPropFilter(t *testing.T) {
 	p := com.NewReqProp("test", "Aario")
-	if !p.NotEmpty() {
+	if p.IsEmpty() {
 		t.Error("test='Aario' should be not empty")
 	}
 	t.Log("string('Aario') ==> ", p.String())

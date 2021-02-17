@@ -26,7 +26,11 @@ func (p *ReqProp) Default(v interface{}) {
 func UintsRegExp(set ...interface{}) string {
 	elems := make([]string, len(set))
 	for i, v := range set {
-		elems[i] = strconv.FormatUint(v.(uint64), 10)
+		w, err := dtype.Uint64(v)
+		if err != nil {
+			continue
+		}
+		elems[i] = strconv.FormatUint(w, 10)
 	}
 	s := strings.Join(elems, "|")
 	return "^(" + s + ")$"
@@ -34,7 +38,11 @@ func UintsRegExp(set ...interface{}) string {
 func IntsRegExp(set ...interface{}) string {
 	elems := make([]string, len(set))
 	for i, v := range set {
-		elems[i] = strconv.FormatInt(v.(int64), 10)
+		w, err := dtype.Int64(v)
+		if err != nil {
+			continue
+		}
+		elems[i] = strconv.FormatInt(w, 10)
 	}
 	s := strings.Join(elems, "|")
 	return "^(" + s + ")$"
@@ -44,7 +52,7 @@ func StringsRegExp(set ...interface{}) string {
 
 	elems := make([]string, len(set))
 	for i, v := range set {
-		elems[i] = v.(string)
+		elems[i] = dtype.String(v)
 	}
 	s := strings.Join(elems, "|")
 	return "^(" + s + ")$"
