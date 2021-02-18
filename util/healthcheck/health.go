@@ -62,21 +62,21 @@ func (s *health) getConf(name string, suffix string, defaultValue ...interface{}
 }
 
 func (s *health) CheckRedis(name string) (h RedisConnHealth, err error) {
-	var c redis.Conn
+	var conn redis.Conn
 	f := s.app.RedisConfig(name)
 	h.Config = f
-	c, err = redis.Dial("tcp", f.Host, redis.DialConnectTimeout(f.ConnTimeout), redis.DialReadTimeout(f.ReadTimeout), redis.DialWriteTimeout(f.WriteTimeout))
+	conn, err = redis.Dial("tcp", f.Host, redis.DialConnectTimeout(f.ConnTimeout), redis.DialReadTimeout(f.ReadTimeout), redis.DialWriteTimeout(f.WriteTimeout))
 	if err != nil {
 		h.ErrMsg = "redis dial error: " + err.Error()
 		return
 	}
-	defer c.Close()
+	defer conn.Close()
 
 	if f.Auth != "" {
-		c.Do("auth", f.Auth)
+		conn.Do("auth", f.Auth)
 	}
-
-	if _, err := redis.String(c.Do("PING")); err != nil {
+	conn.Do("SELECT", f.Db)
+	if _, err := redis.String(conn.Do("PING")); err != nil {
 		h.ErrMsg = "redis ping error: " + err.Error()
 		return
 	}
