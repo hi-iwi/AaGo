@@ -1,5 +1,7 @@
 package healthcheck
 
+import "github.com/hi-iwi/AaGo/aa"
+
 type Health struct {
 	Time           string            `json:"time"`
 	TimezoneID     string            `json:"timezone_id"`     // e.g. Asia/Shanghai
@@ -20,21 +22,11 @@ type AmqpConnHealth struct {
 }
 
 type MysqlConnHealth struct {
-	Name    string `json:"name"`
-	Scheme  string `json:"scheme"`
-	Host    string `json:"host"`
-	Db      string `json:"db"`
-	TLS     bool   `json:"tls"`
-	Timeout string `json:"timeout"`
-	ErrMsg  string `json:"errmsg"`
+	Config aa.MysqlConfig `json:"config"`
+	ErrMsg string         `json:"errmsg"`
 }
 
 type RedisConnHealth struct {
-	Name    string `json:"name"`
-	Scheme  string `json:"scheme"`
-	Host    string `json:"host"`
-	Db      string `json:"db"`
-	TLS     bool   `json:"tls"`
-	Timeout string `json:"timeout"`
-	ErrMsg  string `json:"errmsg"`
+	Config aa.RedisConfig `json:"config"`
+	ErrMsg string         `json:"errmsg"`
 }

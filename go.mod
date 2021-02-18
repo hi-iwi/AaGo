@@ -18,10 +18,9 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/ryanuber/columnize v2.1.2+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/streadway/amqp v1.0.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20210216224549-f992740a1bac // indirect
+	golang.org/x/sys v0.0.0-20210217105451-b926d437f341 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/ini.v1 v1.62.0
 	gopkg.in/yaml.v2 v2.4.0

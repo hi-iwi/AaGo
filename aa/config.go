@@ -32,38 +32,6 @@ func parseToDuration(d string) time.Duration {
 	return time.Duration(t) * time.Second
 }
 
-// ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
-// 10s, 1000ms
-func (app *Aa) ParseTimeout(t string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration, heartbeat time.Duration) {
-	for i, t := range defaultTimeouts {
-		switch i {
-		case 0:
-			conn = t
-		case 1:
-			read = t
-		case 2:
-			write = t
-		case 3:
-			heartbeat = t
-		}
-	}
-
-	ts := strings.Split(strings.Replace(t, " ", "", -1), ",")
-	for i, t := range ts {
-		switch i {
-		case 0:
-			conn = parseToDuration(t)
-		case 1:
-			read = parseToDuration(t)
-		case 2:
-			write = parseToDuration(t)
-		case 3:
-			heartbeat = parseToDuration(t)
-		}
-	}
-
-	return
-}
 
 func splitDots(keys ...string) []string {
 	n := make([]string, 0)

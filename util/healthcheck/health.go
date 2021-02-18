@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
@@ -12,7 +11,6 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/hi-iwi/AaGo/aa"
 	"github.com/hi-iwi/AaGo/dtype"
-	"github.com/streadway/amqp"
 )
 
 type health struct {
@@ -63,112 +61,50 @@ func (s *health) getConf(name string, suffix string, defaultValue ...interface{}
 	return s.app.Config.Get(k, defaultValue...)
 }
 
-func (s *health) CheckRedis(name string) (RedisConnHealth, error) {
-	tls, _ := s.getConf(name, "tls", false).Bool()
-	scheme := s.getConf(name, "scheme", "tcp").String()
-	host := s.getConf(name, "host").String()
-	auth := s.getConf(name, "auth").String()
-
-	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
-
-	h := RedisConnHealth{
-		Name:    name,
-		Scheme:  scheme,
-		Host:    host,
-		Db:      name,
-		TLS:     tls,
-		Timeout: s.getConf(name, "timeout").String(),
-	}
-
-	c, err := redis.DialTimeout(h.Scheme, host, ct, rt, wt)
-
+func (s *health) CheckRedis(name string) (h RedisConnHealth, err error) {
+	var c redis.Conn
+	f := s.app.RedisConfig(name)
+	h.Config = f
+	c, err = redis.Dial("tcp", f.Host, redis.DialConnectTimeout(f.ConnTimeout), redis.DialReadTimeout(f.ReadTimeout), redis.DialWriteTimeout(f.WriteTimeout))
 	if err != nil {
 		h.ErrMsg = "redis dial error: " + err.Error()
-		return h, err
+		return
 	}
 	defer c.Close()
 
-	if auth != "" {
-		c.Do("auth", auth)
+	if f.Auth != "" {
+		c.Do("auth", f.Auth)
 	}
 
 	if _, err := redis.String(c.Do("PING")); err != nil {
 		h.ErrMsg = "redis ping error: " + err.Error()
-		return h, err
+		return
 	}
 
-	return h, err
+	return
 }
 
-func (s *health) CheckMysql(name string) (MysqlConnHealth, error) {
+func (s *health) CheckMysql(xschema string) (h MysqlConnHealth, err error) {
+	var conn *sql.DB
+	f := s.app.MysqlConfig(xschema)
+	h.Config = f
+	ct := f.ConnTimeout.Milliseconds()
+	rt := f.ReadTimeout.Milliseconds()
+	wt := f.WriteTimeout.Milliseconds()
+	src := fmt.Sprintf("%s:%s@tcp(%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms", f.User, f.Password, f.Host, f.Schema, ct, rt, wt)
 
-	tls, _ := s.getConf(name, "mysql_tls", false).Bool()
-	scheme := s.getConf(name, "mysql_scheme", "tcp").String()
-	host := s.getConf(name, "mysql_host").String()
-	db := s.getConf(name, "mysql_db").String()
-	user := s.getConf(name, "mysql_user").String()
-	password := s.getConf(name, "mysql_password").String()
-	//loc := url.QueryEscape(s.app.Config.Get("timezone_id", "UTC").Name())
-	charset := s.getConf(name, "mysql_charset", "utf8mb4").String()
-
-	ct, rt, wt, _ := s.app.ParseTimeout("driver."+name+"_mysql_timeout", 3*time.Second, 3*time.Second, 3*time.Second)
-
-	h := MysqlConnHealth{
-		Name:    name,
-		Scheme:  scheme,
-		Host:    host,
-		Db:      db,
-		TLS:     tls,
-		Timeout: s.getConf(name, "mysql_timeout").String(),
-	}
-
-	ctn := strconv.Itoa(int(ct / time.Millisecond))
-	rtn := strconv.Itoa(int(rt / time.Millisecond))
-	wtn := strconv.Itoa(int(wt / time.Millisecond))
-	src := user + ":" + password + "@" + scheme + "(" + host + ")/" + db + "?charset=" + charset + "&timeout=" + ctn + "ms&readTimeout=" + rtn + "ms&writeTimeout=" + wtn + "ms"
-
-	conn, err := sql.Open("mysql", src)
+	conn, err = sql.Open("mysql", src)
 	if err != nil {
-		return h, errors.New("mysql connection(" + src + ") open error: " + err.Error())
+		err = errors.New("mysql connection(" + src + ") open error: " + err.Error())
+		return
 	}
 	defer conn.Close()
 
 	// Open doesn't open a connection. Validate DSN data:
 	if err = conn.Ping(); err != nil {
-		return h, errors.New("mysql connection(" + src + ") ping error: " + err.Error())
+		err = errors.New("mysql connection(" + src + ") ping error: " + err.Error())
+		return
 	}
 
-	return h, nil
-}
-
-func (s *health) CheckAmqp(name string) (AmqpConnHealth, error) {
-	tls, _ := s.getConf(name, "tls", false).Bool()
-	scheme := s.getConf(name, "scheme", "tcp").String()
-	host := s.getConf(name, "host").String()
-	vhost := s.getConf(name, "vhost").String()
-	user := s.getConf(name, "user").String()
-	password := s.getConf(name, "password").String()
-
-	if vhost[0] == byte('/') {
-		vhost = vhost[1:]
-	}
-
-	h := AmqpConnHealth{
-		Name:    name,
-		Scheme:  scheme,
-		Host:    host,
-		VHost:   vhost,
-		TLS:     tls,
-		Timeout: s.getConf(name, "timeout").String(),
-	}
-
-	url := "amqp://" + user + ":" + password + "@" + host + "/" + vhost
-
-	conn, err := amqp.Dial(url)
-	if err != nil {
-		return h, fmt.Errorf("failed to connect to AMQP broker %s: %s", url, err)
-	}
-	defer conn.Close()
-
-	return h, nil
+	return
 }
