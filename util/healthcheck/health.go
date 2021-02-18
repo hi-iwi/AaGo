@@ -76,7 +76,7 @@ func (s *health) CheckRedis(name string) (h RedisConnHealth, err error) {
 		conn.Do("auth", f.Auth)
 	}
 	conn.Do("SELECT", f.Db)
-	if _, err := redis.String(conn.Do("PING")); err != nil {
+	if _, err = redis.String(conn.Do("PING")); err != nil {
 		h.ErrMsg = "redis ping error: " + err.Error()
 		return
 	}
