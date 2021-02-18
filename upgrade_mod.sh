@@ -23,7 +23,7 @@ pushAndUpgradeMod(){
   cd "$root/$1" || exit
 
   if [ $upgrade -eq 1 ]; then
-    echo "upgrading go.mod..."
+    echo ">>> UPGRADING go.mod..."
     rm -f go.mod
     go mod init
       # 私有库问题
