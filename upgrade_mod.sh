@@ -19,7 +19,6 @@ done
 
 
 pushAndUpgradeMod(){
-  echo "upgrading $1 ..."
   cd "$root/$1" || exit
 
   if [ $upgrade -eq 1 ]; then
