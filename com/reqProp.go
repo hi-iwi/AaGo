@@ -63,7 +63,6 @@ func StringsRegExp(elems []string) string {
 	for i := 0; i < len(elems); i++ {
 		n += len(elems[i])
 	}
-
 	var b strings.Builder
 	b.Grow(n)
 	b.WriteString(elems[0])
