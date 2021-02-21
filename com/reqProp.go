@@ -23,6 +23,9 @@ func (p *ReqProp) Default(v interface{}) {
 		p.Value = v
 	}
 }
+func regexp(elems string) string {
+	return "^(" + elems + ")$"
+}
 func UintsRegExp(set ...interface{}) string {
 	elems := make([]string, len(set))
 	for i, v := range set {
@@ -32,28 +35,38 @@ func UintsRegExp(set ...interface{}) string {
 		}
 		elems[i] = strconv.FormatUint(w, 10)
 	}
-	s := strings.Join(elems, "|")
-	return "^(" + s + ")$"
+	return StringsRegExp(elems)
 }
-func IntsRegExp(set ...interface{}) string {
-	elems := make([]string, len(set))
-	for i, v := range set {
+func IntsRegExp(ies []interface{}) string {
+	elems := make([]string, len(ies))
+	for i, v := range ies {
 		w, err := dtype.Int64(v)
 		if err != nil {
 			continue
 		}
 		elems[i] = strconv.FormatInt(w, 10)
 	}
-	s := strings.Join(elems, "|")
-	return "^(" + s + ")$"
+	return StringsRegExp(elems)
 }
-func StringsRegExp(set ...interface{}) string {
-	// @TODO 使用正则转义
 
-	elems := make([]string, len(set))
-	for i, v := range set {
-		elems[i] = dtype.String(v)
+func StringsRegExp(elems []string) string {
+	switch len(elems) {
+	case 0:
+		return regexp("")
+	case 1:
+		return regexp(dtype.String(elems[0]))
 	}
-	s := strings.Join(elems, "|")
-	return "^(" + s + ")$"
+	n := len(elems) - 1
+	for i := 0; i < len(elems); i++ {
+		n += len(elems[i])
+	}
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteString(elems[0])
+	for _, s := range elems[1:] {
+		b.WriteString("|")
+		b.WriteString(s)
+	}
+	return regexp(b.String())
 }

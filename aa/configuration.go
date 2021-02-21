@@ -10,9 +10,7 @@ import (
 )
 
 type Configuration struct {
-	//VID          string // service + ':' + service id, e.g. user01:12
-	Service string `yaml:"service"`
-	//ServerID     string `yaml:"server_id"`
+	Name         string `yaml:"name"`
 	Env          string `yaml:"env"`         // dev test preprod product
 	TimezoneID   string `yaml:"timezone_id"` // e.g. "Asia/Shanghai"
 	TimeLocation *time.Location
@@ -33,7 +31,7 @@ func (app *Aa) ParseToConfiguration() {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	app.Configuration.Env = app.Config.Get(CkEnv).String()
-	app.Configuration.Service = app.Config.Get(CkService).String()
+	app.Configuration.Name = app.Config.Get(CkService).String()
 	app.Configuration.TimeFormat = app.Config.Get(CkTimeFormat).String()
 	//serverID := app.Config.Get("server_id").Name()
 	//app.Configuration.ServerID = serverID
@@ -54,7 +52,7 @@ func (app *Aa) ParseToConfiguration() {
 }
 
 func (c Configuration) Log() {
-	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Service, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
+	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Name, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
 	fmt.Println(msg)
 }
@@ -126,10 +124,10 @@ func (app *Aa) MysqlConfig(xschema string) MysqlConfig {
 }
 
 type RedisConfig struct {
-	TLS          bool
-	Host         string
-	Auth         string
-	Db           uint8 // 默认0，系统配置为16个，方便flush all，但是不常用
+	TLS  bool
+	Host string
+	Auth string
+	Db   uint8 // 默认0，系统配置为16个，方便flush all，但是不常用
 
 	ConnTimeout  time.Duration
 	ReadTimeout  time.Duration

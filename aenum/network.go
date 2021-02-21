@@ -15,7 +15,7 @@ const (
 type Network uint16
 
 /*
-GPRS : 2G(2.5) General Packet Radia Service 114kbps
+GPRS : 2G(2.5) General Packet Radia Name 114kbps
 EDGE : 2G(2.75G) Enhanced Data Rate for GSM Evolution 384kbps
 UMTS : 3G WCDMA 联通3G Universal Mobile Telecommunication System 完整的3G移动通信技术标准
 CDMA : 2G 电信 Code Division Multiple Access 码分多址
