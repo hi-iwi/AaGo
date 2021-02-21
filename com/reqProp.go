@@ -23,7 +23,7 @@ func (p *ReqProp) Default(v interface{}) {
 		p.Value = v
 	}
 }
-func regexp(elems string) string {
+func rexp(elems string) string {
 	return "^(" + elems + ")$"
 }
 func UintsRegExp(set ...interface{}) string {
@@ -52,9 +52,9 @@ func IntsRegExp(ies []interface{}) string {
 func StringsRegExp(elems []string) string {
 	switch len(elems) {
 	case 0:
-		return regexp("")
+		return rexp("")
 	case 1:
-		return regexp(dtype.String(elems[0]))
+		return rexp(dtype.String(elems[0]))
 	}
 	n := len(elems) - 1
 	for i := 0; i < len(elems); i++ {
@@ -68,5 +68,5 @@ func StringsRegExp(elems []string) string {
 		b.WriteString("|")
 		b.WriteString(s)
 	}
-	return regexp(b.String())
+	return rexp(b.String())
 }
