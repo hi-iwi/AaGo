@@ -23,9 +23,11 @@ func (p *ReqProp) Default(v interface{}) {
 		p.Value = v
 	}
 }
+
 func rexp(elems string) string {
 	return "^(" + elems + ")$"
 }
+
 func UintsRegExp(set ...interface{}) string {
 	elems := make([]string, len(set))
 	for i, v := range set {
@@ -37,6 +39,7 @@ func UintsRegExp(set ...interface{}) string {
 	}
 	return StringsRegExp(elems)
 }
+
 func IntsRegExp(ies []interface{}) string {
 	elems := make([]string, len(ies))
 	for i, v := range ies {
