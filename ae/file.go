@@ -5,6 +5,6 @@ func NewFileError(err error) *Error {
 		return nil
 	}
 
-	return NewError(500, "redis error: "+err.Error())
+	return NewError(500, "file error: "+err.Error())
 
 }
