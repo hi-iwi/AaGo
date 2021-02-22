@@ -1,6 +1,6 @@
 package ae
 
-func NewHttpError(err error) *Error {
+func NewHttpError(tag string, err error) *Error {
 	if err == nil {
 		return nil
 	}
@@ -9,6 +9,6 @@ func NewHttpError(err error) *Error {
 
 	}
 
-	return NewError(500, "http: "+err.Error())
+	return NewError(500, tag+" http: "+err.Error())
 
 }
