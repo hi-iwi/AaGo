@@ -2,9 +2,8 @@ package ae
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/hi-iwi/AaGo/dict"
+	"strconv"
 )
 
 type Error struct {

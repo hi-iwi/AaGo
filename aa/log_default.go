@@ -38,7 +38,8 @@ func xlogHeader(ctx context.Context, caller string, severity string) string {
 }
 
 func xprintf(ctx context.Context, skip int, severity string, msg string, args ...interface{}) {
-	head := xlogHeader(ctx, caller(skip), severity)
+	skip++ // 跳出 xprintf 自身函数
+	head := xlogHeader(ctx, ae.Caller(skip), severity)
 	msg = head + msg
 	if len(args) == 0 {
 		log.Println(msg)
@@ -48,52 +49,52 @@ func xprintf(ctx context.Context, skip int, severity string, msg string, args ..
 }
 
 func (l *xlog) Debug(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "debug", msg, args...)
+	xprintf(ctx, 1, "debug", msg, args...)
 }
 
 func (l *xlog) Info(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "info", msg, args...)
+	xprintf(ctx, 1, "info", msg, args...)
 }
 
 func (l *xlog) Notice(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "notice", msg, args...)
+	xprintf(ctx, 1, "notice", msg, args...)
 }
 
 func (l *xlog) Warn(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "warn", msg, args...)
+	xprintf(ctx, 1, "warn", msg, args...)
 }
 
 func (l *xlog) Error(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "error", msg, args...)
+	xprintf(ctx, 1, "error", msg, args...)
 }
 
 func (l *xlog) Crit(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "crit", msg, args...)
+	xprintf(ctx, 1, "crit", msg, args...)
 }
 
 func (l *xlog) Alert(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "alert", msg, args...)
+	xprintf(ctx, 1, "alert", msg, args...)
 }
 
 func (l *xlog) Emerg(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "error", msg, args...)
+	xprintf(ctx, 1, "error", msg, args...)
 }
 
 func (l *xlog) Printf(ctx context.Context, msg string, args ...interface{}) {
-	xprintf(ctx, 3, "", msg, args...)
+	xprintf(ctx, 1, "", msg, args...)
 }
 
 func (l *xlog) Println(ctx context.Context, msg ...interface{}) {
-	log.Println(xlogHeader(ctx, caller(2), ""), fmt.Sprint(msg...))
+	log.Println(xlogHeader(ctx, ae.Caller(1), ""), fmt.Sprint(msg...))
 }
 
 func (l *xlog) Trace(ctx context.Context) {
 	tid := traceid(ctx)
-	log.Printf("[TRACE]{%s} %s\n", tid, caller(2))
+	log.Printf("[TRACE]{%s} %s\n", tid, ae.Caller(1))
 }
 
 func (l *xlog) AError(ctx context.Context, e *ae.Error) {
 	if e.Code >= 500 {
-		xprintf(ctx, 3, "", e.Error())
+		xprintf(ctx, 1, "", e.Error())
 	}
 }

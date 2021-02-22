@@ -1,10 +1,10 @@
 package ae
 
-func NewFileError(tag string, err error) *Error {
-	if err == nil {
+func NewFileError(err error) *Error {
+ 	if err == nil {
 		return nil
 	}
-
-	return NewError(500, tag+" file error: "+err.Error())
+	pos := Caller(1)
+	return NewError(500, pos+" file error: "+err.Error())
 
 }

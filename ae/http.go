@@ -1,14 +1,11 @@
 package ae
 
-func NewHttpError(tag string, err error) *Error {
+func NewHttpError(err error) *Error {
 	if err == nil {
 		return nil
 	}
+	pos := Caller(1)
 
-	switch err {
-
-	}
-
-	return NewError(500, tag+" http: "+err.Error())
+	return NewError(500, pos+" http: "+err.Error())
 
 }

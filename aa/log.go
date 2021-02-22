@@ -3,9 +3,6 @@ package aa
 import (
 	"context"
 	"github.com/hi-iwi/AaGo/ae"
-	"runtime"
-	"strconv"
-	"strings"
 )
 
 
@@ -44,12 +41,7 @@ type Log interface {
 	Trace(ctx context.Context)
 }
 
-func caller(skip int) string {
-	pc, file, line, _ := runtime.Caller(skip)
-	pcs := runtime.FuncForPC(pc).Name() // 函数名
-	a := strings.Split(file, "/")       // 文件名
-	return a[len(a)-1] + ":" + strconv.Itoa(line) + " " + pcs
-}
+
 
 func traceid(ctx context.Context) string {
 	id, _ := ctx.Value(TraceIdKey).(string)
