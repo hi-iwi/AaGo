@@ -89,7 +89,7 @@ func (l *xlog) Println(ctx context.Context, msg ...interface{}) {
 
 func (l *xlog) Trace(ctx context.Context) {
 	tid := traceid(ctx)
-	log.Printf("{%s} %s\n", tid, caller(2))
+	log.Printf("[TRACE]{%s} %s\n", tid, caller(2))
 }
 
 func (l *xlog) AError(ctx context.Context, e *ae.Error) {
