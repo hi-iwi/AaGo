@@ -176,11 +176,18 @@ func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 
 	return resp.write(cs)
 }
-func (resp *RespStruct) WriteJSONP(varname string, d interface{}) error {
+func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) error {
 	cs := RespContentDTO{
-		Code:    200,
-		Msg:     dict.Code2Msg(200),
-		Payload: d,
+		Code: 200,
+		Msg:  dict.Code2Msg(200),
+	}
+	if payload, e := resp.handlePayload(d, "json"); e != nil {
+		cs.Code = e.Code
+		cs.Msg = e.Msg
+	} else {
+		cs.Code = 200
+		cs.Msg = dict.Code2Msg(200)
+		cs.Payload = payload
 	}
 	for _, mw := range beforeSerialize {
 		mw(&cs)
