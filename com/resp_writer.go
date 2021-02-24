@@ -176,7 +176,7 @@ func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 
 	return resp.write(cs)
 }
-func (resp *RespStruct) WriteJsonp(name string, d interface{}) error {
+func (resp *RespStruct) WriteJSONP(name string, d interface{}) error {
 	cs := RespContentDTO{
 		Code:    200,
 		Msg:     dict.Code2Msg(200),
