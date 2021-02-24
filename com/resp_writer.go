@@ -176,7 +176,7 @@ func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 
 	return resp.write(cs)
 }
-func (resp *RespStruct) WriteJSONP(name string, d interface{}) error {
+func (resp *RespStruct) WriteJSONP(varname string, d interface{}) error {
 	cs := RespContentDTO{
 		Code:    200,
 		Msg:     dict.Code2Msg(200),
@@ -202,7 +202,7 @@ func (resp *RespStruct) WriteJSONP(name string, d interface{}) error {
 	for _, mw := range resp.afterSerialize {
 		b = mw(b)
 	}
-	c := []byte("<script>var " + name + "=")
+	c := []byte("<script>var " + varname + "=")
 	c = append(c, b...)
 	c = append(c, ";</script>"...)
 	resp.SetHeader(aenum.ContentType, aenum.CtHtmlText)
