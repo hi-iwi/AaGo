@@ -1,5 +1,9 @@
 package com
 
+import (
+	"github.com/hi-iwi/AaGo/aenum"
+)
+
 /*
 http fs.go
 func setLastModified(w ResponseWriter, modtime time.Time) {
@@ -20,46 +24,38 @@ func (resp *RespStruct) Header(head string) string {
 	if ok && len(vs) > 0 {
 		return vs[0]
 	}
-	resp.headlck.RLock()
-	h := resp.headers
-	resp.headlck.RUnlock()
-	if v, ok := h[head]; ok {
-		return v
-	}
-	return ""
+	v, _ := resp.headers.Load(head)
+	s := v.(string)
+	return s
 }
 
 func (resp *RespStruct) DelHeader(head string) {
-	if _, ok := resp.writer.Header()[head]; ok {
-		delete(resp.writer.Header(), head)
-	}
-	resp.headlck.Lock()
-	if _, ok := resp.headers[head]; ok {
-		resp.headers[head] = ""
-	}
-	resp.headlck.Unlock()
+	resp.headers.Delete(head)
 }
 
-func (resp *RespStruct) SetHeader(head interface{}, values ...string) {
-	var key, value string
-	if k, ok := head.(string); ok {
-		for i := 0; i < len(values); i++ {
-			key = k
-			value = values[i]
+func (resp *RespStruct) storeHeader(k, v string, loadOrStore bool) {
+	if v == "" {
+		resp.headers.Delete(k)
+	} else {
+		if k == aenum.LastModified {
+			v = fmtLastModified(v)
 		}
-	} else if hs, ok := head.(map[string]string); ok {
-		for k, v := range hs {
-			key = k
-			value = v
+		if loadOrStore {
+			resp.headers.LoadOrStore(k, v)
+		} else {
+			resp.headers.Store(k, v)
 		}
 	}
-	if key == "Last-Modified" {
-		value = fmtLastModified(value)
-	}
+}
+func (resp *RespStruct) SetHeader(k, v string) {
+	resp.storeHeader(k, v, false)
+}
+func (resp *RespStruct) LoadOrSetHeader(k, v string) {
+	resp.storeHeader(k, v, true)
+}
 
-	if value != "" {
-		resp.headlck.Lock()
-		resp.headers[key] = value
-		resp.headlck.Unlock()
+func (resp *RespStruct) SetHeaders(heads map[string]string) {
+	for k, v := range heads {
+		resp.SetHeader(k, v)
 	}
 }
