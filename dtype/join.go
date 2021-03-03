@@ -121,7 +121,7 @@ func JoinByTags(u interface{}, ty JoinType, sep string, tagname string, tags ...
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("[error] dtype.JoinByTags: %s", err)
+			log.Printf("[error] dtype.JoinByTags (%s %s): %s", tagname, strings.Join(tags, ","), err)
 		}
 	}()
 
