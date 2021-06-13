@@ -133,6 +133,9 @@ func JoinByTags(u interface{}, ty JoinType, sep string, tagname string, tags ...
 	var found bool
 	for g := 0; g < len(tags); g++ {
 		tag := tags[g]
+		if tag == "" {
+			continue
+		}
 		found = false
 		for i := 0; i < t.NumField(); i++ {
 			f := t.Field(i)
