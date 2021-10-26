@@ -3,7 +3,7 @@
 # Go 必须要开启支持 vendor 功能
 
 
-readonly LuexuRepos="AaGo"
+readonly AaGoReporitories="AaGo"
 
 initProject() {
     dir="$1"
@@ -11,43 +11,45 @@ initProject() {
         echo "Project directory $dir is not found"
         exit 1
     fi
-    mkdir -p $dir'/app/controller'
-    mkdir -p $dir'/app/dto'   
-    mkdir -p $dir'/app/entity'
+    mkdir -p $dir'/app/aservice'
+
+    mkdir -p $dir'/app/biz_test/cache'
+    mkdir -p $dir'/app/biz_test/entity'
+    mkdir -p $dir'/app/biz_test/module'
+    mkdir -p $dir'/app/biz_test/mservice'
+
+    mkdir -p $dir'/app/cache/proxycache'
     mkdir -p $dir'/app/router/middleware'
-    mkdir -p $dir'/app/model'
-    mkdir -p $dir'/app/service'
-    mkdir -p $dir'/app/rservice/rpci'
-    mkdir -p $dir'/app/register'
 
-    mkdir -p $dir'/bootstrap'
-    mkdir -p $dir'/conf'   
+    mkdir -p $dir'/app/service/mq'
+    mkdir -p $dir'/app/controller'
 
+
+    mkdir -p $dir'/bootstrap/register'
+    mkdir -p $dir'/conf'
     mkdir -p $dir'/deploy/config'
-    mkdir -p $dir'/deploy/public/asset'
-    mkdir -p $dir'/deploy/views'
+    mkdir -p $dir'/deploy/public'
+    mkdir -p $dir'/deploy/view_src'
 
     mkdir -p $dir'/dic'
+    mkdir -p $dir'/docs'
     mkdir -p $dir'/driver'
     mkdir -p $dir'/enum'
-    mkdir -p $dir'/job'             
-    mkdir -p $dir'/console'
-    mkdir -p $dir'/storage/logs'
-    mkdir -p $dir'/storage/docs'
-    mkdir -p $dir'/tests'
     mkdir -p $dir'/helper'
 
-    touch $dir'/main.go'
+    # mkdir -p $dir'/app/register'
+    mkdir -p $dir'/sdk'
+    mkdir -p $dir'/storage/logs'
 }
 
-goGetLuexu() {
+goGetIwiReporitories() {
     update=0
     if [ "$1" == "update" ]; then
         update=1
     fi
     l="${GOPATH}/src/github.com/hi-iwi"
     cd $l
-    for repo in $LuexuRepos; do
+    for repo in $AaGoReporitories; do
         if [ $update -eq 1 ]; then
             go get -u -v "github.com/hi-iwi/${repo}"
         else
@@ -75,7 +77,7 @@ goGet() {
         isInGoPath=1
     fi
 
-    # Luexu 的一律放到$GOPATH下共用
+    #  的一律放到$GOPATH下共用
     if [ $isInGoPath -eq 0 -a "${repo:0:17}" != "github.com/hi-iwi/" ]; then
         GOPATH="${p}/vendor"
     fi
@@ -113,7 +115,7 @@ depEnsureAdd() {
     update="$1"
     repo="$2"
     if [ "$repo" == "luexu" ]; then
-        goGetLuexu $update
+        goGetIwiReporitories $update
     else
         goGet $repo $update
     fi
@@ -131,7 +133,7 @@ do
     h)
         cat << EOF
 Usage: AaGo.sh [\$options]
-    -p <dir>   : new project
+    -p <dir>   : create directories for new project
 EOF
         exit 0
     ;;
