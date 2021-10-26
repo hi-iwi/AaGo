@@ -40,6 +40,7 @@ initProject() {
     # mkdir -p $dir'/app/register'
     mkdir -p $dir'/sdk'
     mkdir -p $dir'/storage/logs'
+    mkdir -p $dir'/tests'   # 其他测试，都是直接在源文件下  _test.go 后缀即可，不需要重新建目录。这里是系统测试
 }
 
 goGetIwiReporitories() {
