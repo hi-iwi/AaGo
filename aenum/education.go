@@ -7,8 +7,8 @@ type EduConclusion uint8 // 毕结业结论
 const (
 	NormalUniversity EduRating = 0 // 一般院校
 	GoodUniversity   EduRating = 1 // 好大学，双一流大学
-	TalentUniversity EduRating = 2 // 人才院校，一般国内985
-	EliteUniversity  EduRating = 3 // 精英院校，海外TOP50
+	TalentUniversity EduRating = 2 // 人才院校，一般国内985（不含TOP100- 清华、港大、北大、港科大、复旦、港中大、上海交大、港城大、浙大、台大、港理工、中科大）
+	EliteUniversity  EduRating = 3 // 精英院校，世界TOP100
 )
 const (
 	GraduationConclusion EduConclusion = 1 // 毕业
@@ -26,16 +26,16 @@ const (
 	BachelorStudent     EduLevel = 20 // 在读全日制本科（非985院校）
 	NonFullTimeBachelor EduLevel = 21 // 非全日制本科（获得学士学位了）  undergraduate degree 只有毕业证，没有学位证
 	FullTimeBachelor    EduLevel = 22 // 全日制本科
-	TalentBachelor      EduLevel = 23 // 高等人才学士，全日制985院校
-	EliteBachelor       EduLevel = 24 // 精英阶层，海外TOP50院校
+	TalentBachelor      EduLevel = 23 // 高等人才学士，全日制985院校（不含TOP100- 清华、港大、北大、港科大、复旦、港中大、上海交大、港城大、浙大、台大、港理工、中科大）
+	EliteBachelor       EduLevel = 24 // 精英阶层，世界TOP100院校
 
 	NonFullTimePostgraduate EduLevel = 30 // 非全日制研究生
 	FullTimePostgraduate    EduLevel = 31 // 研究生
 	TalentPostgraduate      EduLevel = 32 // 人才硕士 本科是全日制985院校，研究生也是
-	ElitePostgraduate       EduLevel = 33 // 精英硕士 本科是TOP50院校，硕士是海外TOP50院校
+	ElitePostgraduate       EduLevel = 33 // 精英硕士 本科是TOP100院校，硕士是海外TOP100院校
 
 	NonFullTimeDoctorate EduLevel = 40 // 非全日制博士学位
 	FullTimeDoctorate    EduLevel = 41 // 博士
 	TalentDoctorate      EduLevel = 42 // 人才博士，本科是全日制985院校，研究生也是
-	EliteDoctorate       EduLevel = 43 // 精英博士，本科是TOP50院校，硕士是海外TOP50院校
+	EliteDoctorate       EduLevel = 43 // 精英博士，本科是TOP100院校，硕士是世界TOP100院校
 )
