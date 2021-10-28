@@ -53,6 +53,7 @@ AaGo
 Application
     + app
         + app_name
+            + ado    # 动态数据对象。是 entity 的局部，entity 可以引用 ado。
             + cache                         # 缓存
             + dic           # 放置翻译文件；   
             + enum              APP 内enum  # 放常量、枚举 conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到

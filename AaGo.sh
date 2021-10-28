@@ -12,7 +12,7 @@ initProject() {
         exit 1
     fi
     mkdir -p $dir'/app/aservice'
-
+    mkdir -p $dir'/app/biz_test/ado'
     mkdir -p $dir'/app/biz_test/cache'
     mkdir -p $dir'/app/biz_test/entity'
     mkdir -p $dir'/app/biz_test/module'
