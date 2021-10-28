@@ -1,12 +1,13 @@
 package dtype_test
 
 import (
+	"github.com/hi-iwi/AaGo/dtype"
 	"testing"
 )
 
 func TestDtype(t *testing.T) {
 	b := 234242342342423.3
-	s := New(b).String()
+	s := dtype.New(b).String()
 	if s != "234242342342423.3" {
 		t.Errorf("float64(%f) ==> string(%s)", b, s)
 	}
@@ -15,7 +16,7 @@ func TestDtype(t *testing.T) {
 func TestDtypeGet(t *testing.T) {
 	arr := map[interface{}]interface{}{
 		1:      100,
-		"name": "Aario",
+		"name": "Iwi",
 		"1":    "999",
 		"test": map[string]interface{}{
 			"nation": "China",
@@ -26,12 +27,12 @@ func TestDtypeGet(t *testing.T) {
 		},
 	}
 
-	d := New(arr)
+	d := dtype.New(arr)
 	v, err := d.Get("name")
 	t.Log("[\"name\"]", v, err)
 
-	if v.String() != "Aario" {
-		t.Error("[\"name\"] != Aario")
+	if v.String() != "Iwi" {
+		t.Error("[\"name\"] != Iwi")
 	}
 
 	v, err = d.Get(1)

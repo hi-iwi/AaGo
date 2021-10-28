@@ -155,10 +155,10 @@ func JoinByTags(u interface{}, ty JoinType, sep string, tagname string, tags ...
 	return
 }
 
-func JoinByAlias(u interface{}, ty JoinType, sep string, alias ...string) string {
-	return JoinByTags(u, ty, sep, "alias", alias...)
+func JoinByNames(u interface{}, ty JoinType, sep string, names ...string) string {
+	return JoinByTags(u, ty, sep, "name", names...)
 }
 
-func JoinAliasByElements(u interface{}, ty JoinType, sep string, eles ...string) string {
-	return JoinTagsByElements(u, ty, sep, "alias", eles...)
+func JoinNamesByElements(u interface{}, ty JoinType, sep string, eles ...string) string {
+	return JoinTagsByElements(u, ty, sep, "name", eles...)
 }

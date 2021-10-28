@@ -6,8 +6,8 @@ import (
 )
 
 type Limit struct {
-	Offset int `alias:"offset"`
-	Limit  int `alias:"limit"`
+	Offset int `name:"offset"`
+	Limit  int `name:"limit"`
 }
 
 type CombineOperator string
@@ -31,8 +31,8 @@ type ORM struct {
 	Or    map[string]ASQL
 }
 
-// aliasName u struct; ele alias name
-func aliasName(u interface{}, ele string) string {
+// name u struct; ele name name
+func name(u interface{}, ele string) string {
 	if !(ele[0] >= 'A' && ele[0] <= 'Z') {
 		return ele
 	}
@@ -47,7 +47,7 @@ func aliasName(u interface{}, ele string) string {
 	for j := 0; j < t.NumField(); j++ {
 		f := t.Field(j)
 		if f.Name == ele {
-			return f.Tag.Get("alias")
+			return f.Tag.Get("name")
 		}
 	}
 	return ele
@@ -84,7 +84,7 @@ func (orm ORM) WithWhere(t interface{}) string {
 			if idx[i] != k {
 				continue
 			}
-			if f := a.Fmt(aliasName(t, k)); f != "" {
+			if f := a.Fmt(name(t, k)); f != "" {
 				ands += " AND " + f
 			}
 		}
@@ -96,7 +96,7 @@ func (orm ORM) WithWhere(t interface{}) string {
 			if idx[i] != k {
 				continue
 			}
-			if f := a.Fmt(aliasName(t, k)); f != "" {
+			if f := a.Fmt(name(t, k)); f != "" {
 				ors += " OR " + f
 			}
 		}

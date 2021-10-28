@@ -9,9 +9,9 @@ import (
 func Fields(u interface{}, fields ...string) string {
 	s := ""
 	if byAlias(fields...) {
-		s = dtype.JoinByAlias(u, dtype.JoinKeys, ",", fields...)
+		s = dtype.JoinByNames(u, dtype.JoinKeys, ",", fields...)
 	} else {
-		s = dtype.JoinAliasByElements(u, dtype.JoinKeys, ",", fields...)
+		s = dtype.JoinNamesByElements(u, dtype.JoinKeys, ",", fields...)
 
 	}
 	return strings.Trim(s, " ")

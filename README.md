@@ -184,11 +184,11 @@ Pagination:
     users?offset=200&limit=100     从第offset（200）条数据开始，选择limit（100）条
 
 Search: (start with `:`)
-    name=Aario                                          name=Aario
-    name=::Aario:                                       name likes Aario
-    name=::Aario                                        name ends with Aario
-    name=:Aario:                                        name starts Aario
-    name=:Aario,Tom                                     name in [Aario, Tom]
+    name=Iwi                                          name=Iwi
+    name=::Iwi:                                       name likes Iwi
+    name=::Iwi                                        name ends with Iwi
+    name=:Iwi:                                        name starts Iwi
+    name=:Iwi,Tom                                     name in [Iwi, Tom]
     create_at=2019-06-01 00:00:00                       create_at = 2019-06-01 00:00:00
     create_at=:2019-06-01 00:00:00~2019-06-01 01:00:00  create_at >= 2019-06-01 00:00:00 && create_at < 2019-06-01 00:00:00
     create_at=:2019-06-01 00:00:00~                     create_at >= 2019-06-01 00:00:00

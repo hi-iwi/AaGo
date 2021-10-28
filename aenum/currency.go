@@ -1,5 +1,7 @@
 package aenum
 
+import "strconv"
+
 type Currency uint16
 
 const (
@@ -14,7 +16,7 @@ const (
 )
 
 func (currency Currency) String() string {
-	return string(currency)
+	return strconv.FormatUint(uint64(currency), 10)
 }
 func (currency Currency) Stringify() string {
 	switch currency {

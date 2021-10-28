@@ -18,9 +18,9 @@ func byAlias(fields ...string) bool {
 
 func Comma(u interface{}, fields ...string) (s string) {
 	if byAlias(fields...) {
-		s = dtype.JoinByAlias(u, dtype.JoinMySQL, ", ", fields...)
+		s = dtype.JoinByNames(u, dtype.JoinMySQL, ", ", fields...)
 	} else {
-		s = dtype.JoinAliasByElements(u, dtype.JoinMySQL, ", ", fields...)
+		s = dtype.JoinNamesByElements(u, dtype.JoinMySQL, ", ", fields...)
 	}
 	return strings.Trim(defenseInjection(s), " ")
 }
@@ -43,9 +43,9 @@ func CommaWithHead(u interface{}, fields ...string) string {
 
 func And(u interface{}, fields ...string) (s string) {
 	if byAlias(fields...) {
-		s = dtype.JoinByAlias(u, dtype.JoinMySQL, " AND ", fields...)
+		s = dtype.JoinByNames(u, dtype.JoinMySQL, " AND ", fields...)
 	} else {
-		s = dtype.JoinAliasByElements(u, dtype.JoinMySQL, " AND ", fields...)
+		s = dtype.JoinNamesByElements(u, dtype.JoinMySQL, " AND ", fields...)
 
 	}
 	return strings.Trim(defenseInjection(s), " ")
@@ -53,18 +53,18 @@ func And(u interface{}, fields ...string) (s string) {
 
 func Or(u interface{}, fields ...string) (s string) {
 	if byAlias(fields...) {
-		s = dtype.JoinByAlias(u, dtype.JoinMySQL, " OR ", fields...)
+		s = dtype.JoinByNames(u, dtype.JoinMySQL, " OR ", fields...)
 	} else {
-		s = dtype.JoinAliasByElements(u, dtype.JoinMySQL, " OR ", fields...)
+		s = dtype.JoinNamesByElements(u, dtype.JoinMySQL, " OR ", fields...)
 	}
 	return strings.Trim(s, " ")
 }
 
 func Like(u interface{}, fields ...string) (s string) {
 	if byAlias(fields...) {
-		s = dtype.JoinByAlias(u, dtype.JoinMySqlFullLike, " OR ", fields...)
+		s = dtype.JoinByNames(u, dtype.JoinMySqlFullLike, " OR ", fields...)
 	} else {
-		s = dtype.JoinAliasByElements(u, dtype.JoinMySqlFullLike, " OR ", fields...)
+		s = dtype.JoinNamesByElements(u, dtype.JoinMySqlFullLike, " OR ", fields...)
 	}
 	return strings.Trim(defenseInjection(s), " ")
 }

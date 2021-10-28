@@ -17,30 +17,30 @@ func TestSetRegExp(t *testing.T) {
 	}
 }
 func TestReqPropFilter(t *testing.T) {
-	p := com.NewReqProp("test", "Aario")
+	p := com.NewReqProp("test", "Iwi")
 	if p.IsEmpty() {
-		t.Error("test='Aario' should be not empty")
+		t.Error("test='Iwi' should be not empty")
 	}
-	t.Log("string('Aario') ==> ", p.String())
+	t.Log("string('Iwi') ==> ", p.String())
 	if i, b := p.Int(); b == nil {
-		t.Error("'Aario' should not can be converted into int")
+		t.Error("'Iwi' should not can be converted into int")
 	} else {
-		t.Log("int('Aario') ==> ", i)
+		t.Log("int('Iwi') ==> ", i)
 	}
 	if f, b := p.Float64(); b == nil {
-		t.Error("'Aario' should not can be converted into float64")
+		t.Error("'Iwi' should not can be converted into float64")
 	} else {
-		t.Log("float64('Aario') ==> ", f)
+		t.Log("float64('Iwi') ==> ", f)
 	}
 	if err := p.Filter(`\d+`, true); err == nil {
-		t.Error("'Aario' should not match `\\d+`")
+		t.Error("'Iwi' should not match `\\d+`")
 	} else {
-		t.Log("'Aario' doesn't match `\\d+`")
+		t.Log("'Iwi' doesn't match `\\d+`")
 	}
 	if err := p.Filter(`[[:word:]]+`, true); err != nil {
-		t.Error("'Aario' should match `[[:word:]]`")
+		t.Error("'Iwi' should match `[[:word:]]`")
 	} else {
-		t.Log("'Aario' matches `[[:word:]]`")
+		t.Log("'Iwi' matches `[[:word:]]`")
 	}
 
 	t.Log("----------------")
@@ -124,10 +124,8 @@ func TestReqPropFilter(t *testing.T) {
 		t.Log("'' is filtered because it's required")
 	}
 
-	if err := p.Filter(`\w+`); err != nil {
-		t.Error("'' should match `\\d+`", err)
-	} else {
-		t.Log("'' matches `\\d+`")
+	if err := p.Filter(`\w+`); err == nil {
+		t.Error("'' should be filtered by `\\w+`", err)
 	}
 }
 

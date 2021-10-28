@@ -26,11 +26,11 @@ e.g.
 
 
 First Time:
-	Client   ---GET/HEAD /static/aario.md  -->                                       [Server]
+	Client   ---GET/HEAD /static/iwi.md  -->                                       [Server]
 		<-- resp header Etag=2e681a-6-5d044840 ---
 
 Next Time:
-	[Client]   --- GET/HEAD /static/aario.md,  header If-None-Match=2e681a-6-5d044840 -->     [Server]
+	[Client]   --- GET/HEAD /static/iwi.md,  header If-None-Match=2e681a-6-5d044840 -->     [Server]
 			<-- if sever Etag == client If-None-Match, set If-None-Match=false, response 304
 				else  set If-None-Match=true, response 200,
 

@@ -7,7 +7,7 @@ import (
 )
 
 // Tag Get tag of a struct.
-// e.g.  struct { Aario string `alias:"aario"`, Nation string `alias:"nation"`}   dtype.Tag(stru, "Aario", "alias")
+// e.g.  struct { Iwi string `name:"iwi"`, Nation string `name:"nation"`}   dtype.Tag(stru, "Iwi", "name")
 func Tag(u interface{}, field string, tagname string) string {
 	defer func() {
 		if err := recover(); err != nil {
@@ -23,8 +23,8 @@ func Tag(u interface{}, field string, tagname string) string {
 	return ""
 }
 
-func AliasTag(u interface{}, field string) string {
-	return Tag(u, field, "alias")
+func NameTag(u interface{}, field string) string {
+	return Tag(u, field, "name")
 }
 
 // ValueByTag Get value by its tag in a struct
@@ -47,6 +47,6 @@ func ValueByTag(u interface{}, tagname string, tag string) (interface{}, error) 
 	return nil, fmt.Errorf(`filed with tag %s:"%s" not found`, tagname, tag)
 }
 
-func ValueByAlias(u interface{}, tag string) (interface{}, error) {
-	return ValueByTag(u, "alias", tag)
+func ValueByName(u interface{}, tag string) (interface{}, error) {
+	return ValueByTag(u, "name", tag)
 }

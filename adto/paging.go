@@ -3,9 +3,9 @@ package adto
 import "github.com/hi-iwi/AaGo/com"
 
 type Paging struct {
-	Page   int `alias:"page"`
-	Offset int `alias:"offset"`
-	Limit  int `alias:"limit"`
+	Page   int `name:"page"`
+	Offset int `name:"offset"`
+	Limit  int `name:"limit"`
 }
 
 func MakePaging(r *com.Req, args ...int) Paging {
