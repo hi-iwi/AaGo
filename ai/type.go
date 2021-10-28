@@ -4,7 +4,7 @@ import "strconv"
 
 type (
 	// 这里是放在 DTO 里面的，而不是放在 entity 里面的
-	Uint64Str string // ID 数据存的是 uint64，拿取到接口都是 string
+	Uint64Str string // Id 数据存的是 uint64，拿取到接口都是 string
 	Uint32Str string // uint/uint32
 	Uint16Str string
 	Uint8Str  string
