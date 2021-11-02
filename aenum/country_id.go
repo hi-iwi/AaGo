@@ -2,7 +2,6 @@ package aenum
 
 import (
 	"strconv"
-	"strings"
 )
 
 type CountryId uint16
@@ -244,25 +243,7 @@ func ToCallingCode(cc CountryId) uint16 {
 	return uint16(cc)
 }
 
-// TelWithCountryCode 电话号码转化为存储模式
-func TelWithCountryCode(cc CountryId, tel string) string {
-	ccs := strconv.FormatUint(uint64(cc), 10)
-	return ccs + ":" + tel
-}
-func ParseTelWithCountryCode(t string, defaultCountryCode ...CountryId) (cc CountryId, tel string) {
-	arr := strings.Split(t, ":")
-	if len(arr) == 1 {
-		tel = arr[0]
-		if len(defaultCountryCode) == 1 {
-			cc = defaultCountryCode[0]
-		}
-	} else {
-		tel = arr[1]
-		d, _ := strconv.Atoi(arr[0])
-		cc = CountryId(d)
-	}
-	return
-}
+
 
 // 转化成拨打模式
 func TelWithCallingCode(cc CountryId, tel string) string {
