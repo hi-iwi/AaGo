@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+func DurationInChinese(d time.Duration) string {
+	s, _ := DurationString(d, "天`小时`分`秒")
+	return s
+}
+
+
 // 格式化 Duration
 // time.Duration.String()  返回如：895061h51m1.00001s
 // 这里对系统功能进行扩展，支持多种语言，但是只支持到整数秒。
