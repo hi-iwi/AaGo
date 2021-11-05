@@ -1,6 +1,7 @@
 package com
 
 import (
+	"errors"
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/dict"
@@ -108,7 +109,17 @@ func (resp *RespStruct) WriteUint64AliasId(alias string, id uint64) error {
 func (resp *RespStruct) WriteUintAliasId(alias string, id uint) error {
 	return resp.Write(map[string]uint{alias: id})
 }
-func (resp *RespStruct) WriteJointId(id map[string]interface{}) error {
+
+// k1,v1, k2, v2, k3,v3
+func (resp *RespStruct) WriteJointId(args ...interface{}) error {
+	l := len(args)
+	if l < 2 || l%2 == 1 {
+		return errors.New("no enough write joint id args  ")
+	}
+	id := make(map[string]interface{}, l/2)
+	for i := 0; i < l; i += 2 {
+		id[args[i].(string)] = args[i+1]
+	}
 	return resp.Write(id)
 }
 
