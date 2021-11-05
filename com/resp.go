@@ -3,6 +3,7 @@ package com
 import (
 	"github.com/hi-iwi/AaGo/aa"
 	"github.com/hi-iwi/AaGo/aenum"
+	"github.com/kataras/iris/v12"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -10,8 +11,7 @@ import (
 	"sync"
 
 	"github.com/hi-iwi/AaGo/dict"
-	"github.com/kataras/iris/v12"
-)
+ )
 
 type RespStruct struct {
 	beforeFlush     []func(*RespStruct)

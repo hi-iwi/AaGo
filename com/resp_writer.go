@@ -87,6 +87,25 @@ func (resp *RespStruct) WriteOK() error {
 	}
 	return resp.write(cs)
 }
+
+// 返回插入数据的ID，ID 可能是联合主键，或者字段不为id，那么就会以对象形式返回
+// 如： {"id":12314}   {"id":"ADREDD"}   {"id":{"k":"i_am_prinary_key"}}  {"id": {"k":"", "uid":""}}
+func (resp *RespStruct) WriteUint64Id(id uint64) error {
+	return resp.Write(map[string]uint64{"id": id})
+}
+func (resp *RespStruct) WriteUintId(id uint) error {
+	return resp.Write(map[string]uint{"id": id})
+}
+func (resp *RespStruct) WriteUint64AliasId(alias string, id uint64) error {
+	return resp.Write(map[string]uint64{alias: id})
+}
+func (resp *RespStruct) WriteUintAliasId(alias string, id uint) error {
+	return resp.Write(map[string]uint{alias: id})
+}
+func (resp *RespStruct) WriteUintJointId(id map[string]interface{}) error {
+	return resp.Write(id)
+}
+
 func (resp *RespStruct) WriteE(e *ae.Error) error {
 	if e != nil {
 		return resp.WriteSafeE(*e)
