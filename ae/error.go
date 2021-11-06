@@ -11,6 +11,13 @@ type Error struct {
 	Msg  string `json:"msg"`
 }
 
+func New(err error) *Error {
+	if err == nil {
+		return nil
+	}
+	return NewErr(err.Error())
+}
+
 func NewE(code int) *Error {
 	return NewError(code, dict.Code2Msg(code))
 }
