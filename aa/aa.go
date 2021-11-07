@@ -5,14 +5,18 @@ import (
 	"time"
 )
 
+var (
+	cfgMtx sync.RWMutex
+)
+
 type Aa struct {
-	mu sync.Mutex
+
 	//once sync.Once
 	// self imported configurations, e.g. parsed from ini
 	Config Config
 	// system configuration
 	Configuration Configuration
-	Log            Log
+	Log           Log
 }
 
 func New() *Aa {

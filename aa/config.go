@@ -1,8 +1,6 @@
 package aa
 
 import (
-	"log"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +10,7 @@ import (
 
 type Config interface {
 	Get(key string, defaultValue ...interface{}) *dtype.Dtype
+	Set(k, v string)
 }
 
 func parseToDuration(d string) time.Duration {
@@ -32,7 +31,6 @@ func parseToDuration(d string) time.Duration {
 	return time.Duration(t) * time.Second
 }
 
-
 func splitDots(keys ...string) []string {
 	n := make([]string, 0)
 	for _, key := range keys {
@@ -41,35 +39,9 @@ func splitDots(keys ...string) []string {
 	return n
 }
 
-func defaultDtype(key string, defaultValue ...interface{}) *dtype.Dtype {
-	dv := parseDefaultValue(defaultValue...)
-	if len(defaultValue) == 0 {
-		log.Println("not found config " + key)
+func defaultDtype(defaultValue ...interface{}) *dtype.Dtype {
+	if len(defaultValue) > 0 {
+		return dtype.New(defaultValue[0])
 	}
-	return dtype.New(dv)
-}
-
-func parseDefaultValue(vs ...interface{}) interface{} {
-	if len(vs) > 0 {
-		return vs[0]
-	}
-	return ""
-}
-
-func (app *Aa) ParseConfig(filename string) error {
-	switch path.Ext(filename) {
-	case ".ini":
-		app.ParseIni(filename)
-		// case ".yml", ".yaml":
-		// 	a.ParseYml(filename)
-	}
-
-	// a.mu.Lock()
-	// for k, v := range c {
-	// 	a.Config[k] = NewDtype(v)
-	// }
-	// a.mu.Unlock()
-
-	app.ParseToConfiguration()
-	return nil
+	return dtype.New("")
 }

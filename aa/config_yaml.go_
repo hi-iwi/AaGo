@@ -23,9 +23,9 @@ func (app *Aa) ParseYml(filename string) error {
 	if err := yaml.Unmarshal(data, &conf.data); err != nil {
 		return err
 	}
-	app.mu.Lock()
+	mu.Lock()
 	app.Config = conf
-	app.mu.Unlock()
+	mu.Unlock()
 	return nil
 }
 

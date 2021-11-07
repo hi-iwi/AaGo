@@ -28,8 +28,8 @@ const (
 )
 
 func (app *Aa) ParseToConfiguration() {
-	app.mu.Lock()
-	defer app.mu.Unlock()
+	cfgMtx.Lock()
+	defer cfgMtx.Unlock()
 	app.Configuration.Env = app.Config.Get(CkEnv).String()
 	app.Configuration.Name = app.Config.Get(CkService).String()
 	app.Configuration.TimeFormat = app.Config.Get(CkTimeFormat).String()
