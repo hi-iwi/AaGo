@@ -5,13 +5,12 @@ import (
 	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/ini.v1"
 	"strings"
-	"sync"
 )
 
 type Ini struct {
 	path        string
 	data        *ini.File
-	otherConfig sync.Map
+	otherConfig map[string]string // 不要使用 sync.Map， 直接对整个map加锁设置
 }
 
 func (app *Aa) LoadIni(path string) error {
@@ -33,9 +32,11 @@ func (c *Ini) Reload() error {
 }
 
 // 这里有锁，所以要批量设置
-func (c *Ini) Add(otherConfigs map[string]string) {
+func (c *Ini) LoadOtherConfig(otherConfigs map[string]string) {
+	cfgMtx.Lock()
+	defer cfgMtx.Unlock()
 	for k, v := range otherConfigs {
-		c.otherConfig.Store(k, v)
+		c.otherConfig[k] = v
 	}
 }
 func (c *Ini) getIni(key string) string {
@@ -92,8 +93,8 @@ func (c *Ini) MustGetString(key string) (string, error) {
 	cfgMtx.Unlock()
 
 	if v == "" {
-		if d, ok := c.otherConfig.Load(key); ok {
-			v = d.(string)
+		if d, ok := c.otherConfig[key]; ok {
+			v = d
 		}
 	}
 	if v == "" {
