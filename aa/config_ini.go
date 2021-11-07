@@ -31,10 +31,13 @@ func (c *Ini) Reload() error {
 	return nil
 }
 
-func (c *Ini) Set(k, v string) {
+// 这里有锁，所以要批量设置
+func (c *Ini) Add(otherConfigs map[string]string) {
 	cfgMtx.Lock()
 	defer cfgMtx.Unlock()
-	c.otherConfig[k] = v
+	for k, v := range otherConfigs {
+		c.otherConfig[k] = v
+	}
 }
 func (c *Ini) getIni(key string) string {
 	keys := splitDots(key)

@@ -10,7 +10,7 @@ import (
 
 type Config interface {
 	Reload() error
-	Set(k, v string)
+	Add(otherConfigs map[string]string)  // 这里有锁，所以要批量设置
 	Get(key string, defaultValue ...interface{}) *dtype.Dtype
 	MustGet(key string) (*dtype.Dtype, error)
 
