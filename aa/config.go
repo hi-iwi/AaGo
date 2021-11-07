@@ -9,8 +9,11 @@ import (
 )
 
 type Config interface {
-	Get(key string, defaultValue ...interface{}) *dtype.Dtype
+	Reload() error
 	Set(k, v string)
+	Get(key string, defaultValue ...interface{}) *dtype.Dtype
+	MustGet(key string) (*dtype.Dtype, error)
+
 }
 
 func parseToDuration(d string) time.Duration {

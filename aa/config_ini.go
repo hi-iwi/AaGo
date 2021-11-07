@@ -1,62 +1,78 @@
 package aa
 
 import (
+	"errors"
 	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/ini.v1"
 	"strings"
 )
 
 type Ini struct {
+	path        string
 	data        *ini.File
 	otherConfig map[string]string
 }
 
-func (app *Aa) LoadIni(filename string) error {
-	c, err := ini.Load(filename)
+func (app *Aa) LoadIni(path string) error {
+	cfgMtx.Lock()
+	defer cfgMtx.Unlock()
+	app.Config = &Ini{path: path}
+	app.Config.Reload()
+	app.ParseToConfiguration()
+
+	return nil
+}
+func (c *Ini) Reload() error {
+	data, err := ini.Load(c.path)
 	if err != nil {
 		return err
 	}
-	var conf = &Ini{data: c}
-	cfgMtx.Lock()
-	app.Config = conf
-	app.ParseToConfiguration()
-	cfgMtx.Unlock()
+	c.data = data
 	return nil
 }
 
 func (c *Ini) Set(k, v string) {
+	cfgMtx.Lock()
+	defer cfgMtx.Unlock()
 	c.otherConfig[k] = v
 }
-func (c *Ini) getIni(key string, defaultValue ...interface{}) *dtype.Dtype {
+func (c *Ini) getIni(key string) string {
 	keys := splitDots(key)
-
-	cfgMtx.RLock()
-	defer cfgMtx.RUnlock()
-
 	var s *ini.Section
 	if len(keys) == 1 {
 		if s = c.data.Section(""); s.HasKey(key) {
-			return dtype.New(s.Key(key).String())
+			return s.Key(key).String()
 		}
-		return defaultDtype(defaultValue...)
+		return ""
 	}
 
 	k := strings.Join(keys[1:], "_")
 	if s = c.data.Section(keys[0]); s.HasKey(k) {
-		return dtype.New(s.Key(k).String())
+		return s.Key(k).String()
 	}
-	return defaultDtype(defaultValue...)
+	return ""
 }
 
 // Get(key) or Get(key, defaultValue)
 // 先从 ini 文件读取，找不到再去从其他 provider （如数据库拉下来的配置）里面找
 func (c *Ini) Get(key string, defaultValue ...interface{}) *dtype.Dtype {
-	v := c.getIni(key, defaultValue)
-	if v.String() != "" {
-		return v
-	}
-	if d, ok := c.otherConfig[key]; ok {
-		v = dtype.New(d)
+	v, err := c.MustGet(key)
+	if err != nil {
+		return defaultDtype(defaultValue...)
 	}
 	return v
+}
+
+func (c *Ini) MustGet(key string) (*dtype.Dtype, error) {
+	cfgMtx.RLock()
+	defer cfgMtx.Unlock()
+
+	v := c.getIni(key)
+	if v == "" {
+		v, _ = c.otherConfig[key]
+	}
+	if v == "" {
+		return nil, errors.New("must set config `%s`")
+	}
+	return dtype.New(v), nil
 }
