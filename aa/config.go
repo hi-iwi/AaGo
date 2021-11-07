@@ -1,19 +1,19 @@
 package aa
 
 import (
+	"github.com/hi-iwi/AaGo/dtype"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/hi-iwi/AaGo/dtype"
 )
 
 type Config interface {
 	Reload() error
-	Add(otherConfigs map[string]string)  // 这里有锁，所以要批量设置
+	Add(otherConfigs map[string]string) // 这里有锁，所以要批量设置
 	Get(key string, defaultValue ...interface{}) *dtype.Dtype
 	MustGet(key string) (*dtype.Dtype, error)
-
+	GetString(key string, defaultValue ...string) string
+	MustGetString(key string) (string, error)
 }
 
 func parseToDuration(d string) time.Duration {
@@ -40,11 +40,4 @@ func splitDots(keys ...string) []string {
 		n = append(n, strings.Split(key, ".")...)
 	}
 	return n
-}
-
-func defaultDtype(defaultValue ...interface{}) *dtype.Dtype {
-	if len(defaultValue) > 0 {
-		return dtype.New(defaultValue[0])
-	}
-	return dtype.New("")
 }
