@@ -236,7 +236,7 @@ func (c CountryId) String() string {
 func (c CountryId) Name() string {
 	switch c {
 	case China:
-		return "中国"
+		return "China"
 	case America:
 		return "USA"
 	}

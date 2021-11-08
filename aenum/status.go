@@ -20,6 +20,28 @@ const (
 	Female     Sex = 2
 	OtherSex   Sex = 255
 )
+
+func NewSex(s uint8) (Sex, bool) {
+	x := Sex(s)
+	return x, x.Valid()
+}
+
+func (x Sex) Valid() bool {
+	return x <= Female || x == OtherSex
+}
+
+func (x Sex) Name() string {
+	switch x {
+	case Male:
+		return "male"
+	case Female:
+		return "female"
+	case OtherSex:
+		return "other sex"
+	}
+	return "unknow sex"
+}
+
 const (
 	DataParsingCheckFailed DataParsing = -2 // 数据签名核对错误、字段核对错误
 	DataParsingFailed      DataParsing = -1 // 数据解析失败
