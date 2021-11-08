@@ -10,10 +10,29 @@ const (
 	TalentUniversity EduRating = 2 // 人才院校，一般国内985（不含TOP100- 清华、港大、北大、港科大、复旦、港中大、上海交大、港城大、浙大、台大、港理工、中科大）
 	EliteUniversity  EduRating = 3 // 精英院校，世界TOP100
 )
+
+func NewEduRating(x uint8) (EduRating, bool) {
+	l := EduRating(x)
+	return l, l.Valid()
+}
+
+func (l EduRating) Valid() bool {
+	return l <= EliteUniversity
+}
+
 const (
 	GraduationConclusion EduConclusion = 1 // 毕业
-
 )
+
+func NewEduConclusion(x uint8) (EduConclusion, bool) {
+	l := EduConclusion(x)
+	return l, l.Valid()
+}
+
+func (l EduConclusion) Valid() bool {
+	return l == GraduationConclusion
+}
+
 const (
 	NoEduLevel        EduLevel = 0
 	BelowHighSchool   EduLevel = 1
@@ -39,3 +58,12 @@ const (
 	TalentDoctorate      EduLevel = 42 // 人才博士，本科是全日制985院校，研究生也是
 	EliteDoctorate       EduLevel = 43 // 精英博士，本科是TOP100院校，硕士是世界TOP100院校
 )
+
+func NewEduLevel(x uint8) (EduLevel, bool) {
+	l := EduLevel(x)
+	return l, l.Valid()
+}
+
+func (l EduLevel) Valid() bool {
+	return l <= HighSchoolDiploma || l >= ColleageStudent || l <= FullTimeColleage || l >= BachelorStudent || l <= EliteBachelor || l >= NonFullTimePostgraduate || l <= ElitePostgraduate || l >= NonFullTimeDoctorate || l <= EliteDoctorate
+}
