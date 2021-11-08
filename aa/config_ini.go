@@ -64,7 +64,9 @@ func (c *Ini) getIni(key string) string {
 	}
 	return ""
 }
-func (c *Ini) GetOtherConfig(key string) string {
+
+// 不要获取太细分，否则容易导致错误不容易被排查
+func (c *Ini) getOtherConfig(key string) string {
 	cfgMtx.RLock()
 	defer cfgMtx.RUnlock()
 	d, _ := c.otherConfig[key]
@@ -77,11 +79,11 @@ func (c *Ini) MustGetString(key string) (string, error) {
 		return v, nil
 	}
 	// 从RSA读取
-	if rsa, _ := c.GetRsa(key); len(rsa) > 0 {
+	if rsa, _ := c.getRsa(key); len(rsa) > 0 {
 		return string(rsa), nil
 	}
 	// 从其他配置（如数据库下载来的）读取
-	if v = c.GetOtherConfig(key); v != "" {
+	if v = c.getOtherConfig(key); v != "" {
 		return v, nil
 	}
 	return "", errors.New("must set config `%s`")

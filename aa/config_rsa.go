@@ -52,8 +52,8 @@ func (c *Ini) AddRsaConfigs(rsaConfigs map[string][]byte) {
 		}
 	}
 }
-
-func (c *Ini) GetRsa(name string) ([]byte, bool) {
+// 不要获取太细分，否则容易导致错误不容易被排查
+func (c *Ini) getRsa(name string) ([]byte, bool) {
 	cfgMtx.RLock()
 	defer cfgMtx.RUnlock()
 	v, ok := c.rsa[name]

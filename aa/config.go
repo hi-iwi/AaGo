@@ -10,9 +10,9 @@ import (
 type Config interface {
 	Reload(app *Aa) error
 	AddOtherConfigs(otherConfigs map[string]string) // 这里有锁，所以要批量设置
-	GetOtherConfig(key string) string
+	//getOtherConfig(key string) string    // 不要获取太细分，否则容易导致错误不容易被排查
 	AddRsaConfigs(rsaConfigs map[string][]byte)
-	GetRsa(name string) ([]byte, bool)
+	//GetRsa(name string) ([]byte, bool) // 不要获取太细分，否则容易导致错误不容易被排查
 	MustGetString(key string) (string, error)
 	GetString(key string, defaultValue ...string) string
 	MustGet(key string) (*dtype.Dtype, error)
