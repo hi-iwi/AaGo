@@ -223,6 +223,35 @@ const (
 	Uzbekistan                   CountryId = 998
 )
 
+func NewCountryId(id uint16) (CountryId, bool) {
+	c := CountryId(id)
+	return c, c.Valid()
+}
+func (c CountryId) Valid() bool {
+	return true
+}
+func (c CountryId) String() string {
+	return strconv.Itoa(int(c))
+}
+func (c CountryId) Name() string {
+	switch c {
+	case China:
+		return "中国"
+	case America:
+		return "USA"
+	}
+	return c.String()
+}
+
+func (c CountryId) In(s []CountryId) bool {
+	for _, id := range s {
+		if id == c {
+			return true
+		}
+	}
+	return false
+}
+
 func ToCallingCode(cc CountryId) uint16 {
 	switch cc {
 	case Canada:
@@ -242,8 +271,6 @@ func ToCallingCode(cc CountryId) uint16 {
 	}
 	return uint16(cc)
 }
-
-
 
 // 转化成拨打模式
 func TelWithCallingCode(cc CountryId, tel string) string {

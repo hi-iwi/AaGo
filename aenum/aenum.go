@@ -1,5 +1,6 @@
 package aenum
 
+// func NewDemo() (Demo, bool){}
 type Demo interface {
 	Valid() bool                  // 是否在正确范围内
 	String() string               // 类型转换为string
