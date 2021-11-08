@@ -54,9 +54,4 @@ const (
 	HttpStatusAccountUnlinked = 491 // 已经授权登陆，但是需要绑定手机号/账号
 )
 
-func ToSex(sex uint8) Sex {
-	if sex == 1 || sex == 2 || sex == 255 {
-		return Sex(sex)
-	}
-	return UnknownSex
-}
+

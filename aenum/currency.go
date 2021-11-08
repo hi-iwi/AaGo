@@ -15,10 +15,17 @@ const (
 	SGD             = Currency(Singapore)
 )
 
+func NewCurrency(x uint16) (Currency, bool) {
+	c := Currency(x)
+	return c, c.Valid()
+}
+func (c Currency) Valid() bool {
+	return true
+}
 func (currency Currency) String() string {
 	return strconv.FormatUint(uint64(currency), 10)
 }
-func (currency Currency) Stringify() string {
+func (currency Currency) Name() string {
 	switch currency {
 	case USD:
 		return "USD"
@@ -27,5 +34,5 @@ func (currency Currency) Stringify() string {
 	case HKD:
 		return "HKD"
 	}
-	return "UnknownCurrency"
+	return "unknown currency"
 }
