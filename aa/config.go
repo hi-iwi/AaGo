@@ -8,12 +8,15 @@ import (
 )
 
 type Config interface {
-	Reload() error
-	LoadOtherConfig(otherConfigs map[string]string) // 这里有锁，所以要批量设置
-	Get(key string, defaultValue ...interface{}) *dtype.Dtype
-	MustGet(key string) (*dtype.Dtype, error)
-	GetString(key string, defaultValue ...string) string
+	Reload(app *Aa) error
+	AddOtherConfigs(otherConfigs map[string]string) // 这里有锁，所以要批量设置
+	GetOtherConfig(key string) string
+	AddRsaConfigs(rsaConfigs map[string][]byte)
+	GetRsa(name string) ([]byte, bool)
 	MustGetString(key string) (string, error)
+	GetString(key string, defaultValue ...string) string
+	MustGet(key string) (*dtype.Dtype, error)
+	Get(key string, defaultValue ...interface{}) *dtype.Dtype
 }
 
 func parseToDuration(d string) time.Duration {

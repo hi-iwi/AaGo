@@ -10,16 +10,17 @@ import (
 )
 
 type Configuration struct {
-	Name         string `yaml:"name"`
-	Env          string `yaml:"env"`         // dev test preprod product
-	TimezoneID   string `yaml:"timezone_id"` // e.g. "Asia/Shanghai"
+	Name         string
+	Env          string // dev test preprod product
+	TimezoneID   string // e.g. "Asia/Shanghai"
 	TimeLocation *time.Location
-	TimeFormat   string `yaml:"time_format"` // e.g. "2006-02-01 15:04:05"
-	Mock         bool   `yaml:"mock"`        // using mock
+	TimeFormat   string // e.g. "2006-02-01 15:04:05"
+	Mock         bool   // using mock
 
 }
 
 const (
+	CkRsaRoot    = "rsa_root"
 	CkEnv        = "env"
 	CkService    = "service"
 	CkTimezoneID = "timezone_id"
@@ -28,16 +29,14 @@ const (
 )
 
 func (app *Aa) ParseToConfiguration() {
-	cfgMtx.Lock()
-	defer cfgMtx.Unlock()
-	app.Configuration.Env = app.Config.Get(CkEnv).String()
-	app.Configuration.Name = app.Config.Get(CkService).String()
-	app.Configuration.TimeFormat = app.Config.Get(CkTimeFormat).String()
+	app.Configuration.Env = app.Config.GetString(CkEnv)
+	app.Configuration.Name = app.Config.GetString(CkService)
+	app.Configuration.TimeFormat = app.Config.GetString(CkTimeFormat)
 	//serverID := app.Config.Get("server_id").Name()
 	//app.Configuration.ServerID = serverID
 	//app.Configuration.VID = svc + ":" + serverID
 
-	if tz := app.Config.Get(CkTimezoneID).String(); tz != "" {
+	if tz := app.Config.GetString(CkTimezoneID); tz != "" {
 		loc, err := time.LoadLocation(tz)
 		if err != nil {
 			panic("invalid timezone: " + tz + ", error: " + err.Error())
