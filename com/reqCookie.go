@@ -2,14 +2,14 @@ package com
 
 import "net/http"
 
-func (req *Req) Cookie(name string) (*http.Cookie, error) {
-	return req.r.Cookie(name)
+func (r *Req) Cookie(name string) (*http.Cookie, error) {
+	return r.r.Cookie(name)
 }
 
-func (req *Req) AddCookie(c *http.Cookie) {
-	req.r.AddCookie(c)
+func (r *Req) AddCookie(c *http.Cookie) {
+	r.r.AddCookie(c)
 }
 
-func (req *Req) Cookies() []*http.Cookie {
-	return req.r.Cookies()
+func (r *Req) Cookies() []*http.Cookie {
+	return r.r.Cookies()
 }

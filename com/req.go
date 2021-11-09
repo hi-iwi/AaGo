@@ -109,41 +109,41 @@ func NewReq(p interface{}) *Req {
 	return req
 }
 
-func (req *Req) ContentType() string {
-	if req.contentType == "" {
-		ct := req.r.Header.Get("Content-Type")
+func (r *Req) ContentType() string {
+	if r.contentType == "" {
+		ct := r.r.Header.Get("Content-Type")
 		if ct == "" {
 			ct = "application/octet-stream"
 		}
-		req.contentType, _, _ = mime.ParseMediaType(ct)
+		r.contentType, _, _ = mime.ParseMediaType(ct)
 	}
-	return req.contentType
+	return r.contentType
 }
 
-func (req *Req) Uri() string {
-	if req.data.uri != "" {
-		return req.data.uri
+func (r *Req) Uri() string {
+	if r.data.uri != "" {
+		return r.data.uri
 	}
-	if req.r != nil {
-		return req.r.URL.Path
+	if r.r != nil {
+		return r.r.URL.Path
 	}
 	return ""
 }
 
-func (req *Req) Headers() map[string]interface{} {
+func (r *Req) Headers() map[string]interface{} {
 
-	if !req.parsed && req.r != nil {
-		req.data.hlck.Lock()
+	if !r.parsed && r.r != nil {
+		r.data.hlck.Lock()
 		// @note 这里必须要判断 map[string]string 是否为空，并分配内存空间
-		if req.data.header == nil {
+		if r.data.header == nil {
 			//req.data.header = make(map[string]string, len(req.r.Header))
 		}
-		req.data.hlck.Unlock()
+		r.data.hlck.Unlock()
 	}
-	req.data.hlck.RLock()
-	h := req.data.header
-	rh := req.r.Header
-	req.data.hlck.RUnlock()
+	r.data.hlck.RLock()
+	h := r.data.header
+	rh := r.r.Header
+	r.data.hlck.RUnlock()
 
 	headers := make(map[string]interface{}, len(rh)+len(h))
 	for k := range rh {
@@ -161,18 +161,18 @@ func (req *Req) Headers() map[string]interface{} {
 	return headers
 }
 
-func (req *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
-	req.data.hlck.RLock()
-	h := req.data.header
-	req.data.hlck.RUnlock()
+func (r *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
+	r.data.hlck.RLock()
+	h := r.data.header
+	r.data.hlck.RUnlock()
 	for k, v := range h {
 		if k == param {
 			r := NewReqProp(param, v)
 			return r, r.Filter(patterns...)
 		}
 	}
-	if req.r != nil {
-		v := req.r.Header.Get(param)
+	if r.r != nil {
+		v := r.r.Header.Get(param)
 		r := NewReqProp(param, v)
 		return r, r.Filter(patterns...)
 	}
@@ -180,11 +180,11 @@ func (req *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Err
 	return r, r.Filter(patterns...)
 }
 
-func (req *Req) Queries() map[string]interface{} {
-	req.data.qlck.RLock()
-	rq := req.r.URL.Query()
-	dq := req.data.query
-	req.data.qlck.RUnlock()
+func (r *Req) Queries() map[string]interface{} {
+	r.data.qlck.RLock()
+	rq := r.r.URL.Query()
+	dq := r.data.query
+	r.data.qlck.RUnlock()
 	queries := make(map[string]interface{}, len(rq)+len(dq))
 	for k := range rq {
 		vs := rq[k]
@@ -201,10 +201,10 @@ func (req *Req) Queries() map[string]interface{} {
 	return queries
 }
 
-func (req *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
-	req.data.qlck.RLock()
-	q := req.data.query
-	req.data.qlck.RUnlock()
+func (r *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
+	r.data.qlck.RLock()
+	q := r.data.query
+	r.data.qlck.RUnlock()
 
 	for k, v := range q {
 		if k == param {
@@ -212,8 +212,8 @@ func (req *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Erro
 			return r, r.Filter(patterns...)
 		}
 	}
-	if req.r != nil {
-		v := req.r.URL.Query().Get(param)
+	if r.r != nil {
+		v := r.r.URL.Query().Get(param)
 		r := NewReqProp(param, v)
 		return r, r.Filter(patterns...)
 	}
@@ -221,69 +221,69 @@ func (req *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Erro
 	return r, r.Filter(patterns...)
 }
 
-func (req *Req) loadFormBody(d url.Values) {
+func (r *Req) loadFormBody(d url.Values) {
 	if len(d) == 0 {
 		return
 	}
-	if len(req.data.body) == 0 {
-		req.data.body = make(map[string]interface{}, len(d))
+	if len(r.data.body) == 0 {
+		r.data.body = make(map[string]interface{}, len(d))
 	}
 	for k, vs := range d {
 
 		if len(vs) > 0 {
-			req.data.blck.Lock()
-			req.data.body[k] = vs[0]
-			req.data.blck.Unlock()
+			r.data.blck.Lock()
+			r.data.body[k] = vs[0]
+			r.data.blck.Unlock()
 		}
 	}
 }
-func (req *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
-	ct := req.ContentType()
-	if !req.parsed {
+func (r *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
+	ct := r.ContentType()
+	if !r.parsed {
 		// 参考 http.parsePostForm()  request.go  ParseForm()
 		switch ct {
 		case "application/json", "application/octet-stream":
-			var reader io.Reader = req.r.Body
+			var reader io.Reader = r.r.Body
 			maxFormSize := int64(1024)
 			if _, ok := reader.(*maxBytesReader); !ok {
 				maxFormSize = int64(10 << 20) // 10 MB is a lot of json.
-				reader = io.LimitReader(req.r.Body, maxFormSize+1)
+				reader = io.LimitReader(r.r.Body, maxFormSize+1)
 			}
-			b, err := ioutil.ReadAll(req.r.Body)
+			b, err := ioutil.ReadAll(r.r.Body)
 			if err != nil {
 				return NewReqProp(param, ""), ae.NewErr(err.Error())
 			}
 			if int64(len(b)) > maxFormSize {
 				return NewReqProp(param, ""), ae.NewError(413, "Json body is too large")
 			}
-			req.raw = string(b)
-			req.data.blck.Lock()
-			json.Unmarshal(b, &req.data.body)
-			req.data.blck.Unlock()
-			req.parsed = true
+			r.raw = string(b)
+			r.data.blck.Lock()
+			json.Unmarshal(b, &r.data.body)
+			r.data.blck.Unlock()
+			r.parsed = true
 		case "application/x-www-form-urlencoded":
-			if req.r.PostForm == nil {
-				req.r.ParseMultipartForm(1 << 20) // 1M
+			if r.r.PostForm == nil {
+				r.r.ParseMultipartForm(1 << 20) // 1M
 			}
-			req.loadFormBody(req.r.PostForm)
+			r.loadFormBody(r.r.PostForm)
 		case "multipart/form-data":
-			if req.r.MultipartForm != nil {
-				req.loadFormBody(req.r.MultipartForm.Value)
+			if r.r.MultipartForm != nil {
+				r.loadFormBody(r.r.MultipartForm.Value)
 			} else {
-				req.loadFormBody(req.r.Form)
+				r.loadFormBody(r.r.Form)
 			}
 		}
 	}
-	req.data.blck.RLock()
-	b := req.data.body
-	req.data.blck.RUnlock()
+	r.data.blck.RLock()
+	b := r.data.body
+	r.data.blck.RUnlock()
 
 	if v, ok := b[param]; ok {
 		r := NewReqProp(param, v)
 		return r, r.Filter(patterns...)
 	}
 
-	fv := req.r.PostFormValue(param)
+	fv := r.r.PostFormValue(param)
 	r := NewReqProp(param, fv)
 	return r, r.Filter(patterns...)
 }

@@ -20,12 +20,19 @@ func (r *Req) XHeader(name string, patterns ...interface{}) (v *ReqProp, e *ae.E
 	v = NewReqProp(name, "")
 	return v, v.Filter(patterns...)
 }
+func (r *Req) FastXheader(name string, patterns ...interface{}) *ReqProp {
+	v, _ := r.XHeader(name, patterns...)
+	return v
+}
 
 // in url params -> in header? -> in cookie?
 // e.g.  csrf_token: in url params? -> Csrf-Token: in header?  X-Csrf-Token: in header-> csrf_token: in cookie
 func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
-
+	key := strings.ToLower(strings.ReplaceAll(name, "-", "-"))
 	if v, e = r.Query(name, patterns...); e == nil && v.NotEmpty() {
+		return
+	}
+	if v, e = r.Query(key, patterns...); e == nil && v.NotEmpty() {
 		return
 	}
 	if v, e = r.XHeader(name, patterns...); e == nil && v.NotEmpty() {
@@ -35,6 +42,14 @@ func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Er
 		v = NewReqProp(cookie.Name, cookie.Value)
 		return v, v.Filter(patterns...)
 	}
+	if cookie, err := r.Cookie(key); err == nil {
+		v = NewReqProp(cookie.Name, cookie.Value)
+		return v, v.Filter(patterns...)
+	}
 	v = NewReqProp(name, "")
 	return v, v.Filter(patterns...)
+}
+func (r *Req) FastXparam(name string, patterns ...interface{}) *ReqProp {
+	v, _ := r.Xparam(name, patterns...)
+	return v
 }
