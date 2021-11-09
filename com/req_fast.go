@@ -5,6 +5,21 @@ import (
 	"strings"
 )
 
+func (r *Req) Xhost() string {
+	scheme := r.r.URL.Scheme
+	if scheme == "" {
+		if r.r.TLS != nil {
+			scheme = "https:"
+		} else {
+			scheme = "http:"
+		}
+	}
+	// 由于是通过接口做跳转，所以不可行，只会对这个接口结果跳转， 不会对页面跳转！！还需要客户端自行处理
+	host := r.r.Host
+	h := scheme + "//" + host
+	return h
+}
+
 // 跟踪客户端数据，优先级：url --> header `X-***`  --> cookie
 // 标准：Referer, User-Agent,
 // 自定义：X-Csrf-Token, X-Request-Id, X-From, X-Inviter
