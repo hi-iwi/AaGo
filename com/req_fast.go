@@ -40,10 +40,7 @@ func (r *Req) FastXheader(name string, patterns ...interface{}) *ReqProp {
 	v, _ := r.XHeader(name, patterns...)
 	return v
 }
-
-// in url params -> in header? -> in cookie?
-// e.g.  csrf_token: in url params? -> Csrf-Token: in header?  X-Csrf-Token: in header-> csrf_token: in cookie
-func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
+func (r *Req) Qparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
 	key := strings.ToLower(strings.ReplaceAll(name, "-", "-"))
 	if v, e = r.Query(name, patterns...); e == nil && v.NotEmpty() {
 		return
@@ -54,6 +51,18 @@ func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Er
 	if v, e = r.XHeader(name, patterns...); e == nil && v.NotEmpty() {
 		return
 	}
+	v = NewReqProp(name, "")
+	return v, v.Filter(patterns...)
+}
+
+// in url params -> in header? -> in cookie?
+// e.g.  csrf_token: in url params? -> Csrf-Token: in header?  X-Csrf-Token: in header-> csrf_token: in cookie
+func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
+	if v, e = r.Qparam(name, patterns...); e == nil && v.NotEmpty() {
+		return
+	}
+
+	key := strings.ToLower(strings.ReplaceAll(name, "-", "-"))
 	if cookie, err := r.Cookie(name); err == nil {
 		v = NewReqProp(cookie.Name, cookie.Value)
 		return v, v.Filter(patterns...)
@@ -65,7 +74,7 @@ func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Er
 	v = NewReqProp(name, "")
 	return v, v.Filter(patterns...)
 }
-func (r *Req) FastXparam(name string, patterns ...interface{}) *ReqProp {
-	v, _ := r.Xparam(name, patterns...)
+func (r *Req) FastXparam(name string) *ReqProp {
+	v, _ := r.Xparam(name, false)
 	return v
 }

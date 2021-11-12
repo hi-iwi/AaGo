@@ -56,10 +56,10 @@ Application
             + ado    # 动态数据对象。是 entity 的局部，entity 可以引用 ado。
             + cache                         # 缓存
             + dic           # 放置翻译文件；   
-            + enum              APP 内enum  # 放常量、枚举 conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
+            + ienum              APP 内enum  # 放常量、枚举 conf  和  ienum 区别是： conf 纯服务端用到；ienum 客户端也需要用到
                                                        # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
             + module                        # 提高微服务特性，module仅用于区分客户端、服务端、CMS端
-                + ss                        # Service/Server 对服务端的接口
+                + syncUser                        # Service/Server 对服务端的接口
                 + cms                       # 内容管理系统
                 + bs                        # B/S架构，Browser/Server
                     + controller
@@ -88,7 +88,7 @@ Application
 
     + bootstrap     # 系统启动初始化
          + console       # 调试控制台、自定义命令（如Go自动生成文件指令）
-    + conf          # .go 配置文件    conf  和  enum 区别是： conf 纯服务端用到；enum 客户端也需要用到
+    + conf          # .go 配置文件    conf  和  ienum 区别是： conf 纯服务端用到；ienum 客户端也需要用到
     + deploy
         + config      # .ini 配置文件，cert.pem 文件
         + public
