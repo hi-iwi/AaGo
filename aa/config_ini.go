@@ -1,6 +1,7 @@
 package aa
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/ini.v1"
@@ -34,6 +35,20 @@ func (c *Ini) Reload(app *Aa) error {
 	cfgMtx.Unlock()
 	err = c.loadRsa()
 	return err
+}
+func (c *Ini) LoadAIni(cfgs map[string]json.RawMessage) error {
+	g := make(map[string]string)
+	for k, v := range cfgs {
+		var c map[string]interface{}
+		if err := json.Unmarshal(v, &c); err != nil {
+			return err
+		}
+		for jk, jv := range c {
+			g[k+"."+jk] = dtype.String(jv)
+		}
+	}
+	c.AddOtherConfigs(g)
+	return nil
 }
 
 // 这里有锁，所以要批量设置
