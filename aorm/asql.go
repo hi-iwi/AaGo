@@ -18,7 +18,7 @@ type ASQL struct {
 	EndWith          string
 }
 
-// urlencode special code is start with `%`, e.g. `%23`. URL special characters: + % / ? = % # &
+// urlencode special code is start with `%`, e.g. `%23`. Url special characters: + % / ? = % # &
 // name=Iwi                                          name=Iwi
 // name=::Iwi:                                       name likes Iwi
 // name=::Iwi                                        name ends with Iwi

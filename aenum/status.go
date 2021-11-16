@@ -1,7 +1,7 @@
 package aenum
 
 type Status int8
-type Sex uint8
+
 type DataParsing int8 // 解析远程数据，储存远程数据记录时用到
 
 const (
@@ -14,33 +14,7 @@ const (
 	Finished      Status = 127  // 已完成，展示
 )
 
-const (
-	UnknownSex Sex = 0
-	Male       Sex = 1
-	Female     Sex = 2
-	OtherSex   Sex = 255
-)
 
-func NewSex(s uint8) (Sex, bool) {
-	x := Sex(s)
-	return x, x.Valid()
-}
-
-func (x Sex) Valid() bool {
-	return x <= Female || x == OtherSex
-}
-
-func (x Sex) Name() string {
-	switch x {
-	case Male:
-		return "male"
-	case Female:
-		return "female"
-	case OtherSex:
-		return "other sex"
-	}
-	return "unknow sex"
-}
 
 const (
 	DataParsingCheckFailed DataParsing = -2 // 数据签名核对错误、字段核对错误

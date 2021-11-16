@@ -8,14 +8,14 @@ import (
 )
 
 type OasBimg struct {
-	//URL    string `json:"url"`
+	//Url    string `json:"url"`
 	Path   string `json:"path"`
 	Width  uint16 `json:"width"`
 	Height uint16 `json:"height"`
 	Size   uint32 `json:"size"`
 }
 type OasBvideo struct {
-	//URL  string `json:"url"`
+	//Url  string `json:"url"`
 	Path   string `json:"path"`
 	Width  uint16 `json:"width"`
 	Height uint16 `json:"height"`
