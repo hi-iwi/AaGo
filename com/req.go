@@ -176,8 +176,8 @@ func (r *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Error
 		r := NewReqProp(param, v)
 		return r, r.Filter(patterns...)
 	}
-	r := NewReqProp(param, "")
-	return r, r.Filter(patterns...)
+	p := NewReqProp(param, "")
+	return p, p.Filter(patterns...)
 }
 
 func (r *Req) Queries() map[string]interface{} {
@@ -217,8 +217,8 @@ func (r *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Error)
 		r := NewReqProp(param, v)
 		return r, r.Filter(patterns...)
 	}
-	r := NewReqProp(param, "")
-	return r, r.Filter(patterns...)
+	p := NewReqProp(param, "")
+	return p, p.Filter(patterns...)
 }
 
 func (r *Req) loadFormBody(d url.Values) {
@@ -284,6 +284,6 @@ func (r *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) 
 	}
 
 	fv := r.r.PostFormValue(param)
-	r := NewReqProp(param, fv)
-	return r, r.Filter(patterns...)
+	p := NewReqProp(param, fv)
+	return p, p.Filter(patterns...)
 }
