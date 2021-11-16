@@ -2,6 +2,13 @@ package aa
 
 import "time"
 
+type MysqlPoolConfig struct {
+	MaxIdleConns    int
+	MaxOpenConns    int
+	ConnMaxLifetime time.Duration
+	ConnMaxIdleTime time.Duration
+}
+
 // https://github.com/go-sql-driver/mysql/
 type MysqlConfig struct {
 	Schema   string // dbname
@@ -17,13 +24,27 @@ type MysqlConfig struct {
 	ReadTimeout  time.Duration // 使用时，需要设置单位，s, ms等。I/O read timeout.
 	WriteTimeout time.Duration // 使用时，需要设置单位，s, ms等。I/O write timeout.
 
-	MaxIdleConns    int
-	MaxOpenConns    int
-	ConnMaxLifetime time.Duration
-	ConnMaxIdleTime time.Duration
+	Pool MysqlPoolConfig
 }
 
+//
+//// @example
+//	[mysql_helloworld]
+//  host=localhost
+//	schema=helloworld
+//	user=hi
+//	password=hello
+//	tls=false
+//	timeout=10s,10s,10s
+//  pool_max_idle_conns=
+//  pool_max_open_conns=
+//  pool_conn_max_life_time=
+//  pool_conn_max_idle_time=
 func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
+	host, err := app.Config.MustGetString(section + ".host")
+	if err != nil {
+		return MysqlConfig{}, err
+	}
 	schema, err := app.Config.MustGetString(section + ".schema")
 	if err != nil {
 		return MysqlConfig{}, err
@@ -36,30 +57,29 @@ func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
 	if err != nil {
 		return MysqlConfig{}, err
 	}
-	host, err := app.Config.MustGetString(section + ".host")
-	if err != nil {
-		return MysqlConfig{}, err
-	}
+
 	tls := app.Config.GetString(section+".tls", "false")
 	timeout := app.Config.GetString(section+".timeout", "10s,10s,10s")
 	ct, rt, wt := app.ParseTimeout(timeout)
-	maxIdleConns := app.Config.Get(section + ".max_idle_conns").DefaultInt(0)
-	maxOpenConns := app.Config.Get(section + ".max_open_conns").DefaultInt(0)
-	connMaxLifetime := app.Config.Get(section + ".conn_max_life_time").DefaultInt64(0)
-	connMaxIdleTime := app.Config.Get(section + ".conn_max_idle_time").DefaultInt64(0)
+	poolMaxIdleConns := app.Config.Get(section + ".pool_max_idle_conns").DefaultInt(0)
+	pooMaxOpenConns := app.Config.Get(section + ".pool_max_open_conns").DefaultInt(0)
+	poolConnMaxLifetime := app.Config.Get(section + ".pool_conn_max_life_time").DefaultInt64(0)
+	pooConnMaxIdleTime := app.Config.Get(section + ".pool_conn_max_idle_time").DefaultInt64(0)
 	cf := MysqlConfig{
-		Schema:          schema,
-		User:            user,
-		Password:        password,
-		TLS:             tls,
-		Host:            host,
-		ConnTimeout:     ct,
-		ReadTimeout:     rt,
-		WriteTimeout:    wt,
-		MaxIdleConns:    maxIdleConns,
-		MaxOpenConns:    maxOpenConns,
-		ConnMaxLifetime: time.Duration(connMaxLifetime) * time.Second,
-		ConnMaxIdleTime: time.Duration(connMaxIdleTime) * time.Second,
+		Schema:       schema,
+		User:         user,
+		Password:     password,
+		TLS:          tls,
+		Host:         host,
+		ConnTimeout:  ct,
+		ReadTimeout:  rt,
+		WriteTimeout: wt,
+		Pool: MysqlPoolConfig{
+			MaxIdleConns:    poolMaxIdleConns,
+			MaxOpenConns:    pooMaxOpenConns,
+			ConnMaxLifetime: time.Duration(poolConnMaxLifetime) * time.Second,
+			ConnMaxIdleTime: time.Duration(pooConnMaxIdleTime) * time.Second,
+		},
 	}
 	return cf, nil
 }
