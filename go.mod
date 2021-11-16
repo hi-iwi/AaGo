@@ -14,7 +14,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/jade v1.1.4 // indirect
-	github.com/iris-contrib/schema v0.0.6 // indirect
+	github.com/iris-contrib/cfgSection v0.0.6 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.1.7 // indirect
