@@ -1,6 +1,9 @@
 package aa
 
-import "time"
+import (
+	"github.com/hi-iwi/AaGo/dtype"
+	"time"
+)
 
 type MysqlPoolConfig struct {
 	MaxIdleConns    int
@@ -30,9 +33,8 @@ type MysqlConfig struct {
 //
 //// @example
 /*
-[mysql_helloworld]
+[mysql]
 host=localhost
-schema=helloworld
 user=hi
 password=hello
 tls=false
@@ -41,32 +43,54 @@ pool_max_idle_conns=0
 pool_max_open_conns=0
 pool_conn_max_life_time=0
 pool_conn_max_idle_time=0
+[mysql_helloworld]
+schema=helloworld
+[mysql_helloworld2]
+host=localhost2
+schema=helloworld2
+user=hi2
+password=hello2
+tls=false
+timeout=10s,10s,10s
+pool_max_idle_conns=0
+pool_max_open_conns=0
+pool_conn_max_life_time=0
+pool_conn_max_idle_time=0
 */
+func (app *Aa) tryGetMysqlCfg(section string, key string) (string, error) {
+	k := section + "." + key
+	v, err := app.Config.MustGetString(k)
+	if err == nil {
+		return v, nil
+	}
+
+	return app.Config.MustGetString("mysql." + key)
+}
 func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
-	host, err := app.Config.MustGetString(section + ".host")
+	host, err := app.tryGetMysqlCfg(section, "host")
 	if err != nil {
 		return MysqlConfig{}, err
 	}
-	schema, err := app.Config.MustGetString(section + ".schema")
+	schema, err := app.tryGetMysqlCfg(section, "schema")
 	if err != nil {
 		return MysqlConfig{}, err
 	}
-	user, err := app.Config.MustGetString(section + ".user")
+	user, err := app.tryGetMysqlCfg(section, "user")
 	if err != nil {
 		return MysqlConfig{}, err
 	}
-	password, err := app.Config.MustGetString(section + ".password")
+	password, err := app.tryGetMysqlCfg(section, "password")
 	if err != nil {
 		return MysqlConfig{}, err
 	}
 
-	tls := app.Config.GetString(section+".tls", "false")
-	timeout := app.Config.GetString(section+".timeout", "10s,10s,10s")
+	tls, _ := app.tryGetMysqlCfg(section, "tls")
+	timeout, _ := app.tryGetMysqlCfg(section, "timeout")
 	ct, rt, wt := app.ParseTimeout(timeout)
-	poolMaxIdleConns := app.Config.Get(section + ".pool_max_idle_conns").DefaultInt(0)
-	pooMaxOpenConns := app.Config.Get(section + ".pool_max_open_conns").DefaultInt(0)
-	poolConnMaxLifetime := app.Config.Get(section + ".pool_conn_max_life_time").DefaultInt64(0)
-	pooConnMaxIdleTime := app.Config.Get(section + ".pool_conn_max_idle_time").DefaultInt64(0)
+	poolMaxIdleConns, _ := app.tryGetMysqlCfg(section, "pool_max_idle_conns")
+	poolMaxOpenConns, _ := app.tryGetMysqlCfg(section, "pool_max_open_conns")
+	poolConnMaxLifetime, _ := app.tryGetMysqlCfg(section, "pool_conn_max_life_time")
+	poolConnMaxIdleTime, _ := app.tryGetMysqlCfg(section, "pool_conn_max_idle_time")
 	cf := MysqlConfig{
 		Schema:       schema,
 		User:         user,
@@ -77,10 +101,10 @@ func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
 		ReadTimeout:  rt,
 		WriteTimeout: wt,
 		Pool: MysqlPoolConfig{
-			MaxIdleConns:    poolMaxIdleConns,
-			MaxOpenConns:    pooMaxOpenConns,
-			ConnMaxLifetime: time.Duration(poolConnMaxLifetime) * time.Second,
-			ConnMaxIdleTime: time.Duration(pooConnMaxIdleTime) * time.Second,
+			MaxIdleConns:    dtype.New(poolMaxIdleConns).DefaultInt(0),
+			MaxOpenConns:    dtype.New(poolMaxOpenConns).DefaultInt(0),
+			ConnMaxLifetime: time.Duration(dtype.New(poolConnMaxLifetime).DefaultInt64(0)) * time.Second,
+			ConnMaxIdleTime: time.Duration(dtype.New(poolConnMaxIdleTime).DefaultInt64(0)) * time.Second,
 		},
 	}
 	return cf, nil
@@ -122,7 +146,7 @@ type RedisConfig struct {
 // @example
 
 /*
-[redis_helloworld]
+[redis]
 host=localhost
 auth=
 tls=false
@@ -130,42 +154,63 @@ db=0
 timeout=3s,3s,3s
 pool_max_idle=0
 pool_max_active=0
+pool_idle_timeout=0
+pool_wait=false
+pool_conn_life_time=0
+[redis_helloworld]
+db=1
+[redis_helloworld2]
+host=localhost2
+auth=2
+tls=false
+db=2
+timeout=3s,3s,3s
+pool_max_idle=0
+pool_max_active=0
+pool_idle_timeout=0
 pool_wait=false
 pool_conn_life_time=0
 */
+func (app *Aa) tryGeRedisCfg(section string, key string) (string, error) {
+	k := section + "." + key
+	v, err := app.Config.MustGetString(k)
+	if err == nil {
+		return v, nil
+	}
 
-
+	return app.Config.MustGetString("redis." + key)
+}
 
 func (app *Aa) RedisConfig(section string) (RedisConfig, error) {
-	host, err := app.Config.MustGetString(section + ".host")
+	host, err := app.tryGeRedisCfg(section, "host")
 	if err != nil {
 		return RedisConfig{}, err
 	}
-	auth := app.Config.GetString(section + ".auth")
-	tls, _ := app.Config.Get(section+".tls", false).Bool()
-	db, _ := app.Config.Get(section+".db", 0).Uint8()
-	timeout := app.Config.Get(section+".timeout", " 3s, 3s, 3s").String()
+	auth, _ := app.tryGeRedisCfg(section, "auth") // auth 可以为空
+	tls, _ := app.tryGeRedisCfg(section, "tls")
+	db, _ := app.tryGeRedisCfg(section, "db")
+	timeout, _ := app.tryGeRedisCfg(section, "timeout")
 	ct, rt, wt := app.ParseTimeout(timeout)
 
-	poolMaxIdle := app.Config.Get(section + ".pool_max_idle").DefaultInt(0)
-	poolMaxActive := app.Config.Get(section + ".pool_max_active").DefaultInt(0)
-	poolIdleTimeout := app.Config.Get(section + ".pool_idle_timeout").DefaultInt64(0)
-	poolWait := app.Config.Get(section + ".pool_wait").DefaultBool(false)
-	poolConnLifeTime := app.Config.Get(section + ".pool_conn_life_time").DefaultInt64(0)
+	poolMaxIdle, _ := app.tryGeRedisCfg(section, "pool_max_idle")
+	poolMaxActive, _ := app.tryGeRedisCfg(section, "pool_max_active")
+	poolIdleTimeout, _ := app.tryGeRedisCfg(section, "pool_idle_timeout")
+	poolWait, _ := app.tryGeRedisCfg(section, "pool_wait")
+	poolConnLifeTime, _ := app.tryGeRedisCfg(section, "pool_conn_life_time")
 	cf := RedisConfig{
-		TLS:          tls,
+		TLS:          dtype.New(tls).DefaultBool(false),
 		Host:         host,
 		Auth:         auth,
-		Db:           db,
+		Db:           dtype.New(db).DefaultUint8(0),
 		ConnTimeout:  ct,
 		ReadTimeout:  rt,
 		WriteTimeout: wt,
 		Pool: RedisPoolConfig{
-			MaxIdle:         poolMaxIdle,
-			MaxActive:       poolMaxActive,
-			IdleTimeout:     time.Duration(poolIdleTimeout) * time.Second,
-			Wait:            poolWait,
-			MaxConnLifetime: time.Duration(poolConnLifeTime) * time.Second,
+			MaxIdle:         dtype.New(poolMaxIdle).DefaultInt(0),
+			MaxActive:       dtype.New(poolMaxActive).DefaultInt(0),
+			IdleTimeout:     time.Duration(dtype.New(poolIdleTimeout).DefaultInt64(0)) * time.Second,
+			Wait:            dtype.New(poolWait).DefaultBool(false),
+			MaxConnLifetime: time.Duration(dtype.New(poolConnLifeTime).DefaultInt64(0)) * time.Second,
 		},
 	}
 	return cf, nil
