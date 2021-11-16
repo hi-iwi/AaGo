@@ -29,17 +29,19 @@ type MysqlConfig struct {
 
 //
 //// @example
-//	[mysql_helloworld]
-//  host=localhost
-//	schema=helloworld
-//	user=hi
-//	password=hello
-//	tls=false
-//	timeout=10s,10s,10s
-//  pool_max_idle_conns=
-//  pool_max_open_conns=
-//  pool_conn_max_life_time=
-//  pool_conn_max_idle_time=
+/*
+[mysql_helloworld]
+host=localhost
+schema=helloworld
+user=hi
+password=hello
+tls=false
+timeout=10s,10s,10s
+pool_max_idle_conns=0
+pool_max_open_conns=0
+pool_conn_max_life_time=0
+pool_conn_max_idle_time=0
+*/
 func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
 	host, err := app.Config.MustGetString(section + ".host")
 	if err != nil {
@@ -118,6 +120,22 @@ type RedisConfig struct {
 }
 
 // @example
+
+/*
+[redis_helloworld]
+host=localhost
+auth=
+tls=false
+db=0
+timeout=3s,3s,3s
+pool_max_idle=0
+pool_max_active=0
+pool_wait=false
+pool_conn_life_time=0
+*/
+
+
+
 func (app *Aa) RedisConfig(section string) (RedisConfig, error) {
 	host, err := app.Config.MustGetString(section + ".host")
 	if err != nil {
