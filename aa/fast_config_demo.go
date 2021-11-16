@@ -117,6 +117,7 @@ type RedisConfig struct {
 	Pool         RedisPoolConfig
 }
 
+// @example
 func (app *Aa) RedisConfig(section string) (RedisConfig, error) {
 	host, err := app.Config.MustGetString(section + ".host")
 	if err != nil {
