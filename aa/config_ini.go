@@ -16,7 +16,9 @@ type Ini struct {
 }
 
 func (app *Aa) LoadIni(path string) error {
-	app.Config = &Ini{path: path}
+	rsa := make(map[string][]byte)
+	ocfg := make(map[string]string)
+	app.Config = &Ini{path: path, rsa: rsa, otherConfig: ocfg}
 	err := app.Config.Reload(app)
 	if err != nil {
 		return err
@@ -31,8 +33,9 @@ func (c *Ini) Reload(app *Aa) error {
 	}
 	cfgMtx.Lock()
 	c.data = data
-	app.ParseToConfiguration()
 	cfgMtx.Unlock()
+	// parseToConfiguration 里面有 RLock()
+	app.ParseToConfiguration()
 	err = c.loadRsa()
 	return err
 }

@@ -38,8 +38,9 @@ func (c *Ini) loadRsa() error {
 			}
 		}
 	}
-
-	c.AddRsaConfigs(rsas)
+	if len(rsas) > 0 {
+		c.AddRsaConfigs(rsas)
+	}
 	return nil
 }
 
@@ -52,6 +53,7 @@ func (c *Ini) AddRsaConfigs(rsaConfigs map[string][]byte) {
 		}
 	}
 }
+
 // 不要获取太细分，否则容易导致错误不容易被排查
 func (c *Ini) getRsa(name string) ([]byte, bool) {
 	cfgMtx.RLock()
