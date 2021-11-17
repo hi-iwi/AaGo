@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -12,10 +11,6 @@ import (
 var startingSteps int32
 var gitHash string
 
-func consoleLog(msg string) {
-	log.Println(msg)
-	fmt.Println(msg)
-}
 func GitVersion() string {
 	if gitHash == "" {
 		s, _ := exec.LookPath(os.Args[0])
@@ -36,5 +31,5 @@ func TraceStartup(msg ...string) {
 	if len(msg) > 0 {
 		m += " " + msg[0]
 	}
-	consoleLog(m)
+	log.Println(msg)
 }
