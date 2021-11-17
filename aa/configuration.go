@@ -51,9 +51,9 @@ func (app *Aa) ParseToConfiguration() {
 func (c Configuration) Log() {
 	n := time.Now()
 	now := n.Format(c.TimeFormat) + "." + strconv.FormatInt(n.UnixMilli(), 10)
-	msg := fmt.Sprintf("%s started\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", now, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
+	msg := fmt.Sprintf("lauching...\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Env, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
-	fmt.Println(msg)
+	fmt.Println(now + " " + msg)
 }
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
