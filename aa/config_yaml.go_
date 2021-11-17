@@ -18,13 +18,13 @@ func (app *Aa) ParseYml(filename string) error {
 	if err != nil {
 		return err
 	}
-	var conf = &Yaml{}
+	var huodongerconf = &Yaml{}
 
-	if err := yaml.Unmarshal(data, &conf.data); err != nil {
+	if err := yaml.Unmarshal(data, &huodongerconf.data); err != nil {
 		return err
 	}
 	mu.Lock()
-	app.Config = conf
+	app.Config = huodongerconf
 	mu.Unlock()
 	return nil
 }

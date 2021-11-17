@@ -2,7 +2,7 @@ package aa
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/ini.v1"
 	"strings"
@@ -104,7 +104,7 @@ func (c *Ini) MustGetString(key string) (string, error) {
 	if v = c.getOtherConfig(key); v != "" {
 		return v, nil
 	}
-	return "", errors.New("must set config `%s`")
+	return "", fmt.Errorf("must set config `%s`", key)
 }
 
 func (c *Ini) GetString(key string, defaultValue ...string) string {
