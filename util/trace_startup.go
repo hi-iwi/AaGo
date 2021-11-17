@@ -31,7 +31,7 @@ func GitVersion() string {
 	}
 	return gitHash
 }
-func TraceStarting(msg ...string) {
+func TraceStartup(msg ...string) {
 	id := atomic.AddInt32(&startingSteps, 1)
 	m := "starting " + strconv.FormatInt(int64(id), 10)
 	if len(msg) > 0 {
@@ -40,7 +40,7 @@ func TraceStarting(msg ...string) {
 	consoleLog(m)
 }
 
-func StartingLog(app *aa.Aa) {
+func StartupLog(app *aa.Aa) {
 	c := app.Configuration
 	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Name, c.Env, c.TimezoneID, c.Mock, GitVersion())
 	TraceStarting(msg)
