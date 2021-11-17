@@ -40,9 +40,10 @@ pushAndUpgradeMod(){
   git push origin master
   # 自增tag
   if [ $incrTag -eq 1 ]; then
+    echo "adding tag..."
     git fetch --tags
     latestTag=$(git describe --tags "$(git rev-list --tags --max-count=1)")
-    if [ "$latestTag"  -ne "" ]; then
+    if [ "$latestTag"  != "" ]; then
       tag=${latestTag%.*}
       id=${latestTag##*.}
       id=$((id+1))
