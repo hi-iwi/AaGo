@@ -1,11 +1,12 @@
 package util
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
 	"sync/atomic"
+	"time"
 )
 
 var startingSteps int32
@@ -27,10 +28,12 @@ func GitVersion() string {
 }
 func TraceStartup(msg ...string) {
 	id := atomic.AddInt32(&startingSteps, 1)
-	m := "starting " + strconv.FormatInt(int64(id), 10)
+	//log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate | log.Lmicroseconds)
+	n := time.Now()
+	now := n.Format("2006-01-02 15:04:05") + "." + strconv.FormatInt(n.UnixMicro(), 10)
+	m := now + " starting " + strconv.FormatInt(int64(id), 10)
 	if len(msg) > 0 {
 		m += " " + msg[0]
 	}
-	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate | log.Lmicroseconds)
-	log.Println(msg)
+	fmt.Println(m)
 }
