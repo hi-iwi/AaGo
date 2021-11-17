@@ -31,5 +31,6 @@ func TraceStartup(msg ...string) {
 	if len(msg) > 0 {
 		m += " " + msg[0]
 	}
+	log.SetFlags(log.Lshortfile | log.Ltime | log.Ldate | log.Lmicroseconds)
 	log.Println(msg)
 }
