@@ -5,7 +5,7 @@
 readonly root='/data/Aa/proj/go/src/github.com/hi-iwi'
 comment="NO_COMMENT"
 upgrade=0
-incrTag=0
+incrTag=1
 
 for arg in "$@"; do
   case "$arg" in
@@ -13,7 +13,7 @@ for arg in "$@"; do
       upgrade=1
       ;;
     -t)
-      incrTag=1
+      incrTag=0
       ;;
     *)
       comment="$arg"
@@ -52,6 +52,7 @@ pushAndUpgradeMod(){
       git push origin --delete tag "$latestTag"
       git tag "$newTag"
       git push origin --tags
+      echo "$newTag"
     fi
   fi
 }
