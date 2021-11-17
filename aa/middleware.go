@@ -11,12 +11,10 @@ const TraceIdKey = "aa_trace_id"
 // tracePrefix should be captialized
 func (app *Aa) IrisMiddleware(ictx iris.Context) {
 	defer ictx.Next() // 这个是必须要存在的！！！
-	tracePrefix := app.Configuration.Name
 	traceId := ictx.GetHeader("X-Request-Id")
 	if traceId == "" {
-		traceId = tracePrefix + ":" + uuid.New().String()
+		traceId = uuid.New().String()
 	}
-	traceId += "->" + tracePrefix // NGX:asdfljle23afasdf->user_0:1
 	ictx.Values().Set(TraceIdKey, traceId)
 }
 

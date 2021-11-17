@@ -3,6 +3,7 @@ package aa
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 )
 
 type Configuration struct {
-	Name         string
 	Env          string // dev test preprod product
 	TimezoneID   string // e.g. "Asia/Shanghai"
 	TimeLocation *time.Location
@@ -22,7 +22,6 @@ type Configuration struct {
 const (
 	CkRsaRoot    = "rsa_root"
 	CkEnv        = "env"
-	CkService    = "service"
 	CkTimezoneID = "timezone_id"
 	CkTimeFormat = "time_format"
 	CkMock       = "mock"
@@ -30,7 +29,6 @@ const (
 
 func (app *Aa) ParseToConfiguration() {
 	app.Configuration.Env = app.Config.GetString(CkEnv)
-	app.Configuration.Name = app.Config.GetString(CkService)
 	app.Configuration.TimeFormat = app.Config.GetString(CkTimeFormat)
 	//serverID := app.Config.Get("server_id").Name()
 	//app.Configuration.ServerID = serverID
@@ -51,7 +49,9 @@ func (app *Aa) ParseToConfiguration() {
 }
 
 func (c Configuration) Log() {
-	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Name, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
+	n := time.Now()
+	now := n.Format(c.TimeFormat) + "." + strconv.FormatInt(n.UnixMilli(), 10)
+	msg := fmt.Sprintf("%s starting...\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", now, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
 	log.Println(msg)
 	fmt.Println(msg)
 }
