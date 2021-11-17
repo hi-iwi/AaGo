@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"github.com/hi-iwi/AaGo/aa"
 	"log"
 	"os"
 	"os/exec"
@@ -38,10 +37,4 @@ func TraceStartup(msg ...string) {
 		m += " " + msg[0]
 	}
 	consoleLog(m)
-}
-
-func StartupLog(app *aa.Aa) {
-	c := app.Configuration
-	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Name, c.Env, c.TimezoneID, c.Mock, GitVersion())
-	TraceStarting(msg)
 }

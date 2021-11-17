@@ -50,7 +50,11 @@ func (app *Aa) ParseToConfiguration() {
 	app.Configuration.Mock = mock
 }
 
-
+func (c Configuration) Log() {
+	msg := fmt.Sprintf("starting service %s\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Name, c.Env, c.TimezoneID, c.Mock, util.GitVersion())
+	log.Println(msg)
+	fmt.Println(msg)
+}
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
 // 10s, 1000ms
