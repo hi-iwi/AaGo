@@ -31,10 +31,11 @@ pushAndUpgradeMod(){
     # 私有库问题
     #env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/AaGo
   fi
-  echo ">>> git comment: $comment"
+  echo ">>> go get -u ./... && go mod tidy $comment"
   go build
   go get -u ./...
   go mod tidy
+  echo ">>> git commit -m  $comment"
   git add -A .
   git commit -m "$comment"
   git push origin master
