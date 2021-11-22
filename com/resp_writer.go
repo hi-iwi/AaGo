@@ -274,10 +274,10 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 	switch ct {
 	case aenum.CtHtmlText:
 		// jsonp
+		b, err = util.JsonString(cs)
 	default:
 		// json Marshal 不转译 HTML 字符
 		b, err = util.JsonString(cs)
-
 	}
 
 	if err != nil {
