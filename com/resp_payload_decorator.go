@@ -35,6 +35,9 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	} else if k == reflect.Struct {
+		if t.NumField() == 0 {
+			return nil, nil
+		}
 		p := make(map[string]interface{}, 0)
 		for i := 0; i < t.NumField(); i++ {
 			f := t.Field(i)
@@ -65,6 +68,9 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	} else if k == reflect.Map {
+		if len(v.MapKeys()) == 0 {
+			return nil, nil
+		}
 		p := make(map[string]interface{}, v.Len())
 		for _, key := range v.MapKeys() {
 			ks := key.String()
