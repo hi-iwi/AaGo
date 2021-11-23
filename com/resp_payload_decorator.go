@@ -1,10 +1,8 @@
 package com
 
 import (
-	"reflect"
-	"strconv"
-
 	"github.com/hi-iwi/AaGo/dtype"
+	"reflect"
 
 	"github.com/hi-iwi/AaGo/ae"
 )
@@ -12,13 +10,6 @@ import (
 // ?_stringify=1  weak language, turn all fields into string
 func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
 	stringify, _ := resp.req.Query("_stringify", `^[01]$`, false)
-	s := stringify.DefaultBool(false)
-	if !s {
-		cookie, err := resp.req.Cookie("_stringify")
-		if err == nil {
-			s, _ = strconv.ParseBool(cookie.Value)
-		}
-	}
 	if stringify.DefaultBool(false) {
 		return stringifyPayloadFields(payload, tagname)
 	}
@@ -32,6 +23,9 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 	k := t.Kind()
 
 	if k == reflect.Slice || k == reflect.Array {
+		if v.Len() == 0 {
+			return nil, nil
+		}
 		p := make([]interface{}, v.Len())
 		for i := 0; i < v.Len(); i++ {
 			p[i], e = stringifyPayloadFields(v.Index(i).Interface(), tagname)
@@ -46,13 +40,28 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			f := t.Field(i)
 			ks := f.Tag.Get(tagname)
 			// 忽略json/xml 里面的  -
-			if (tagname == "json" || tagname == "xml") && ks == "-" {
+			if ks == "-" {
 				continue
 			}
-			p[ks], e = stringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
+
+			w, e := stringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}
+
+			//   struct in struct
+			if ks == "" {
+				m, ok := w.(map[string]interface{})
+				if !ok {
+					return nil, ae.NewErr("unsolved json struct stringify")
+				}
+				for y, z := range m {
+					p[y] = z
+				}
+			} else {
+				p[ks] = w
+			}
+
 		}
 		return p, nil
 	} else if k == reflect.Map {
@@ -60,12 +69,25 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		for _, key := range v.MapKeys() {
 			ks := key.String()
 			// 忽略json/xml 里面的  -
-			if (tagname == "json" || tagname == "xml") && ks == "-" {
+			if ks == "-" {
 				continue
 			}
-			p[ks], e = stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
+			w, e := stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
 			if e != nil {
 				return nil, e
+			}
+
+			//   struct in struct
+			if ks == "" {
+				m, ok := w.(map[string]interface{})
+				if !ok {
+					return nil, ae.NewErr("unsolved json map stringify")
+				}
+				for y, z := range m {
+					p[y] = z
+				}
+			} else {
+				p[ks] = w
 			}
 		}
 		return p, nil
