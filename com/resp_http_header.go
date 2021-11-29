@@ -1,9 +1,5 @@
 package com
 
-import (
-	"github.com/hi-iwi/AaGo/aenum"
-)
-
 /*
 http fs.go
 func setLastModified(w ResponseWriter, modtime time.Time) {
@@ -37,7 +33,7 @@ func (resp *RespStruct) storeHeader(k, v string, loadOrStore bool) {
 	if v == "" {
 		resp.headers.Delete(k)
 	} else {
-		if k == aenum.LastModified {
+		if k == "Last-Modified" {
 			v = fmtLastModified(v)
 		}
 		if loadOrStore {

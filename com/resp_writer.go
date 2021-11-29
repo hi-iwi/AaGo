@@ -3,7 +3,6 @@ package com
 import (
 	"errors"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/dict"
 	"github.com/hi-iwi/AaGo/dtype"
 	"github.com/hi-iwi/AaGo/util"
@@ -31,10 +30,10 @@ func (resp *RespStruct) writeNotModified() {
 	if resp.ictx != nil {
 		resp.ictx.StatusCode(403)
 	} else {
-		resp.DelHeader(aenum.ContentType)
-		resp.DelHeader(aenum.ContentLength)
-		if w.Header().Get(aenum.Etag) != "" {
-			resp.DelHeader(aenum.LastModified)
+		resp.DelHeader("Content-Type")
+		resp.DelHeader("Content-Length")
+		if w.Header().Get("Etag") != "" {
+			resp.DelHeader("Last-Modified")
 		}
 		w.WriteHeader(resp.code)
 	}
@@ -63,8 +62,8 @@ func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 		return 0, nil
 	}
 	// @TODO 这里设置Content-Length之后，iris Gzip 就会异常
-	resp.DelHeader(aenum.ContentLength) // 因为内容变更了，必须要把content-length设为空，不然客户端会读取错误
-	resp.headers.LoadOrStore(aenum.ContentType, http.DetectContentType(resp.content))
+	resp.DelHeader("Content-Length") // 因为内容变更了，必须要把content-length设为空，不然客户端会读取错误
+	resp.headers.LoadOrStore("Content-Type", http.DetectContentType(resp.content))
 	resp.headers.Range(func(k, v interface{}) bool {
 		s := v.(string)
 		if s != "" {
@@ -248,7 +247,7 @@ func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) err
 	c := []byte("<script>var " + varname + "=")
 	c = append(c, b...)
 	c = append(c, ";</script>"...)
-	resp.SetHeader(aenum.ContentType, aenum.CtHtmlText)
+	resp.SetHeader("Content-Type", "text/html; charset=utf-8")
 	resp.content = c
 	resp.WriteRaw()
 	return nil
@@ -265,14 +264,14 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 
 	HideServerErr(resp.ictx, &cs, resp.req)
 
-	ct, _ := resp.headers.Load(aenum.ContentType)
+	ct, _ := resp.headers.Load("Content-Type")
 	var (
 		b   []byte
 		err error
 	)
 
 	switch ct {
-	case aenum.CtHtmlText:
+	case "text/html; charset=utf-8":
 		// jsonp
 		b, err = util.JsonString(cs)
 	default:

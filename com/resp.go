@@ -2,7 +2,6 @@ package com
 
 import (
 	"github.com/hi-iwi/AaGo/aa"
-	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/kataras/iris/v12"
 	"net/http"
 	"runtime"
@@ -11,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/hi-iwi/AaGo/dict"
- )
+)
 
 type RespStruct struct {
 	beforeFlush     []func(*RespStruct)
@@ -54,7 +53,7 @@ func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 	}
 	for _, a := range as {
 		if mw, _ := a.(string); mw != "" {
-			resp.SetHeader(aenum.ContentType, mw)
+			resp.SetHeader("Content-Type", mw)
 		} else if mw, ok := a.(func(*RespStruct)); ok {
 			resp.beforeFlush = append(resp.beforeFlush, mw)
 		} else if mw, ok := a.(func(*RespContentDTO)); ok {

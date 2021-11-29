@@ -18,6 +18,8 @@ const (
 func NewSex(s interface{}) (Sex, bool) {
 	ss := strings.ToUpper(dtype.String(s))
 	switch ss {
+	case "0", "U", "UNKNOWN":
+		return UnknownSex, true
 	case "1", "M", "MALE":
 		return Male, true
 	case "2", "F", "FEMALE":
