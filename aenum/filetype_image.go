@@ -51,7 +51,19 @@ func (t ImageType) Name() string {
 	}
 	return t.String()
 }
-
+func (t ImageType) ContentType() string {
+	switch t {
+	case Jpeg:
+		return "image/jpeg"
+	case Png:
+		return "image/png"
+	case Gif:
+		return "image/gif"
+	case Webp:
+		return "image/webp"
+	}
+	return ""
+}
 func (t ImageType) Is(t2 ImageType) bool {
 	return t == t2
 }
