@@ -41,7 +41,7 @@ func (r *Req) FastXheader(name string, patterns ...interface{}) *ReqProp {
 	return v
 }
 func (r *Req) Qparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
-	key := strings.ToLower(strings.ReplaceAll(name, "-", "-"))
+	key := strings.ToLower(strings.ReplaceAll(name, "-", "_"))
 	if v, e = r.Query(name, patterns...); e == nil && v.NotEmpty() {
 		return
 	}
@@ -62,7 +62,7 @@ func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Er
 		return
 	}
 
-	key := strings.ToLower(strings.ReplaceAll(name, "-", "-"))
+	key := strings.ToLower(strings.ReplaceAll(name, "-", "_"))
 	if cookie, err := r.Cookie(name); err == nil {
 		v = NewReqProp(cookie.Name, cookie.Value)
 		return v, v.Filter(patterns...)
