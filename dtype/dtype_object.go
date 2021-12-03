@@ -1,7 +1,20 @@
 package dtype
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"reflect"
+)
 
+func (p *Dtype) IsNil() bool {
+	if p.raw == nil {
+		return true
+	}
+	switch reflect.TypeOf(p.raw).Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return reflect.ValueOf(p.raw).IsNil()
+	}
+	return false
+}
 func (p *Dtype) Strings() ([]string, bool) {
 	v, ok := p.raw.([]string)
 	return v, ok
@@ -30,11 +43,18 @@ func (p *Dtype) Float64s() ([]float64, bool) {
 	v, ok := p.raw.([]float64)
 	return v, ok
 }
-func (p *Dtype) ArrayJson() (json.RawMessage, bool) {
+func (p *Dtype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 	arr, ok := p.raw.([]interface{})
 	if ok {
 		v, _ := json.Marshal(arr)
 		return v, true
+	}
+	if allowNil {
+		if p.IsNil() {
+			return nil, true
+		} else if s, _ := p.raw.(string); s == "" {
+			return nil, true
+		}
 	}
 	// 也可能客户端传的是 string ，也可能使对象原数
 	bytes, ok := p.raw.([]byte)
@@ -48,12 +68,20 @@ func (p *Dtype) ArrayJson() (json.RawMessage, bool) {
 
 	return nil, false
 }
-func (p *Dtype) MapJson() (json.RawMessage, bool) {
+func (p *Dtype) MapJson(allowNil bool) (json.RawMessage, bool) {
 	arr, ok := p.raw.(map[string]interface{})
 	if ok {
 		v, _ := json.Marshal(arr)
 		return v, true
 	}
+	if allowNil {
+		if p.IsNil() {
+			return nil, true
+		} else if s, _ := p.raw.(string); s == "" {
+			return nil, true
+		}
+	}
+
 	// 也可能客户端传的是 string ，也可能使对象原数
 	bytes, ok := p.raw.([]byte)
 	if ok {
