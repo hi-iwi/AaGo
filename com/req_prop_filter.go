@@ -26,7 +26,7 @@ func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
 		} else if b, ok := pat.(bool); ok {
 			required = b
 		} else if d, ok := pat.(*dtype.Dtype); ok && p.String() == "" {
-			p.Value = d.Value
+			p.Reload(d.Raw())
 		}
 	}
 	if p.String() == "" {

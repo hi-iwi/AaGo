@@ -13,14 +13,14 @@ type ReqProp struct {
 
 func NewReqProp(param string, data interface{}) *ReqProp {
 	var p ReqProp
+	p.Reload(data)
 	p.param = param
-	p.Value = data
 	return &p
 }
 
 func (p *ReqProp) Default(v interface{}) {
 	if p.IsEmpty() {
-		p.Value = v
+		p.Reload(v)
 	}
 }
 

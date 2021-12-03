@@ -8,13 +8,20 @@ import (
 type Dbyte byte
 
 type Dtype struct {
-	Value interface{}
+	raw interface{}
 }
 
 func New(data interface{}) *Dtype {
 	return &Dtype{
-		Value: data,
+		raw: data,
 	}
+}
+
+func (p *Dtype) Raw() interface{} {
+	return p.raw
+}
+func (p *Dtype) Reload(v interface{}) {
+	p.raw = v
 }
 
 // Get get key from a map[string]interface{}
@@ -22,7 +29,7 @@ func New(data interface{}) *Dtype {
 // @warn p.Get("user", "1", "name") is diffirent with p.Get("user", 1, "name")
 
 func (p *Dtype) Get(keys ...interface{}) (*Dtype, error) {
-	v, err := NewMap(p.Value).Get(keys[0], keys[1:]...)
+	v, err := NewMap(p.raw).Get(keys[0], keys[1:]...)
 	return New(v), err
 }
 
@@ -41,17 +48,14 @@ func (p *Dtype) SqlNullFloat64() sql.NullFloat64 {
 }
 
 func (p *Dtype) IsEmpty() bool {
-	return IsEmpty(p.Value)
+	return IsEmpty(p.raw)
 }
 func (p *Dtype) NotEmpty() bool {
-	return NotEmpty(p.Value)
-}
-func (p *Dtype) Interface() interface{} {
-	return p.Value
+	return NotEmpty(p.raw)
 }
 
 func (p *Dtype) Bool() (bool, error) {
-	return Bool(p.Value)
+	return Bool(p.raw)
 }
 
 func (p *Dtype) DefaultBool(defaultValue bool) bool {
@@ -63,7 +67,7 @@ func (p *Dtype) DefaultBool(defaultValue bool) bool {
 }
 
 func (p *Dtype) Slice() ([]interface{}, error) {
-	return Slice(p.Value)
+	return Slice(p.raw)
 }
 
 func (p *Dtype) DefaultSlice(defaultValue []interface{}) []interface{} {
@@ -75,7 +79,7 @@ func (p *Dtype) DefaultSlice(defaultValue []interface{}) []interface{} {
 }
 
 func (p *Dtype) String() string {
-	return String(p.Value)
+	return String(p.raw)
 }
 func (p *Dtype) DefaultString(defaultValue string) string {
 	v := p.String()
@@ -86,23 +90,7 @@ func (p *Dtype) DefaultString(defaultValue string) string {
 }
 
 func (p *Dtype) Bytes() []byte {
-	return Bytes(p.Value)
-}
-
-func (p *Dtype) JsonArray() []byte {
-	v := p.Bytes()
-	if len(v) == 0 {
-		return []byte{'[', ']'}
-	}
-	return v
-}
-
-func (p *Dtype) JsonObject() []byte {
-	v := p.Bytes()
-	if len(v) == 0 {
-		return []byte{'{', '}'}
-	}
-	return v
+	return Bytes(p.raw)
 }
 
 func (p *Dtype) DefaultBytes(defaultValue []byte) []byte {
@@ -114,7 +102,7 @@ func (p *Dtype) DefaultBytes(defaultValue []byte) []byte {
 }
 
 func (p *Dtype) Int8() (int8, error) {
-	return Int8(p.Value)
+	return Int8(p.raw)
 }
 
 func (p *Dtype) DefaultInt8(defaultValue int8) int8 {
@@ -126,7 +114,7 @@ func (p *Dtype) DefaultInt8(defaultValue int8) int8 {
 }
 
 func (p *Dtype) Int16() (int16, error) {
-	return Int16(p.Value)
+	return Int16(p.raw)
 }
 func (p *Dtype) DefaultInt16(defaultValue int16) int16 {
 	v, err := p.Int16()
@@ -137,7 +125,7 @@ func (p *Dtype) DefaultInt16(defaultValue int16) int16 {
 }
 
 func (p *Dtype) Int32() (int32, error) {
-	return Int32(p.Value)
+	return Int32(p.raw)
 }
 
 func (p *Dtype) DefaultInt32(defaultValue int32) int32 {
@@ -149,7 +137,7 @@ func (p *Dtype) DefaultInt32(defaultValue int32) int32 {
 }
 
 func (p *Dtype) Int() (int, error) {
-	return Int(p.Value)
+	return Int(p.raw)
 }
 
 func (p *Dtype) DefaultInt(defaultValue int) int {
@@ -161,7 +149,7 @@ func (p *Dtype) DefaultInt(defaultValue int) int {
 }
 
 func (p *Dtype) Int64() (int64, error) {
-	return Int64(p.Value)
+	return Int64(p.raw)
 }
 
 func (p *Dtype) DefaultInt64(defaultValue int64) int64 {
@@ -173,7 +161,7 @@ func (p *Dtype) DefaultInt64(defaultValue int64) int64 {
 }
 
 func (p *Dtype) Uint8() (uint8, error) {
-	return Uint8(p.Value)
+	return Uint8(p.raw)
 }
 
 func (p *Dtype) DefaultUint8(defaultValue uint8) uint8 {
@@ -185,7 +173,7 @@ func (p *Dtype) DefaultUint8(defaultValue uint8) uint8 {
 }
 
 func (p *Dtype) Uint16() (uint16, error) {
-	return Uint16(p.Value)
+	return Uint16(p.raw)
 }
 
 func (p *Dtype) DefaultUint16(defaultValue uint16) uint16 {
@@ -196,7 +184,7 @@ func (p *Dtype) DefaultUint16(defaultValue uint16) uint16 {
 	return v
 }
 func (p *Dtype) Uint32() (uint32, error) {
-	return Uint32(p.Value)
+	return Uint32(p.raw)
 }
 
 func (p *Dtype) DefaultUint32(defaultValue uint32) uint32 {
@@ -207,7 +195,7 @@ func (p *Dtype) DefaultUint32(defaultValue uint32) uint32 {
 	return v
 }
 func (p *Dtype) Uint() (uint, error) {
-	return Uint(p.Value)
+	return Uint(p.raw)
 }
 
 func (p *Dtype) DefaultUint(defaultValue uint) uint {
@@ -219,7 +207,7 @@ func (p *Dtype) DefaultUint(defaultValue uint) uint {
 }
 
 func (p *Dtype) Uint64() (uint64, error) {
-	return Uint64(p.Value)
+	return Uint64(p.raw)
 }
 
 func (p *Dtype) DefaultUint64(defaultValue uint64) uint64 {
@@ -231,7 +219,7 @@ func (p *Dtype) DefaultUint64(defaultValue uint64) uint64 {
 }
 
 func (p *Dtype) Float32() (float32, error) {
-	return Float32(p.Value)
+	return Float32(p.raw)
 }
 
 func (p *Dtype) DefaultFloat32(defaultValue float32) float32 {
@@ -243,7 +231,7 @@ func (p *Dtype) DefaultFloat32(defaultValue float32) float32 {
 }
 
 func (p *Dtype) Float64() (float64, error) {
-	return Float64(p.Value)
+	return Float64(p.raw)
 }
 
 func (p *Dtype) DefaultFloat64(defaultValue float64) float64 {
