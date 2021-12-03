@@ -89,6 +89,22 @@ func (p *Dtype) Bytes() []byte {
 	return Bytes(p.Value)
 }
 
+func (p *Dtype) JsonArray() []byte {
+	v := p.Bytes()
+	if len(v) == 0 {
+		return []byte{'[', ']'}
+	}
+	return v
+}
+
+func (p *Dtype) JsonObject() []byte {
+	v := p.Bytes()
+	if len(v) == 0 {
+		return []byte{'{', '}'}
+	}
+	return v
+}
+
 func (p *Dtype) DefaultBytes(defaultValue []byte) []byte {
 	v := p.Bytes()
 	if len(v) == 0 {
