@@ -5,10 +5,10 @@ import (
 	"database/sql"
 )
 
-func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error) {
-	return db.DB.BeginTx(ctx, opts)
+func (d *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error) {
+	return d.DB.BeginTx(ctx, opts)
 }
 
-func (db *DB) Begin() (*sql.Tx, error) {
-	return db.DB.BeginTx(context.Background(), nil)
+func (d *DB) Begin() (*sql.Tx, error) {
+	return d.DB.BeginTx(context.Background(), nil)
 }

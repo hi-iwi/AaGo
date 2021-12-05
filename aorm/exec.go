@@ -8,20 +8,22 @@ import (
 )
 
 type DB struct {
-	close bool
-	DB    *sql.DB
-	err   error
+	Schema string
+	close  bool
+	DB     *sql.DB
+	err    error
 }
 
-func AliveDriver(db *sql.DB, close bool, err error) *DB {
+func AliveDriver(schema string, db *sql.DB, close bool, err error) *DB {
 	return &DB{
-		close: close,
-		DB:    db,
-		err:   err,
+		Schema: schema,
+		close:  close,
+		DB:     db,
+		err:    err,
 	}
 }
 
-func Driver(db *sql.DB, err error) *DB {
+func Driver(schema string, db *sql.DB, err error) *DB {
 	return &DB{
 		close: true,
 		DB:    db,
