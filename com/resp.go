@@ -35,12 +35,13 @@ var (
 
 func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 	if cs.Code >= 500 {
+		msg := cs.Msg
 		ctx := aa.Context(ictx)
 		cs.Msg = dict.Code2Msg(cs.Code)
 
-		_, file, line, _ := runtime.Caller(1)
+		_, file, line, _ := runtime.Caller(2)
 		a := strings.Split(file, "/")
-		Log.Error(ctx, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, cs.Msg)
+		Log.Error(ctx, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, msg)
 	}
 }
 
