@@ -23,8 +23,6 @@ type VideoSrc struct {
 	Size     uint32 `json:"size"`
 }
 
-
-
 func ParseImgSrc(content string) string {
 	reg, _ := regexp.Compile(`<img([^>]+)data-path="([^"]+)"([^>]*)>`)
 	dataReg, _ := regexp.Compile(`data-([a-z]+)="([^"]+)"`)
@@ -102,5 +100,3 @@ func (p *ImagePattern) Parse(tag string) {
 		}
 	}
 }
-
-
