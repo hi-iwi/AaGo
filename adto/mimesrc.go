@@ -3,6 +3,7 @@ package adto
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/hi-iwi/AaGo/dtype"
 	"regexp"
 	"strconv"
 )
@@ -28,12 +29,9 @@ func ParseImgAdto(m [4]interface{}) ImgSrc {
 	var is ImgSrc
 	is.Path, _ = m[0].(string)
 	//  If you sent the JSON value through browser then any number you sent that will be the type float64
-	x, _ := m[1].(float64)
-	is.Size = uint32(x)
-	x, _ = m[2].(float64)
-	is.Width = uint16(x)
-	x, _ = m[3].(float64)
-	is.Height = uint16(x)
+	is.Size = dtype.New(m[1]).DefaultUint32(0)
+	is.Width = dtype.New(m[2]).DefaultUint16(0)
+	is.Height = dtype.New(m[3]).DefaultUint16(0)
 	return is
 }
 func EncodeImgSrc(content string) json.RawMessage {
