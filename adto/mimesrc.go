@@ -7,10 +7,11 @@ import (
 	"strconv"
 )
 
-// 存储在数据库里面，图片列表
+// 存储在数据库里面，图片列表，为了节省空间，用数组来
 type ImgSrc struct {
 	//Url    string `json:"url"`
 	Path   string `json:"path"`
+	Size   uint32 `json:"size"`
 	Width  uint16 `json:"width"`
 	Height uint16 `json:"height"`
 }
@@ -23,37 +24,60 @@ type VideoSrc struct {
 	Size     uint32 `json:"size"`
 }
 
-func ParseImgSrc(content string) string {
+func ParseImgAdto(m [4]interface{}) ImgSrc {
+	var is ImgSrc
+	is.Path, _ = m[0].(string)
+	x, _ := m[1].(int)
+	is.Size = uint32(x)
+	x, _ = m[2].(int)
+	is.Width = uint16(x)
+	x, _ = m[3].(int)
+	is.Height = uint16(x)
+	return is
+}
+func EncodeImgSrc(content string) json.RawMessage {
 	reg, _ := regexp.Compile(`<img([^>]+)data-path="([^"]+)"([^>]*)>`)
 	dataReg, _ := regexp.Compile(`data-([a-z]+)="([^"]+)"`)
 	matches := reg.FindAllStringSubmatch(content, -1)
-	imgs := make([]ImgSrc, len(matches))
-	for i, match := range matches {
-		ni := ImgSrc{
-			Path: match[2],
-		}
+	var b bytes.Buffer
+	const firstBracket = 1
+	b.WriteByte('[')
+	// b.Grow()
+	for _, match := range matches {
+		var size, width, height string
+		path := match[2]
 		data := match[1] + match[3]
-
 		dataMatches := dataReg.FindAllStringSubmatch(data, -1)
 		for _, dm := range dataMatches {
 			switch dm[1] {
+			case "size":
+				size = dm[2]
 			case "width":
-				w, _ := strconv.Atoi(dm[2])
-				ni.Width = uint16(w)
+				width = dm[2]
 			case "height":
-				h, _ := strconv.Atoi(dm[2])
-				ni.Height = uint16(h)
+				height = dm[2]
 			}
 		}
-		imgs[i] = ni
+		if b.Len() > firstBracket {
+			b.WriteByte(',')
+		}
+		b.WriteByte('[')
+		b.WriteByte('"')
+		b.WriteString(path) // path
+		b.WriteByte('"')
+		b.WriteByte(',')
+		b.WriteString(size)
+		b.WriteByte(',')
+		b.WriteString(width)
+		b.WriteByte(',')
+		b.WriteString(height)
+		b.WriteByte(']')
 	}
-
-	buf := bytes.NewBuffer([]byte{})
-	je := json.NewEncoder(buf)
-	je.SetEscapeHTML(false)
-	je.Encode(imgs)
-
-	return buf.String()
+	if b.Len() > firstBracket {
+		b.WriteByte(']')
+		return b.Bytes()
+	}
+	return nil
 }
 
 type ImagePattern struct {
