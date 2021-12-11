@@ -27,11 +27,12 @@ type VideoSrc struct {
 func ParseImgAdto(m [4]interface{}) ImgSrc {
 	var is ImgSrc
 	is.Path, _ = m[0].(string)
-	x, _ := m[1].(int)
+	//  If you sent the JSON value through browser then any number you sent that will be the type float64
+	x, _ := m[1].(float64)
 	is.Size = uint32(x)
-	x, _ = m[2].(int)
+	x, _ = m[2].(float64)
 	is.Width = uint16(x)
-	x, _ = m[3].(int)
+	x, _ = m[3].(float64)
 	is.Height = uint16(x)
 	return is
 }
