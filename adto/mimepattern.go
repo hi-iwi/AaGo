@@ -51,3 +51,7 @@ func ToImagePattern(tag string) ImagePattern {
 	}
 	return p
 }
+
+func ToVideoPattern(tag string) VideoPattern {
+	return VideoPattern{}
+}
