@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/hi-iwi/AaGo/dtype"
 	"regexp"
-	"strconv"
 )
 
 // 存储在数据库里面，图片列表，为了节省空间，用数组来
@@ -77,49 +76,4 @@ func EncodeImgSrc(content string) json.RawMessage {
 		return b.Bytes()
 	}
 	return nil
-}
-
-type ImagePattern struct {
-	Height      int
-	Width       int
-	Quality     int
-	MaxWidth    int
-	MaxHeight   int
-	WatermarkID int
-}
-
-func NewImagePattern(tag ...string) *ImagePattern {
-	p := &ImagePattern{}
-	if len(tag) > 0 {
-		p.Parse(tag[0])
-	}
-	return p
-}
-
-func (p *ImagePattern) Parse(tag string) {
-	reg, _ := regexp.Compile(`([a-z]+)(\d+)`)
-	matches := reg.FindAllStringSubmatch(tag, -1)
-	for _, match := range matches {
-		v, _ := strconv.Atoi(match[2])
-		/**
-		 * w width, h height, q quanlity, v max width, g max height
-		 *    	img.width <= v ,   img.width = w  两者区别
-		 * xN  有意义，对于不定尺寸的白名单，自动化方案是：先获取 x1 的尺寸，然后 xN ，之后把 source 裁剪
-		 */
-		t := match[1]
-		switch t {
-		case "h":
-			p.Height = v
-		case "w":
-			p.Width = v
-		case "g":
-			p.MaxHeight = v
-		case "v":
-			p.MaxWidth = v
-		case "q":
-			p.Quality = v
-		case "m":
-			p.WatermarkID = v
-		}
-	}
 }
