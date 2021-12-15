@@ -36,3 +36,7 @@ func NewError(code int, msg string) *Error {
 func (e *Error) Error() string {
 	return e.Msg + " [" + strconv.Itoa(e.Code) + "]"
 }
+
+func (e *Error) IsServerError() bool {
+	return e.Code > 499
+}
