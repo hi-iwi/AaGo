@@ -94,7 +94,7 @@ func (l *xlog) Trace(ctx context.Context) {
 }
 
 func (l *xlog) AError(ctx context.Context, e *ae.Error) {
-	if e.IsServerError() {
+	if e != nil && e.IsServerError() {
 		xprintf(ctx, 1, "", e.Error())
 	}
 }
