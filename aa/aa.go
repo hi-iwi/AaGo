@@ -1,6 +1,8 @@
 package aa
 
 import (
+	"context"
+	"github.com/hi-iwi/AaGo/ae"
 	"sync"
 	"time"
 )
@@ -30,4 +32,13 @@ func New() *Aa {
 	}
 
 	return aa
+}
+
+// 快捷方式，对服务器错误记录日志
+func (app *Aa) OK(ctx context.Context, e *ae.Error) bool {
+	if e != nil {
+		app.Log.AError(ctx, e)
+		return false
+	}
+	return true
 }
