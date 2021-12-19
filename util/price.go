@@ -52,11 +52,15 @@ func (p *Price) aug(v float64, multiple float64) float64 {
 }
 
 func (p *Price) Fixed() string {
-	return fmt.Sprintf("%.2f", p.Val())
+	return fmt.Sprintf("%.2f", p.Float64())
 }
-func (p *Price) Val() float64 {
+func (p *Price) Float64() float64 {
 	return p.aug(p.value, 100.0) / 100.0
 }
+func (p *Price) Float32() float32 {
+	return float32(p.Float64())
+}
+
 func (p *Price) Add(b float64) *Price {
 	v := (p.value * 100.0) + (b * 100.0)
 	p.value = p.aug(v, 1.0) / 100.0
@@ -89,6 +93,6 @@ func (p *Price) XPercent(percent float64) *Price {
 }
 
 func (p *Price) Percent(base float64) float64 {
-	x := p.aug(p.value*10000.0/float64(base), 1.0)
+	x := p.aug(p.value*10000.0/base, 1.0)
 	return x / 100.0
 }
