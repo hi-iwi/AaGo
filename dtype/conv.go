@@ -14,32 +14,34 @@ func String(d interface{}, errs ...error) string {
 		switch v := d.(type) {
 		case Dbyte: // Name(Dbyte('A')) returns "A"
 			return string([]byte{byte(v)})
-		case byte: // is a built-in alias of uint8, Name('A') returns "97"
-			return strconv.Itoa(int(v))
+		case bool:
+			return strconv.FormatBool(v)
 		case []byte:
 			return string(v)
 		case string:
 			return v
-		case int:
-			return strconv.Itoa(v)
 		case int8:
-			return strconv.Itoa(int(v))
+			return strconv.FormatInt(int64(v), 10)
 		case int16:
-			return strconv.Itoa(int(v))
+			return strconv.FormatInt(int64(v), 10)
 		case rune: // is a built-in alias of int32, @notice 'A' is a rune(65), is different with byte('A') (alias of uint8(65))
-			return strconv.Itoa(int(v))
+			return strconv.FormatInt(int64(v), 10)
+		case int:
+			return strconv.FormatInt(int64(v), 10)
 		case int64:
 			return strconv.FormatInt(v, 10)
-		case uint:
+		case byte: // is a built-in alias of uint8, Name('A') returns "97"
 			return strconv.FormatUint(uint64(v), 10)
 		case uint16:
 			return strconv.FormatUint(uint64(v), 10)
 		case uint32:
 			return strconv.FormatUint(uint64(v), 10)
+		case uint:
+			return strconv.FormatUint(uint64(v), 10)
 		case uint64:
 			return strconv.FormatUint(v, 10)
 		case float32:
-			return strconv.FormatFloat(float64(v), 'f', -1, 64)
+			return strconv.FormatFloat(float64(v), 'f', -1, 32)
 		case float64:
 			return strconv.FormatFloat(v, 'f', -1, 64)
 		default:
@@ -50,7 +52,7 @@ func String(d interface{}, errs ...error) string {
 }
 
 func Bytes(d interface{}, errs ...error) []byte {
-	return []byte(String(d))
+	return []byte(String(d, errs...))
 }
 
 func Bool(d interface{}, errs ...error) (bool, error) {
@@ -75,344 +77,214 @@ func Slice(d interface{}, errs ...error) ([]interface{}, error) {
 }
 
 func Int8(d interface{}, errs ...error) (int8, error) {
-	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-
-		switch v := d.(type) {
-		case bool:
-			if v {
-				return 1, nil
-			}
-			return 0, nil
-		case string:
-			x, err := strconv.Atoi(v)
-			if err != nil {
-				return 0, err
-			}
-			return int8(x), nil
-		case int:
-			return int8(v), nil
-		case int8:
-			return v, nil
-		case int16:
-			return int8(v), nil
-		case int32:
-			return int8(v), nil
-		case int64:
-			return int8(v), nil
-		case float32:
-			return int8(v), nil
-		case float64:
-			return int8(v), nil
-		case byte:
-			return int8(v), nil
-		case Dbyte:
-			return int8(v), nil
-		default:
-			x, err := strconv.Atoi(String(v))
-			if err != nil {
-				return 0, err
-			}
-			return int8(x), nil
-		}
-	}
-	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> int8")
+	v, err := BaseInt64(d, 8, errs...)
+	return int8(v), err
 }
 
 func Int16(d interface{}, errs ...error) (int16, error) {
-	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-
-		switch v := d.(type) {
-		case bool:
-			if v {
-				return 1, nil
-			}
-			return 0, nil
-		case string:
-			x, err := strconv.Atoi(v)
-			if err != nil {
-				return 0, err
-			}
-			return int16(x), nil
-		case int:
-			return int16(v), nil
-		case int8:
-			return int16(v), nil
-		case int16:
-			return v, nil
-		case int32:
-			return int16(v), nil
-		case int64:
-			return int16(v), nil
-		case float32:
-			return int16(v), nil
-		case float64:
-			return int16(v), nil
-		case byte:
-			return int16(v), nil
-		case Dbyte:
-			return int16(v), nil
-		default:
-			x, err := strconv.Atoi(String(v))
-			if err != nil {
-				return 0, err
-			}
-			return int16(x), nil
-		}
-	}
-	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> int16")
+	v, err := BaseInt64(d, 16, errs...)
+	return int16(v), err
 }
 func Int32(d interface{}, errs ...error) (int32, error) {
-	v, err := Int(d, errs...)
+	v, err := BaseInt64(d, 32, errs...)
 	return int32(v), err
 }
 
 func Int(d interface{}, errs ...error) (int, error) {
+	v, err := BaseInt64(d, 32, errs...)
+	return int(v), err
+}
+func Int64(d interface{}, errs ...error) (int64, error) {
+	v, err := BaseInt64(d, 64, errs...)
+	return v, err
+}
+func BaseInt64(d interface{}, bitSize int, errs ...error) (int64, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-
 		switch v := d.(type) {
+		case Dbyte:
+			return int64(v), nil
 		case bool:
 			if v {
 				return 1, nil
 			}
 			return 0, nil
-		case string:
-			return strconv.Atoi(v)
-		case int:
-			return v, nil
-		case int8:
-			return int(v), nil
-		case int16:
-			return int(v), nil
-		case int32:
-			return int(v), nil
-		case int64:
-			return int(v), nil
-		case float32:
-			return int(v), nil
-		case float64:
-			return int(v), nil
-		case byte:
-			return int(v), nil
-		case Dbyte:
-			return int(v), nil
-		default:
-			return strconv.Atoi(String(v))
-		}
-	}
-	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> int")
-}
 
-func Int64(d interface{}, errs ...error) (int64, error) {
-	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-		switch v := d.(type) {
-		case bool:
-			if v {
-				return int64(1), nil
-			}
-			return int64(0), nil
-		case byte:
-			return int64(v), nil
 		case string:
-			return strconv.ParseInt(v, 10, 64)
-		case int:
-			return int64(v), nil
+			return strconv.ParseInt(v, 10, bitSize)
 		case int8:
 			return int64(v), nil
 		case int16:
 			return int64(v), nil
-		case int32:
+		case rune:
+			return int64(v), nil
+		case int:
 			return int64(v), nil
 		case int64:
 			return v, nil
+		case byte:
+			return int64(v), nil
+		case uint16:
+			return int64(v), nil
+		case uint32:
+			return int64(v), nil
+		case uint:
+			return int64(v), nil
+		case uint64:
+			return int64(v), nil
 		case float32:
 			return int64(v), nil
 		case float64:
 			return int64(v), nil
 		default:
-			return strconv.ParseInt(String(v), 10, 64)
+			return strconv.ParseInt(String(v), 10, bitSize)
 		}
 	}
 	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> int64")
 }
 
 func Uint8(d interface{}, errs ...error) (uint8, error) {
-	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-		switch v := d.(type) {
-		case bool:
-			if v {
-				return uint8(1), nil
-			}
-			return uint8(0), nil
-		case byte:
-			return uint8(v), nil
-		case Dbyte:
-			return uint8(v), nil
-		case string:
-			val, err := strconv.ParseUint(v, 10, 64)
-			return uint8(val), err
-		case int:
-			return uint8(v), nil
-		case int8:
-			return uint8(v), nil
-		case int16:
-			return uint8(v), nil
-		case int32:
-			return uint8(v), nil
-		case int64:
-			return uint8(v), nil
-		case float32:
-			return uint8(v), nil
-		case float64:
-			return uint8(v), nil
-		default:
-			val, err := strconv.ParseUint(String(v), 10, 64)
-			return uint8(val), err
-		}
-	}
-	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> uint8")
+	v, err := BaseUint64(d, 8, errs...)
+	return uint8(v), err
 }
 
 func Uint16(d interface{}, errs ...error) (uint16, error) {
-	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-		switch v := d.(type) {
-		case bool:
-			if v {
-				return uint16(1), nil
-			}
-			return uint16(0), nil
-		case byte:
-			return uint16(v), nil
-		case Dbyte:
-			return uint16(v), nil
-		case string:
-			val, err := strconv.ParseUint(v, 10, 64)
-			return uint16(val), err
-		case int:
-			return uint16(v), nil
-		case int8:
-			return uint16(v), nil
-		case int16:
-			return uint16(v), nil
-		case int32:
-			return uint16(v), nil
-		case int64:
-			return uint16(v), nil
-		case float32:
-			return uint16(v), nil
-		case float64:
-			return uint16(v), nil
-		default:
-			val, err := strconv.ParseUint(String(v), 10, 64)
-			return uint16(val), err
-		}
-	}
-	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> uint16")
+	v, err := BaseUint64(d, 16, errs...)
+	return uint16(v), err
 }
 func Uint32(d interface{}, errs ...error) (uint32, error) {
-	r, err := Uint(d, errs...)
+	r, err := BaseUint64(d, 32, errs...)
 	return uint32(r), err
 }
 
 func Uint(d interface{}, errs ...error) (uint, error) {
-	if (len(errs) == 0 || errs[0] == nil) && d != nil {
-		switch v := d.(type) {
-		case bool:
-			if v {
-				return uint(1), nil
-			}
-			return uint(0), nil
-		case byte:
-			return uint(v), nil
-		case Dbyte:
-			return uint(v), nil
-		case string:
-			val, err := strconv.ParseUint(v, 10, 64)
-			return uint(val), err
-		case int:
-			return uint(v), nil
-		case int8:
-			return uint(v), nil
-		case int16:
-			return uint(v), nil
-		case int32:
-			return uint(v), nil
-		case int64:
-			return uint(v), nil
-		case float32:
-			return uint(v), nil
-		case float64:
-			return uint(v), nil
-		default:
-			val, err := strconv.ParseUint(String(v), 10, 64)
-			return uint(val), err
-		}
-	}
-	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> uint")
+	r, err := BaseUint64(d, 32, errs...)
+	return uint(r), err
 }
-
 func Uint64(d interface{}, errs ...error) (uint64, error) {
+	r, err := BaseUint64(d, 64, errs...)
+	return r, err
+}
+func BaseUint64(d interface{}, bitSize int, errs ...error) (uint64, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case bool:
-			if v {
-				return uint64(1), nil
-			}
-			return uint64(0), nil
-		case byte:
-			return uint64(v), nil
 		case Dbyte:
 			return uint64(v), nil
+		case bool:
+			if v {
+				return 1, nil
+			}
+			return 0, nil
 		case string:
-			return strconv.ParseUint(v, 10, 64)
-		case int:
-			return uint64(v), nil
+			return strconv.ParseUint(v, 10, bitSize)
 		case int8:
 			return uint64(v), nil
 		case int16:
 			return uint64(v), nil
-		case int32:
+		case rune:
+			return uint64(v), nil
+		case int:
 			return uint64(v), nil
 		case int64:
 			return uint64(v), nil
+		case byte: // 等同uint8
+			return uint64(v), nil
+		case uint16:
+			return uint64(v), nil
+		case uint32:
+			return uint64(v), nil
+		case uint:
+			return uint64(v), nil
+		case uint64:
+			return v, nil
 		case float32:
 			return uint64(v), nil
 		case float64:
 			return uint64(v), nil
 		default:
-			return strconv.ParseUint(String(v), 10, 64)
+			return strconv.ParseUint(String(v), 10, bitSize)
 		}
 	}
 	return 0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> uint64")
 }
 
+// 由于精度不一样，就不要用 float32(float64) 了
 func Float32(d interface{}, errs ...error) (float32, error) {
-	v, err := Float64(d, errs...)
-	return float32(v), err
+	if (len(errs) == 0 || errs[0] == nil) && d != nil {
+		switch v := d.(type) {
+		case Dbyte:
+			return float32(v), nil
+		case bool:
+			if v {
+				return 1.0, nil
+			}
+			return 0.0, nil
+		case string:
+			val, err := strconv.ParseFloat(v, 32)
+			return float32(val), err
+		case int8:
+			return float32(v), nil
+		case int16:
+			return float32(v), nil
+		case rune:
+			return float32(v), nil
+		case int:
+			return float32(v), nil
+		case int64:
+			return float32(v), nil
+		case byte:
+			return float32(v), nil
+		case uint16:
+			return float32(v), nil
+		case uint32:
+			return float32(v), nil
+		case uint:
+			return float32(v), nil
+		case uint64:
+			return float32(v), nil
+		case float32:
+			return v, nil
+		case float64:
+			return float32(v), nil
+		default:
+			val, err := strconv.ParseFloat(String(v), 32)
+			return float32(val), err
+		}
+	}
+	return 0.0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> Float32")
 }
 
 func Float64(d interface{}, errs ...error) (float64, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case bool:
-			if v {
-				return float64(1), nil
-			}
-			return float64(0), nil
-		case byte:
-			return float64(v), nil
 		case Dbyte:
 			return float64(v), nil
+		case bool:
+			if v {
+				return 1.0, nil
+			}
+			return 0.0, nil
+
 		case string:
 			return strconv.ParseFloat(v, 64)
-		case int:
-			return float64(v), nil
 		case int8:
 			return float64(v), nil
 		case int16:
 			return float64(v), nil
-		case int32:
+		case rune:
+			return float64(v), nil
+		case int:
 			return float64(v), nil
 		case int64:
+			return float64(v), nil
+		case byte:
+			return float64(v), nil
+		case uint16:
+			return float64(v), nil
+		case uint32:
+			return float64(v), nil
+		case uint:
+			return float64(v), nil
+		case uint64:
 			return float64(v), nil
 		case float32:
 			return float64(v), nil
@@ -422,7 +294,7 @@ func Float64(d interface{}, errs ...error) (float64, error) {
 			return strconv.ParseFloat(String(v), 64)
 		}
 	}
-	return float64(0), errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> Float64")
+	return 0.0, errors.New("cast type error " + reflect.TypeOf(d).Kind().String() + "--> Float64")
 }
 
 func IsEmpty(d interface{}, errs ...error) bool {
@@ -435,28 +307,36 @@ func IsEmpty(d interface{}, errs ...error) bool {
 func NotEmpty(d interface{}, errs ...error) bool {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
+		case Dbyte:
+			return v != 0
 		case bool:
 			return v
-		case byte:
-			return v != byte(0)
-		case Dbyte:
-			return v != Dbyte(0)
 		case string:
 			return v != ""
+		case int8:
+			return v != 0 // 复数，不算 empty，只有0 才算empty
+		case int16:
+			return v != 0
+		case rune:
+			return v != 0
 		case int:
 			return v != 0
-		case int8:
-			return v != int8(0)
-		case int16:
-			return v != int16(0)
-		case rune:
-			return v != rune(0)
 		case int64:
-			return v != int64(0)
+			return v != 0
+		case byte:
+			return v > 0
+		case uint16:
+			return v > 0
+		case uint32:
+			return v > 0
+		case uint:
+			return v > 0
+		case uint64:
+			return v > 0
 		case float32:
-			return v != float32(0)
+			return v != 0
 		case float64:
-			return v != float64(0)
+			return v != 0
 		default:
 			return String(d) != ""
 		}
