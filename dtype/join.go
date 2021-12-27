@@ -6,6 +6,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -161,4 +162,27 @@ func JoinByNames(u interface{}, ty JoinType, sep string, names ...string) string
 
 func JoinNamesByElements(u interface{}, ty JoinType, sep string, eles ...string) string {
 	return JoinTagsByElements(u, ty, sep, "name", eles...)
+}
+
+func JoinUint64(ids []uint64, sep byte) string {
+	var s strings.Builder
+	s.Grow(21 * len(ids)) // maxlen of uint64  is 20, extra 1 for sep
+	for i, id := range ids {
+		if i > 0 {
+			s.WriteByte(sep)
+		}
+		s.WriteString(strconv.FormatUint(id, 10))
+	}
+	return s.String()
+}
+func JoinUint(ids []uint, sep byte) string {
+	var s strings.Builder
+	s.Grow(11 * len(ids)) // maxlen of uint  is 10, extra 1 for sep
+	for i, id := range ids {
+		if i > 0 {
+			s.WriteByte(sep)
+		}
+		s.WriteString(strconv.FormatUint(uint64(id), 10))
+	}
+	return s.String()
 }
