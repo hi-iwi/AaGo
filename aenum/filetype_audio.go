@@ -46,6 +46,10 @@ func (t AudioType) Name() string {
 	return t.String()
 }
 
+func (t AudioType) Ext() string {
+	return "." + t.Name()
+}
+
 func (t AudioType) Is(t2 AudioType) bool {
 	return t == t2
 }

@@ -59,7 +59,9 @@ func (t VideoType) Name() string {
 	}
 	return t.String()
 }
-
+func (t VideoType) Ext() string {
+	return "." + t.Name()
+}
 func (t VideoType) Is(t2 VideoType) bool {
 	return t == t2
 }

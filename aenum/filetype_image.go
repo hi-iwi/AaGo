@@ -41,7 +41,7 @@ func (t ImageType) String() string {
 func (t ImageType) Name() string {
 	switch t {
 	case Jpeg:
-		return "jpeg"
+		return "jpg"
 	case Png:
 		return "png"
 	case Gif:
@@ -51,6 +51,11 @@ func (t ImageType) Name() string {
 	}
 	return t.String()
 }
+
+func (t ImageType) Ext() string {
+	return "." + t.Name()
+}
+
 func (t ImageType) ContentType() string {
 	switch t {
 	case Jpeg:
