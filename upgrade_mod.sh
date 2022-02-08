@@ -2,7 +2,7 @@
 
 # 更新 Go mod
 
-readonly root='/data/Aa/proj/go/src/github.com/hi-iwi'
+readonly root="../"
 comment="NO_COMMENT"
 upgrade=0
 incrTag=1
