@@ -5,18 +5,18 @@ import (
 	"encoding/json"
 )
 
-
-
-type NullUint8s sql.NullString      // uint8 json array
-type NullUint16s sql.NullString     // uint16 json array
-type NullUint32s sql.NullString     // uint32 json array
-type NullInts sql.NullString        // int json array
-type NullUints sql.NullString       // uint json array
-type NullUint64s sql.NullString     // uint64 json array
-type NullStrings sql.NullString     // string json array
-type NullStringMap sql.NullString   // map[string]string
-type Null2dStringMap sql.NullString // map[string]map[string]string
-
+type NullJson sql.NullString
+type NullUint8s sql.NullString        // uint8 json array
+type NullUint16s sql.NullString       // uint16 json array
+type NullUint32s sql.NullString       // uint32 json array
+type NullInts sql.NullString          // int json array
+type NullUints sql.NullString         // uint json array
+type NullUint64s sql.NullString       // uint64 json array
+type NullStrings sql.NullString       // string json array
+type NullStringMap sql.NullString     // map[string]string
+type Null2dStringMap sql.NullString   // map[string]map[string]string
+type NullStringMaps sql.NullString    // []map[string]string
+type NullStringMapsMap sql.NullString // map[string][]map[string]string
 
 func (t NullUint8s) Uint8s() []uint8 {
 	if !t.Valid || t.String == "" {
@@ -89,6 +89,22 @@ func (t Null2dStringMap) TStringMap() map[string]map[string]string {
 		return nil
 	}
 	var v map[string]map[string]string
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+func (t NullStringMaps) StringMaps() []map[string]string {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	var v []map[string]string
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	var v map[string][]map[string]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }

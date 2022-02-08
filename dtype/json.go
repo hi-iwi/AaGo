@@ -1,6 +1,8 @@
 package dtype
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type JsonUint8s json.RawMessage
 type JsonUint16s json.RawMessage
@@ -9,8 +11,10 @@ type JsonInts json.RawMessage
 type JsonUints json.RawMessage
 type JsonUint64s json.RawMessage
 type JsonStrings json.RawMessage
-type JsonStringMap json.RawMessage
-type Json2dStringMap json.RawMessage
+type JsonStringMap json.RawMessage     // map[string]string
+type Json2dStringMap json.RawMessage   // map[string]map[string]string
+type JsonStringMaps json.RawMessage    // []map[string]string
+type JsonStringMapsMap json.RawMessage // map[string][]map[string]string
 
 func (t JsonUint8s) Uint8s() []uint8 {
 	var v []uint8
@@ -56,6 +60,16 @@ func (t JsonStringMap) StringMap() map[string]string {
 
 func (t Json2dStringMap) TStringMap() map[string]map[string]string {
 	var v map[string]map[string]string
+	json.Unmarshal(t, &v)
+	return v
+}
+func (t JsonStringMaps) StringMaps() []map[string]string {
+	var v []map[string]string
+	json.Unmarshal(t, &v)
+	return v
+}
+func (t JsonStringMapsMap) StringMapsMap() map[string][]map[string]string {
+	var v map[string][]map[string]string
 	json.Unmarshal(t, &v)
 	return v
 }
