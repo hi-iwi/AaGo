@@ -1,11 +1,10 @@
-package util
+package com
 
 import (
 	"github.com/hi-iwi/AaGo/adto"
-	"github.com/hi-iwi/AaGo/com"
 )
 
-func MakePaging(r *com.Req, args ...int) adto.Paging {
+func MakePaging(r *Req, args ...int) adto.Paging {
 	p, _ := r.Query("page", `^\d+$`, false)
 	ofs, _ := r.Query("offset", `^\d+$`, false)
 	lmt, _ := r.Query("limit", `^\d+$`, false)
