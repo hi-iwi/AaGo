@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/hi-iwi/AaGo/adto"
+	"strconv"
+	"strings"
 )
 
 type NullJson sql.NullString
@@ -18,10 +20,19 @@ type NullStringMap sql.NullString     // map[string]string
 type Null2dStringMap sql.NullString   // map[string]map[string]string
 type NullStringMaps sql.NullString    // []map[string]string
 type NullStringMapsMap sql.NullString // map[string][]map[string]string
-type NullImgSrc sql.NullString        // adto.ImgSrc
-type NullImgSrcs sql.NullString       // []adto.ImgSrc
-type NullVideoSrc sql.NullString      // adto.VideoSrc
-type NullVideosSrcs sql.NullString    // []adto.VideoSrc
+
+type NullSepStrings sql.NullString // a,b,c,d,e
+type NullSepUint8s sql.NullString  // 1,2,3,4
+type NullSepUint16s sql.NullString // 1,2,3,4
+type NullSepUint32s sql.NullString // 1,2,3,4
+type NullSepInts sql.NullString    // 1,2,3,4
+type NullSepUints sql.NullString   // 1,2,3,4
+type NullSepUint64s sql.NullString // 1,2,3,4
+
+type NullImgSrc sql.NullString     // adto.ImgSrc
+type NullImgSrcs sql.NullString    // []adto.ImgSrc
+type NullVideoSrc sql.NullString   // adto.VideoSrc
+type NullVideosSrcs sql.NullString // []adto.VideoSrc
 
 func (t NullUint8s) Uint8s() []uint8 {
 	if !t.Valid || t.String == "" {
@@ -112,6 +123,73 @@ func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	}
 	var v map[string][]map[string]string
 	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+
+func (t NullSepStrings) Strings(sep string) []string {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	return strings.Split(t.String, sep)
+}
+func (t NullSepUint8s) Uint8s(sep string) []uint8 {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	arr := strings.Split(t.String, sep)
+	v := make([]uint8, len(arr))
+	for i, a := range arr {
+		b, _ := strconv.ParseUint(a, 10, 8)
+		v[i] = uint8(b)
+	}
+	return v
+}
+func (t NullSepUint16s) Uint16s(sep string) []uint16 {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	arr := strings.Split(t.String, sep)
+	v := make([]uint16, len(arr))
+	for i, a := range arr {
+		b, _ := strconv.ParseUint(a, 10, 16)
+		v[i] = uint16(b)
+	}
+	return v
+}
+func (t NullSepUint32s) Uint16s(sep string) []uint32 {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	arr := strings.Split(t.String, sep)
+	v := make([]uint32, len(arr))
+	for i, a := range arr {
+		b, _ := strconv.ParseUint(a, 10, 32)
+		v[i] = uint32(b)
+	}
+	return v
+}
+
+func (t NullSepInts) Ints(sep string) []int {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	arr := strings.Split(t.String, sep)
+	v := make([]int, len(arr))
+	for i, a := range arr {
+		b, _ := strconv.ParseInt(a, 10, 64)
+		v[i] = int(b)
+	}
+	return v
+}
+func (t NullSepUint64s) Uint16s(sep string) []uint64 {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	arr := strings.Split(t.String, sep)
+	v := make([]uint64, len(arr))
+	for i, a := range arr {
+		v[i], _ = strconv.ParseUint(a, 10, 64)
+	}
 	return v
 }
 
