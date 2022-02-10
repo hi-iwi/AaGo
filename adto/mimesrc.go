@@ -3,7 +3,6 @@ package adto
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/hi-iwi/AaGo/dtype"
 	"regexp"
 )
 
@@ -24,15 +23,6 @@ type VideoSrc struct {
 	Size     uint32 `json:"size"`
 }
 
-func ParseImgAdto(m [4]interface{}) ImgSrc {
-	var is ImgSrc
-	is.Path, _ = m[0].(string)
-	//  If you sent the JSON value through browser then any number you sent that will be the type float64
-	is.Size = dtype.New(m[1]).DefaultUint32(0)
-	is.Width = dtype.New(m[2]).DefaultUint16(0)
-	is.Height = dtype.New(m[3]).DefaultUint16(0)
-	return is
-}
 func EncodeImgSrc(content string) json.RawMessage {
 	reg, _ := regexp.Compile(`<img([^>]+)data-path="([^"]+)"([^>]*)>`)
 	dataReg, _ := regexp.Compile(`data-([a-z]+)="([^"]+)"`)
