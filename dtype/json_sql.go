@@ -20,6 +20,7 @@ type NullStringMap sql.NullString     // map[string]string
 type Null2dStringMap sql.NullString   // map[string]map[string]string
 type NullStringMaps sql.NullString    // []map[string]string
 type NullStringMapsMap sql.NullString // map[string][]map[string]string
+type NullStringsMap sql.NullString    // map[string][]string
 
 type NullSepStrings sql.NullString // a,b,c,d,e
 type NullSepUint8s sql.NullString  // 1,2,3,4
@@ -239,6 +240,26 @@ func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
+
+func ToNullStringsMap(v map[string][]string) NullStringsMap {
+	if len(v) == 0 {
+		return NullStringsMap{}
+	}
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return NullStringsMap{}
+	}
+	return NullStringsMap{Valid: true, String: string(s)}
+}
+func (t NullStringsMap) StringsMap() map[string][]string {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	var v map[string][]string
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+
 func ToNullSepStrings(v []string) NullSepStrings {
 	if len(v) == 0 {
 		return NullSepStrings{}
