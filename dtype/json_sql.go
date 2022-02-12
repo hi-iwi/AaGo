@@ -35,6 +35,9 @@ type NullImgSrcs sql.NullString    // []adto.ImgSrc  @warn 为了节省空间，
 type NullVideoSrc sql.NullString   // adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
 type NullVideosSrcs sql.NullString // []adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
 
+func ScanNullUint8s(data string) NullUint8s {
+	return NullUint8s{String: data, Valid: data != ""}
+}
 func ToNullUint8s(v []uint8) NullUint8s {
 	if len(v) == 0 {
 		return NullUint8s{}
@@ -47,12 +50,22 @@ func ToNullUint8s(v []uint8) NullUint8s {
 }
 
 func (t NullUint8s) Uint8s() []uint8 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
-	var v []uint8
+	var v []interface{}
 	json.Unmarshal([]byte(t.String), &v)
-	return v
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]uint8, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultUint8(0)
+	}
+	return w
+}
+func ScanNullUint16s(data string) NullUint16s {
+	return NullUint16s{String: data, Valid: data != ""}
 }
 func ToNullUint16s(v []uint16) NullUint16s {
 	if len(v) == 0 {
@@ -66,14 +79,23 @@ func ToNullUint16s(v []uint16) NullUint16s {
 }
 
 func (t NullUint16s) Uint16s() []uint16 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
-	var v []uint16
+	var v []interface{}
 	json.Unmarshal([]byte(t.String), &v)
-	return v
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]uint16, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultUint16(0)
+	}
+	return w
 }
-
+func ScanNullUint32s(data string) NullUint32s {
+	return NullUint32s{String: data, Valid: data != ""}
+}
 func ToNullUint32s(v []uint32) NullUint32s {
 	if len(v) == 0 {
 		return NullUint32s{}
@@ -86,14 +108,23 @@ func ToNullUint32s(v []uint32) NullUint32s {
 }
 
 func (t NullUint32s) Uint32s() []uint32 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
-	var v []uint32
+	var v []interface{}
 	json.Unmarshal([]byte(t.String), &v)
-	return v
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]uint32, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultUint32(0)
+	}
+	return w
 }
-
+func ScanNullInts(data string) NullInts {
+	return NullInts{String: data, Valid: data != ""}
+}
 func ToNullInts(v []int) NullInts {
 	if len(v) == 0 {
 		return NullInts{}
@@ -106,12 +137,22 @@ func ToNullInts(v []int) NullInts {
 }
 
 func (t NullInts) Ints() []int {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
-	var v []int
+	var v []interface{}
 	json.Unmarshal([]byte(t.String), &v)
-	return v
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]int, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultInt(0)
+	}
+	return w
+}
+func ScanNullUints(data string) NullUints {
+	return NullUints{String: data, Valid: data != ""}
 }
 func ToNullUints(v []uint) NullUints {
 	if len(v) == 0 {
@@ -124,12 +165,22 @@ func ToNullUints(v []uint) NullUints {
 	return NullUints{Valid: true, String: string(s)}
 }
 func (t NullUints) Uints() []uint {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
-	var v []uint
+	var v []interface{}
 	json.Unmarshal([]byte(t.String), &v)
-	return v
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]uint, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultUint(0)
+	}
+	return w
+}
+func ScanNullUint64s(data string) NullUint64s {
+	return NullUint64s{String: data, Valid: data != ""}
 }
 func ToNullUint64s(v []uint64) NullUint64s {
 	if len(v) == 0 {
@@ -142,12 +193,22 @@ func ToNullUint64s(v []uint64) NullUint64s {
 	return NullUint64s{Valid: true, String: string(s)}
 }
 func (t NullUint64s) Uint64s() []uint64 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
-	var v []uint64
+	var v []interface{}
 	json.Unmarshal([]byte(t.String), &v)
-	return v
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]uint64, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultUint64(0)
+	}
+	return w
+}
+func ScanNullStrings(data string) NullStrings {
+	return NullStrings{String: data, Valid: data != ""}
 }
 func ToNullStrings(v []string) NullStrings {
 	if len(v) == 0 {
@@ -160,12 +221,15 @@ func ToNullStrings(v []string) NullStrings {
 	return NullStrings{Valid: true, String: string(s)}
 }
 func (t NullStrings) Strings() []string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	var v []string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
+}
+func ScanNullStringMap(data string) NullStringMap {
+	return NullStringMap{String: data, Valid: data != ""}
 }
 func ToNullNullStringMap(v map[string]string) NullStringMap {
 	if len(v) == 0 {
@@ -179,12 +243,15 @@ func ToNullNullStringMap(v map[string]string) NullStringMap {
 }
 
 func (t NullStringMap) StringMap() map[string]string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	var v map[string]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
+}
+func ScanNull2dStringMap(data string) Null2dStringMap {
+	return Null2dStringMap{String: data, Valid: data != ""}
 }
 func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
 	if len(v) == 0 {
@@ -197,12 +264,15 @@ func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
 	return Null2dStringMap{Valid: true, String: string(s)}
 }
 func (t Null2dStringMap) TStringMap() map[string]map[string]string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	var v map[string]map[string]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
+}
+func ScanNullStringMaps(data string) NullStringMaps {
+	return NullStringMaps{String: data, Valid: data != ""}
 }
 func ToNullStringMaps(v []map[string]string) NullStringMaps {
 	if len(v) == 0 {
@@ -215,12 +285,15 @@ func ToNullStringMaps(v []map[string]string) NullStringMaps {
 	return NullStringMaps{Valid: true, String: string(s)}
 }
 func (t NullStringMaps) StringMaps() []map[string]string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	var v []map[string]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
+}
+func ScanNullStringMapsMap(data string) NullStringMapsMap {
+	return NullStringMapsMap{String: data, Valid: data != ""}
 }
 func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
 	if len(v) == 0 {
@@ -233,14 +306,16 @@ func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
 	return NullStringMapsMap{Valid: true, String: string(s)}
 }
 func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	var v map[string][]map[string]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func ScanNullStringsMap(data string) NullStringsMap {
+	return NullStringsMap{String: data, Valid: data != ""}
+}
 func ToNullStringsMap(v map[string][]string) NullStringsMap {
 	if len(v) == 0 {
 		return NullStringsMap{}
@@ -252,14 +327,16 @@ func ToNullStringsMap(v map[string][]string) NullStringsMap {
 	return NullStringsMap{Valid: true, String: string(s)}
 }
 func (t NullStringsMap) StringsMap() map[string][]string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	var v map[string][]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func ScanNullSepStrings(data string) NullSepStrings {
+	return NullSepStrings{String: data, Valid: data != ""}
+}
 func ToNullSepStrings(v []string) NullSepStrings {
 	if len(v) == 0 {
 		return NullSepStrings{}
@@ -271,10 +348,13 @@ func ToNullSepStrings(v []string) NullSepStrings {
 	return NullSepStrings{Valid: true, String: string(s)}
 }
 func (t NullSepStrings) Strings(sep string) []string {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	return strings.Split(t.String, sep)
+}
+func ScanNullSepUint8s(data string) NullSepUint8s {
+	return NullSepUint8s{String: data, Valid: data != ""}
 }
 func ToNullSepUint8s(v []uint8) NullSepUint8s {
 	if len(v) == 0 {
@@ -287,7 +367,7 @@ func ToNullSepUint8s(v []uint8) NullSepUint8s {
 	return NullSepUint8s{Valid: true, String: string(s)}
 }
 func (t NullSepUint8s) Uint8s(sep string) []uint8 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	arr := strings.Split(t.String, sep)
@@ -297,6 +377,9 @@ func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 		v[i] = uint8(b)
 	}
 	return v
+}
+func ScanNullSepUint16s(data string) NullSepUint16s {
+	return NullSepUint16s{String: data, Valid: data != ""}
 }
 func ToNullSepUint16s(v []uint16) NullSepUint16s {
 	if len(v) == 0 {
@@ -309,7 +392,7 @@ func ToNullSepUint16s(v []uint16) NullSepUint16s {
 	return NullSepUint16s{Valid: true, String: string(s)}
 }
 func (t NullSepUint16s) Uint16s(sep string) []uint16 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	arr := strings.Split(t.String, sep)
@@ -319,6 +402,9 @@ func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 		v[i] = uint16(b)
 	}
 	return v
+}
+func ScanNullSepUint32s(data string) NullSepUint32s {
+	return NullSepUint32s{String: data, Valid: data != ""}
 }
 func ToNullSepUint32s(v []uint32) NullSepUint32s {
 	if len(v) == 0 {
@@ -331,7 +417,7 @@ func ToNullSepUint32s(v []uint32) NullSepUint32s {
 	return NullSepUint32s{Valid: true, String: string(s)}
 }
 func (t NullSepUint32s) Uint32s(sep string) []uint32 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	arr := strings.Split(t.String, sep)
@@ -341,6 +427,9 @@ func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 		v[i] = uint32(b)
 	}
 	return v
+}
+func ScanNullSepInts(data string) NullSepInts {
+	return NullSepInts{String: data, Valid: data != ""}
 }
 func ToNullSepInts(v []int) NullSepInts {
 	if len(v) == 0 {
@@ -353,7 +442,7 @@ func ToNullSepInts(v []int) NullSepInts {
 	return NullSepInts{Valid: true, String: string(s)}
 }
 func (t NullSepInts) Ints(sep string) []int {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	arr := strings.Split(t.String, sep)
@@ -363,6 +452,9 @@ func (t NullSepInts) Ints(sep string) []int {
 		v[i] = int(b)
 	}
 	return v
+}
+func ScanNullSepUint64s(data string) NullSepUint64s {
+	return NullSepUint64s{String: data, Valid: data != ""}
 }
 func ToNullSepUint64s(v []uint64) NullSepUint64s {
 	if len(v) == 0 {
@@ -375,7 +467,7 @@ func ToNullSepUint64s(v []uint64) NullSepUint64s {
 	return NullSepUint64s{Valid: true, String: string(s)}
 }
 func (t NullSepUint64s) Uint16s(sep string) []uint64 {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 	arr := strings.Split(t.String, sep)
@@ -384,6 +476,9 @@ func (t NullSepUint64s) Uint16s(sep string) []uint64 {
 		v[i], _ = strconv.ParseUint(a, 10, 64)
 	}
 	return v
+}
+func ScanNullImgSrc(data string) NullImgSrc {
+	return NullImgSrc{String: data, Valid: data != ""}
 }
 
 // @warn 这里不是json，为了节省存储空间，这里使用 [path,size,width,height] 数组方式存储
@@ -400,7 +495,7 @@ func ToNullImgSrc(v *adto.ImgSrc) NullImgSrc {
 }
 
 func (t NullImgSrc) ImgSrc() *adto.ImgSrc {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 
@@ -418,6 +513,9 @@ func (t NullImgSrc) ImgSrc() *adto.ImgSrc {
 		Height: New(m[3]).DefaultUint16(0),
 	}
 }
+func ScanNullImgSrcs(data string) NullImgSrcs {
+	return NullImgSrcs{String: data, Valid: data != ""}
+}
 func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
 	if len(v) == 0 {
 		return NullImgSrcs{}
@@ -434,7 +532,7 @@ func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
 	return NullImgSrcs{Valid: true, String: string(s)}
 }
 func (t NullImgSrcs) ImgSrcs() []adto.ImgSrc {
-	if !t.Valid || t.String == "" {
+	if t.String == "" {
 		return nil
 	}
 
