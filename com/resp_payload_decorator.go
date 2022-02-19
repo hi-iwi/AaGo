@@ -1,10 +1,9 @@
 package com
 
 import (
+	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/dtype"
 	"reflect"
-
-	"github.com/hi-iwi/AaGo/ae"
 )
 
 // ?_stringify=1  weak language, turn all fields into string
@@ -22,8 +21,16 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 	v := reflect.ValueOf(payload)
 	k := t.Kind()
 
+	// 指针
+	if k == reflect.Ptr || k == reflect.UnsafePointer {
+		t = t.Elem()
+		k = t.Kind()
+		v = v.Elem()
+	}
+
 	if k == reflect.Slice || k == reflect.Array {
-		if v.Len() == 0 {
+		// v 有可能是一个nil指针
+		if v.Kind() == reflect.Invalid || v.Len() == 0 {
 			return nil, nil
 		}
 		p := make([]interface{}, v.Len())
@@ -35,9 +42,11 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	} else if k == reflect.Struct {
-		if t.NumField() == 0 {
+		// v 有可能是一个nil指针
+		if v.Kind() == reflect.Invalid || t.NumField() == 0 {
 			return nil, nil
 		}
+
 		p := make(map[string]interface{}, 0)
 		for i := 0; i < t.NumField(); i++ {
 			f := t.Field(i)
@@ -46,7 +55,6 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			if ks == "-" {
 				continue
 			}
-
 			w, e := stringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
 			if e != nil {
 				return nil, e
@@ -56,7 +64,7 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			if ks == "" {
 				m, ok := w.(map[string]interface{})
 				if !ok {
-					return nil, ae.NewErr("unsolved json struct stringify")
+					return nil, ae.NewErr("unsolved json struct 1 stringify, maybe tag `json:` not defined")
 				}
 				for y, z := range m {
 					p[y] = z
@@ -68,7 +76,8 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	} else if k == reflect.Map {
-		if len(v.MapKeys()) == 0 {
+		// v 有可能是一个nil指针
+		if v.Kind() == reflect.Invalid || len(v.MapKeys()) == 0 {
 			return nil, nil
 		}
 		p := make(map[string]interface{}, v.Len())
