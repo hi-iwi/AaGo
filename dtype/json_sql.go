@@ -8,35 +8,42 @@ import (
 	"strings"
 )
 
-type NullJson sql.NullString
-type NullUint8s sql.NullString        // uint8 json array
-type NullUint16s sql.NullString       // uint16 json array
-type NullUint32s sql.NullString       // uint32 json array
-type NullInts sql.NullString          // int json array
-type NullUints sql.NullString         // uint json array
-type NullUint64s sql.NullString       // uint64 json array
-type NullStrings sql.NullString       // string json array
-type NullStringMap sql.NullString     // map[string]string
-type Null2dStringMap sql.NullString   // map[string]map[string]string
-type NullStringMaps sql.NullString    // []map[string]string
-type NullStringMapsMap sql.NullString // map[string][]map[string]string
-type NullStringsMap sql.NullString    // map[string][]string
+type ObjScan interface {
+	Scan(value interface{}) error
+}
+type NullJson struct{ sql.NullString }
+type NullUint8s struct{ sql.NullString }        // uint8 json array
+type NullUint16s struct{ sql.NullString }       // uint16 json array
+type NullUint32s struct{ sql.NullString }       // uint32 json array
+type NullInts struct{ sql.NullString }          // int json array
+type NullUints struct{ sql.NullString }         // uint json array
+type NullUint64s struct{ sql.NullString }       // uint64 json array
+type NullStrings struct{ sql.NullString }       // string json array
+type NullStringMap struct{ sql.NullString }     // map[string]string
+type Null2dStringMap struct{ sql.NullString }   // map[string]map[string]string
+type NullStringMaps struct{ sql.NullString }    // []map[string]string
+type NullStringMapsMap struct{ sql.NullString } // map[string][]map[string]string
+type NullStringsMap struct{ sql.NullString }    // map[string][]string
 
-type NullSepStrings sql.NullString // a,b,c,d,e
-type NullSepUint8s sql.NullString  // 1,2,3,4
-type NullSepUint16s sql.NullString // 1,2,3,4
-type NullSepUint32s sql.NullString // 1,2,3,4
-type NullSepInts sql.NullString    // 1,2,3,4
-type NullSepUints sql.NullString   // 1,2,3,4
-type NullSepUint64s sql.NullString // 1,2,3,4
+type NullSepStrings struct{ sql.NullString } // a,b,c,d,e
+type NullSepUint8s struct{ sql.NullString }  // 1,2,3,4
+type NullSepUint16s struct{ sql.NullString } // 1,2,3,4
+type NullSepUint32s struct{ sql.NullString } // 1,2,3,4
+type NullSepInts struct{ sql.NullString }    // 1,2,3,4
+type NullSepUints struct{ sql.NullString }   // 1,2,3,4
+type NullSepUint64s struct{ sql.NullString } // 1,2,3,4
 
-type NullImgSrc sql.NullString     // adto.ImgSrc  @warn 为了节省空间，这里使用数组方式存储
-type NullImgSrcs sql.NullString    // []adto.ImgSrc  @warn 为了节省空间，这里使用数组方式存储
-type NullVideoSrc sql.NullString   // adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
-type NullVideosSrcs sql.NullString // []adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
+type NullImgSrc struct{ sql.NullString }     // adto.ImgSrc  @warn 为了节省空间，这里使用数组方式存储
+type NullImgSrcs struct{ sql.NullString }    // []adto.ImgSrc  @warn 为了节省空间，这里使用数组方式存储
+type NullVideoSrc struct{ sql.NullString }   // adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
+type NullVideosSrcs struct{ sql.NullString } // []adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
 
-func ScanNullUint8s(data string) NullUint8s {
-	return NullUint8s{String: data, Valid: data != ""}
+// 保证空字符串不能正常的对象
+func ScanNullObject(obj ObjScan, data string) {
+	if data == "" {
+		obj.Scan(nil)
+	}
+	obj.Scan(data)
 }
 func ToNullUint8s(v []uint8) NullUint8s {
 	if len(v) == 0 {
@@ -46,7 +53,9 @@ func ToNullUint8s(v []uint8) NullUint8s {
 	if len(s) == 0 {
 		return NullUint8s{}
 	}
-	return NullUint8s{Valid: true, String: string(s)}
+	var x NullUint8s
+	ScanNullObject(&x, string(s))
+	return x
 }
 
 func (t NullUint8s) Uint8s() []uint8 {
@@ -64,9 +73,7 @@ func (t NullUint8s) Uint8s() []uint8 {
 	}
 	return w
 }
-func ScanNullUint16s(data string) NullUint16s {
-	return NullUint16s{String: data, Valid: data != ""}
-}
+
 func ToNullUint16s(v []uint16) NullUint16s {
 	if len(v) == 0 {
 		return NullUint16s{}
@@ -75,7 +82,9 @@ func ToNullUint16s(v []uint16) NullUint16s {
 	if len(s) == 0 {
 		return NullUint16s{}
 	}
-	return NullUint16s{Valid: true, String: string(s)}
+	var x NullUint16s
+	ScanNullObject(&x, string(s))
+	return x
 }
 
 func (t NullUint16s) Uint16s() []uint16 {
@@ -93,9 +102,7 @@ func (t NullUint16s) Uint16s() []uint16 {
 	}
 	return w
 }
-func ScanNullUint32s(data string) NullUint32s {
-	return NullUint32s{String: data, Valid: data != ""}
-}
+
 func ToNullUint32s(v []uint32) NullUint32s {
 	if len(v) == 0 {
 		return NullUint32s{}
@@ -104,7 +111,9 @@ func ToNullUint32s(v []uint32) NullUint32s {
 	if len(s) == 0 {
 		return NullUint32s{}
 	}
-	return NullUint32s{Valid: true, String: string(s)}
+	var x NullUint32s
+	ScanNullObject(&x, string(s))
+	return x
 }
 
 func (t NullUint32s) Uint32s() []uint32 {
@@ -122,9 +131,7 @@ func (t NullUint32s) Uint32s() []uint32 {
 	}
 	return w
 }
-func ScanNullInts(data string) NullInts {
-	return NullInts{String: data, Valid: data != ""}
-}
+
 func ToNullInts(v []int) NullInts {
 	if len(v) == 0 {
 		return NullInts{}
@@ -133,7 +140,9 @@ func ToNullInts(v []int) NullInts {
 	if len(s) == 0 {
 		return NullInts{}
 	}
-	return NullInts{Valid: true, String: string(s)}
+	var x NullInts
+	ScanNullObject(&x, string(s))
+	return x
 }
 
 func (t NullInts) Ints() []int {
@@ -151,9 +160,7 @@ func (t NullInts) Ints() []int {
 	}
 	return w
 }
-func ScanNullUints(data string) NullUints {
-	return NullUints{String: data, Valid: data != ""}
-}
+
 func ToNullUints(v []uint) NullUints {
 	if len(v) == 0 {
 		return NullUints{}
@@ -162,7 +169,9 @@ func ToNullUints(v []uint) NullUints {
 	if len(s) == 0 {
 		return NullUints{}
 	}
-	return NullUints{Valid: true, String: string(s)}
+	var x NullUints
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullUints) Uints() []uint {
 	if t.String == "" {
@@ -179,9 +188,7 @@ func (t NullUints) Uints() []uint {
 	}
 	return w
 }
-func ScanNullUint64s(data string) NullUint64s {
-	return NullUint64s{String: data, Valid: data != ""}
-}
+
 func ToNullUint64s(v []uint64) NullUint64s {
 	if len(v) == 0 {
 		return NullUint64s{}
@@ -190,8 +197,11 @@ func ToNullUint64s(v []uint64) NullUint64s {
 	if len(s) == 0 {
 		return NullUint64s{}
 	}
-	return NullUint64s{Valid: true, String: string(s)}
+	var x NullUint64s
+	ScanNullObject(&x, string(s))
+	return x
 }
+
 func (t NullUint64s) Uint64s() []uint64 {
 	if t.String == "" {
 		return nil
@@ -207,9 +217,7 @@ func (t NullUint64s) Uint64s() []uint64 {
 	}
 	return w
 }
-func ScanNullStrings(data string) NullStrings {
-	return NullStrings{String: data, Valid: data != ""}
-}
+
 func ToNullStrings(v []string) NullStrings {
 	if len(v) == 0 {
 		return NullStrings{}
@@ -218,7 +226,9 @@ func ToNullStrings(v []string) NullStrings {
 	if len(s) == 0 {
 		return NullStrings{}
 	}
-	return NullStrings{Valid: true, String: string(s)}
+	var x NullStrings
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullStrings) Strings() []string {
 	if t.String == "" {
@@ -228,9 +238,7 @@ func (t NullStrings) Strings() []string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func ScanNullStringMap(data string) NullStringMap {
-	return NullStringMap{String: data, Valid: data != ""}
-}
+
 func ToNullNullStringMap(v map[string]string) NullStringMap {
 	if len(v) == 0 {
 		return NullStringMap{}
@@ -239,7 +247,9 @@ func ToNullNullStringMap(v map[string]string) NullStringMap {
 	if len(s) == 0 {
 		return NullStringMap{}
 	}
-	return NullStringMap{Valid: true, String: string(s)}
+	var x NullStringMap
+	ScanNullObject(&x, string(s))
+	return x
 }
 
 func (t NullStringMap) StringMap() map[string]string {
@@ -250,9 +260,7 @@ func (t NullStringMap) StringMap() map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func ScanNull2dStringMap(data string) Null2dStringMap {
-	return Null2dStringMap{String: data, Valid: data != ""}
-}
+
 func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
 	if len(v) == 0 {
 		return Null2dStringMap{}
@@ -261,7 +269,9 @@ func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
 	if len(s) == 0 {
 		return Null2dStringMap{}
 	}
-	return Null2dStringMap{Valid: true, String: string(s)}
+	var x Null2dStringMap
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t Null2dStringMap) TStringMap() map[string]map[string]string {
 	if t.String == "" {
@@ -271,9 +281,7 @@ func (t Null2dStringMap) TStringMap() map[string]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func ScanNullStringMaps(data string) NullStringMaps {
-	return NullStringMaps{String: data, Valid: data != ""}
-}
+
 func ToNullStringMaps(v []map[string]string) NullStringMaps {
 	if len(v) == 0 {
 		return NullStringMaps{}
@@ -282,8 +290,11 @@ func ToNullStringMaps(v []map[string]string) NullStringMaps {
 	if len(s) == 0 {
 		return NullStringMaps{}
 	}
-	return NullStringMaps{Valid: true, String: string(s)}
+	var x NullStringMaps
+	ScanNullObject(&x, string(s))
+	return x
 }
+
 func (t NullStringMaps) StringMaps() []map[string]string {
 	if t.String == "" {
 		return nil
@@ -292,9 +303,7 @@ func (t NullStringMaps) StringMaps() []map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func ScanNullStringMapsMap(data string) NullStringMapsMap {
-	return NullStringMapsMap{String: data, Valid: data != ""}
-}
+
 func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
 	if len(v) == 0 {
 		return NullStringMapsMap{}
@@ -303,7 +312,9 @@ func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
 	if len(s) == 0 {
 		return NullStringMapsMap{}
 	}
-	return NullStringMapsMap{Valid: true, String: string(s)}
+	var x NullStringMapsMap
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	if t.String == "" {
@@ -313,9 +324,7 @@ func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func ScanNullStringsMap(data string) NullStringsMap {
-	return NullStringsMap{String: data, Valid: data != ""}
-}
+
 func ToNullStringsMap(v map[string][]string) NullStringsMap {
 	if len(v) == 0 {
 		return NullStringsMap{}
@@ -324,8 +333,11 @@ func ToNullStringsMap(v map[string][]string) NullStringsMap {
 	if len(s) == 0 {
 		return NullStringsMap{}
 	}
-	return NullStringsMap{Valid: true, String: string(s)}
+	var x NullStringsMap
+	ScanNullObject(&x, string(s))
+	return x
 }
+
 func (t NullStringsMap) StringsMap() map[string][]string {
 	if t.String == "" {
 		return nil
@@ -334,9 +346,7 @@ func (t NullStringsMap) StringsMap() map[string][]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func ScanNullSepStrings(data string) NullSepStrings {
-	return NullSepStrings{String: data, Valid: data != ""}
-}
+
 func ToNullSepStrings(v []string) NullSepStrings {
 	if len(v) == 0 {
 		return NullSepStrings{}
@@ -345,7 +355,9 @@ func ToNullSepStrings(v []string) NullSepStrings {
 	if len(s) == 0 {
 		return NullSepStrings{}
 	}
-	return NullSepStrings{Valid: true, String: string(s)}
+	var x NullSepStrings
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullSepStrings) Strings(sep string) []string {
 	if t.String == "" {
@@ -353,9 +365,7 @@ func (t NullSepStrings) Strings(sep string) []string {
 	}
 	return strings.Split(t.String, sep)
 }
-func ScanNullSepUint8s(data string) NullSepUint8s {
-	return NullSepUint8s{String: data, Valid: data != ""}
-}
+
 func ToNullSepUint8s(v []uint8) NullSepUint8s {
 	if len(v) == 0 {
 		return NullSepUint8s{}
@@ -364,7 +374,9 @@ func ToNullSepUint8s(v []uint8) NullSepUint8s {
 	if len(s) == 0 {
 		return NullSepUint8s{}
 	}
-	return NullSepUint8s{Valid: true, String: string(s)}
+	var x NullSepUint8s
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 	if t.String == "" {
@@ -378,9 +390,7 @@ func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 	}
 	return v
 }
-func ScanNullSepUint16s(data string) NullSepUint16s {
-	return NullSepUint16s{String: data, Valid: data != ""}
-}
+
 func ToNullSepUint16s(v []uint16) NullSepUint16s {
 	if len(v) == 0 {
 		return NullSepUint16s{}
@@ -389,7 +399,9 @@ func ToNullSepUint16s(v []uint16) NullSepUint16s {
 	if len(s) == 0 {
 		return NullSepUint16s{}
 	}
-	return NullSepUint16s{Valid: true, String: string(s)}
+	var x NullSepUint16s
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 	if t.String == "" {
@@ -403,9 +415,7 @@ func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 	}
 	return v
 }
-func ScanNullSepUint32s(data string) NullSepUint32s {
-	return NullSepUint32s{String: data, Valid: data != ""}
-}
+
 func ToNullSepUint32s(v []uint32) NullSepUint32s {
 	if len(v) == 0 {
 		return NullSepUint32s{}
@@ -414,7 +424,9 @@ func ToNullSepUint32s(v []uint32) NullSepUint32s {
 	if len(s) == 0 {
 		return NullSepUint32s{}
 	}
-	return NullSepUint32s{Valid: true, String: string(s)}
+	var x NullSepUint32s
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 	if t.String == "" {
@@ -428,9 +440,7 @@ func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 	}
 	return v
 }
-func ScanNullSepInts(data string) NullSepInts {
-	return NullSepInts{String: data, Valid: data != ""}
-}
+
 func ToNullSepInts(v []int) NullSepInts {
 	if len(v) == 0 {
 		return NullSepInts{}
@@ -439,7 +449,9 @@ func ToNullSepInts(v []int) NullSepInts {
 	if len(s) == 0 {
 		return NullSepInts{}
 	}
-	return NullSepInts{Valid: true, String: string(s)}
+	var x NullSepInts
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullSepInts) Ints(sep string) []int {
 	if t.String == "" {
@@ -453,9 +465,7 @@ func (t NullSepInts) Ints(sep string) []int {
 	}
 	return v
 }
-func ScanNullSepUint64s(data string) NullSepUint64s {
-	return NullSepUint64s{String: data, Valid: data != ""}
-}
+
 func ToNullSepUint64s(v []uint64) NullSepUint64s {
 	if len(v) == 0 {
 		return NullSepUint64s{}
@@ -464,7 +474,9 @@ func ToNullSepUint64s(v []uint64) NullSepUint64s {
 	if len(s) == 0 {
 		return NullSepUint64s{}
 	}
-	return NullSepUint64s{Valid: true, String: string(s)}
+	var x NullSepUint64s
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullSepUint64s) Uint16s(sep string) []uint64 {
 	if t.String == "" {
@@ -477,9 +489,6 @@ func (t NullSepUint64s) Uint16s(sep string) []uint64 {
 	}
 	return v
 }
-func ScanNullImgSrc(data string) NullImgSrc {
-	return NullImgSrc{String: data, Valid: data != ""}
-}
 
 // @warn 这里不是json，为了节省存储空间，这里使用 [path,size,width,height] 数组方式存储
 func ToNullImgSrc(v *adto.ImgSrc) NullImgSrc {
@@ -491,7 +500,9 @@ func ToNullImgSrc(v *adto.ImgSrc) NullImgSrc {
 	if len(s) == 0 {
 		return NullImgSrc{}
 	}
-	return NullImgSrc{Valid: true, String: string(s)}
+	var x NullImgSrc
+	ScanNullObject(&x, string(s))
+	return x
 }
 
 func (t NullImgSrc) ImgSrc() *adto.ImgSrc {
@@ -513,9 +524,7 @@ func (t NullImgSrc) ImgSrc() *adto.ImgSrc {
 		Height: New(m[3]).DefaultUint16(0),
 	}
 }
-func ScanNullImgSrcs(data string) NullImgSrcs {
-	return NullImgSrcs{String: data, Valid: data != ""}
-}
+
 func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
 	if len(v) == 0 {
 		return NullImgSrcs{}
@@ -529,7 +538,9 @@ func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
 	if len(s) == 0 {
 		return NullImgSrcs{}
 	}
-	return NullImgSrcs{Valid: true, String: string(s)}
+	var x NullImgSrcs
+	ScanNullObject(&x, string(s))
+	return x
 }
 func (t NullImgSrcs) ImgSrcs() []adto.ImgSrc {
 	if t.String == "" {
