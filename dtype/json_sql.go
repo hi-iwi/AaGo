@@ -347,16 +347,9 @@ func (t NullStringsMap) StringsMap() map[string][]string {
 	return v
 }
 
-func ToNullSepStrings(v []string) NullSepStrings {
-	if len(v) == 0 {
-		return NullSepStrings{}
-	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return NullSepStrings{}
-	}
+func ToNullSepStrings(elems []string, sep string) NullSepStrings {
 	var x NullSepStrings
-	ScanNullObject(&x, string(s))
+	ScanNullObject(&x, strings.Join(elems, sep))
 	return x
 }
 func (t NullSepStrings) Strings(sep string) []string {
@@ -366,16 +359,29 @@ func (t NullSepStrings) Strings(sep string) []string {
 	return strings.Split(t.String, sep)
 }
 
-func ToNullSepUint8s(v []uint8) NullSepUint8s {
-	if len(v) == 0 {
+func ToNullSepUint8s(elems []uint8, sep string) NullSepUint8s {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
 		return NullSepUint8s{}
+	case 1:
+		var x NullSepUint8s
+		x.Scan(strconv.FormatUint(uint64(elems[0]), 10))
+		return x
 	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return NullSepUint8s{}
+
+	n := len(sep)*(len(elems)-1) + (len(elems) * 3) // uint8 -> 0~256, max 3 bytes
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteByte(elems[0])
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteByte(s)
 	}
+
 	var x NullSepUint8s
-	ScanNullObject(&x, string(s))
+	ScanNullObject(&x, b.String())
 	return x
 }
 func (t NullSepUint8s) Uint8s(sep string) []uint8 {
@@ -391,16 +397,29 @@ func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 	return v
 }
 
-func ToNullSepUint16s(v []uint16) NullSepUint16s {
-	if len(v) == 0 {
+func ToNullSepUint16s(elems []uint16, sep string) NullSepUint16s {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
 		return NullSepUint16s{}
+	case 1:
+		var x NullSepUint16s
+		x.Scan(strconv.FormatUint(uint64(elems[0]), 10))
+		return x
 	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return NullSepUint16s{}
+
+	n := len(sep)*(len(elems)-1) + (len(elems) * 5) // uint16 -> 0~65535, max 5 bytes
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteRune(rune(elems[0]))
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteRune(rune(s))
 	}
+
 	var x NullSepUint16s
-	ScanNullObject(&x, string(s))
+	ScanNullObject(&x, b.String())
 	return x
 }
 func (t NullSepUint16s) Uint16s(sep string) []uint16 {
@@ -416,18 +435,32 @@ func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 	return v
 }
 
-func ToNullSepUint32s(v []uint32) NullSepUint32s {
-	if len(v) == 0 {
+func ToNullSepUint32s(elems []uint32, sep string) NullSepUint32s {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
 		return NullSepUint32s{}
+	case 1:
+		var x NullSepUint32s
+		x.Scan(strconv.FormatUint(uint64(elems[0]), 10))
+		return x
 	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return NullSepUint32s{}
+
+	n := len(sep)*(len(elems)-1) + (len(elems) * 10) // uint32 -> 0~4294967295, max 10 bytes
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteString(strconv.FormatUint(uint64(s), 10))
 	}
+
 	var x NullSepUint32s
-	ScanNullObject(&x, string(s))
+	ScanNullObject(&x, b.String())
 	return x
 }
+
 func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 	if t.String == "" {
 		return nil
@@ -441,16 +474,29 @@ func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 	return v
 }
 
-func ToNullSepInts(v []int) NullSepInts {
-	if len(v) == 0 {
+func ToNullSepInts(elems []int, sep string) NullSepInts {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
 		return NullSepInts{}
+	case 1:
+		var x NullSepInts
+		x.Scan(strconv.FormatInt(int64(elems[0]), 10))
+		return x
 	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return NullSepInts{}
+
+	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteString(strconv.FormatInt(int64(elems[0]), 10))
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteString(strconv.FormatInt(int64(s), 10))
 	}
+
 	var x NullSepInts
-	ScanNullObject(&x, string(s))
+	ScanNullObject(&x, b.String())
 	return x
 }
 func (t NullSepInts) Ints(sep string) []int {
@@ -466,19 +512,32 @@ func (t NullSepInts) Ints(sep string) []int {
 	return v
 }
 
-func ToNullSepUint64s(v []uint64) NullSepUint64s {
-	if len(v) == 0 {
+func ToNullSepUint64s(elems []uint64, sep string) NullSepUint64s {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
 		return NullSepUint64s{}
+	case 1:
+		var x NullSepUint64s
+		x.Scan(strconv.FormatUint(elems[0], 10))
+		return x
 	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return NullSepUint64s{}
+
+	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteString(strconv.FormatUint(elems[0], 10))
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteString(strconv.FormatUint(s, 10))
 	}
+
 	var x NullSepUint64s
-	ScanNullObject(&x, string(s))
+	ScanNullObject(&x, b.String())
 	return x
 }
-func (t NullSepUint64s) Uint16s(sep string) []uint64 {
+func (t NullSepUint64s) Uint64s(sep string) []uint64 {
 	if t.String == "" {
 		return nil
 	}
