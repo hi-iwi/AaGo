@@ -34,7 +34,7 @@ pushAndUpgradeMod(){
   echo ">>> go get -u ./... && go mod tidy $comment"
   go build
   go get -u ./...
-  go mod tidy
+  go mod tidy -compat=1.17
   echo ">>> git commit -m  $comment"
   git add -A .
   git commit -m "$comment"

@@ -6,20 +6,24 @@ import (
 )
 
 // 存储在数据库里面，图片列表，为了节省空间，用数组来
+// 数据库存储方式为 dtype.NullImgSrc，即  [path,size,width,height]
 type ImgSrc struct {
-	//Url    string `json:"url"`
-	Path   string `json:"path"`
-	Size   uint32 `json:"size"`
-	Width  uint16 `json:"width"`
-	Height uint16 `json:"height"`
+	Processor int    `name:"-" json:"processor"`  // 图片处理ID，如阿里云图片处理、网易云图片处理等
+	Url       string `name:"-" json:"url"`
+	Path      string `name:"path" json:"path"`
+	Size      uint32 `name:"size" json:"size"`
+	Width     uint16 `name:"width" json:"width"`
+	Height    uint16 `name:"height" json:"height"`
 }
+
 type VideoSrc struct {
-	//Url  string `json:"url"`
-	Path     string `json:"path"`
-	Width    uint16 `json:"width"`
-	Height   uint16 `json:"height"`
-	Duration uint32 `json:"duration"` // 时长，秒
-	Size     uint32 `json:"size"`
+	Processor int    `name:"-" json:"processor"`
+	Url       string `name:"-" json:"url"`
+	Path      string `name:"path" json:"path"`
+	Size      uint32 `name:"size" json:"size"`
+	Width     uint16 `name:"width" json:"width"`
+	Height    uint16 `name:"height" json:"height"`
+	Duration  uint32 `name:"duration" json:"duration"` // 时长，秒
 }
 
 func EncodeImgSrc(content string) []ImgSrc {
