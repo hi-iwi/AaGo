@@ -564,7 +564,7 @@ func ToNullImgSrc(v *adto.ImgSrc) NullImgSrc {
 	return x
 }
 
-func (t NullImgSrc) ImgSrc() *adto.ImgSrc {
+func (t NullImgSrc) ImgSrc(filler func(src adto.ImgSrc) adto.ImgSrc) *adto.ImgSrc {
 	if t.String == "" {
 		return nil
 	}
@@ -576,12 +576,13 @@ func (t NullImgSrc) ImgSrc() *adto.ImgSrc {
 	if err != nil {
 		return nil
 	}
-	return &adto.ImgSrc{
+	x := filler(adto.ImgSrc{
 		Path:   New(m[0]).String(),
 		Size:   New(m[1]).DefaultUint32(0),
 		Width:  New(m[2]).DefaultUint16(0),
 		Height: New(m[3]).DefaultUint16(0),
-	}
+	})
+	return &x
 }
 
 func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
@@ -601,7 +602,7 @@ func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
 	ScanNullObject(&x, string(s))
 	return x
 }
-func (t NullImgSrcs) ImgSrcs() []adto.ImgSrc {
+func (t NullImgSrcs) ImgSrcs(filler func(src adto.ImgSrc) adto.ImgSrc) []adto.ImgSrc {
 	if t.String == "" {
 		return nil
 	}
@@ -615,12 +616,12 @@ func (t NullImgSrcs) ImgSrcs() []adto.ImgSrc {
 	}
 	v := make([]adto.ImgSrc, len(ms))
 	for i, m := range ms {
-		v[i] = adto.ImgSrc{
+		v[i] = filler(adto.ImgSrc{
 			Path:   New(m[0]).String(),
 			Size:   New(m[1]).DefaultUint32(0),
 			Width:  New(m[2]).DefaultUint16(0),
 			Height: New(m[3]).DefaultUint16(0),
-		}
+		})
 	}
 	return v
 }
