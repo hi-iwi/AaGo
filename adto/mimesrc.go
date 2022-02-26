@@ -9,6 +9,7 @@ import (
 // 数据库存储方式为 dtype.NullImgSrc，即  [path,size,width,height]
 type ImgSrc struct {
 	Processor int    `name:"-" json:"processor"`  // 图片处理ID，如阿里云图片处理、网易云图片处理等
+	ResizeUrl string `name:"-" json:"resize_url"` //  e.g.  https://xxx/img.jpg?width=$WIDTH&height=$HEIGHT or https://xxx/img.jpg?maxwidth=$MAXWIDTH
 	Url       string `name:"-" json:"url"`
 	Path      string `name:"path" json:"path"`
 	Size      uint32 `name:"size" json:"size"`
@@ -18,6 +19,7 @@ type ImgSrc struct {
 
 type VideoSrc struct {
 	Processor int    `name:"-" json:"processor"`
+	ResizeUrl string `name:"-" json:"resize_url"` // e.g.  https://xxx/video.avi?quality=$QUALITY
 	Url       string `name:"-" json:"url"`
 	Path      string `name:"path" json:"path"`
 	Size      uint32 `name:"size" json:"size"`
