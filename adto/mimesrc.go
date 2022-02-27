@@ -8,9 +8,9 @@ import (
 // 存储在数据库里面，图片列表，为了节省空间，用数组来
 // 数据库存储方式为 dtype.NullImgSrc，即  [path,size,width,height]
 type ImgSrc struct {
-	Processor int    `name:"-" json:"processor"`  // 图片处理ID，如阿里云图片处理、网易云图片处理等
-	CropUrl   string `name:"-" json:"crop_url"`   // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
-	ResizeUrl string `name:"-" json:"resize_url"` // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
+	Processor int    `name:"-" json:"processor"` // 图片处理ID，如阿里云图片处理、网易云图片处理等
+	Fill      string `name:"-" json:"fill"`      // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
+	Fit       string `name:"-" json:"fit"`       // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
 	Url       string `name:"-" json:"url"`
 	Dir       string `name:"-" json:"dir"`
 	Path      string `name:"path" json:"path"`
@@ -21,7 +21,7 @@ type ImgSrc struct {
 
 type VideoSrc struct {
 	Processor int    `name:"-" json:"processor"`
-	ResizeUrl string `name:"-" json:"resize_url"` // e.g.  https://xxx/video.avi?quality=${QUALITY}
+	Fit       string `name:"-" json:"fit"` // e.g.  https://xxx/video.avi?quality=${QUALITY}
 	Url       string `name:"-" json:"url"`
 	Dir       string `name:"-" json:"dir"`
 	Path      string `name:"path" json:"path"`
