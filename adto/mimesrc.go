@@ -12,6 +12,7 @@ type ImgSrc struct {
 	CropUrl   string `name:"-" json:"crop_url"`   // e.g.  https://xxx/img.jpg?width=$WIDTH&height=$HEIGHT
 	ResizeUrl string `name:"-" json:"resize_url"` // e.g. https://xxx/img.jpg?maxwidth=$MAXWIDTH
 	Url       string `name:"-" json:"url"`
+	Dir       string `name:"-" json:"dir"`
 	Path      string `name:"path" json:"path"`
 	Size      uint32 `name:"size" json:"size"`
 	Width     uint16 `name:"width" json:"width"`
@@ -22,6 +23,7 @@ type VideoSrc struct {
 	Processor int    `name:"-" json:"processor"`
 	ResizeUrl string `name:"-" json:"resize_url"` // e.g.  https://xxx/video.avi?quality=$QUALITY
 	Url       string `name:"-" json:"url"`
+	Dir       string `name:"-" json:"dir"`
 	Path      string `name:"path" json:"path"`
 	Size      uint32 `name:"size" json:"size"`
 	Width     uint16 `name:"width" json:"width"`

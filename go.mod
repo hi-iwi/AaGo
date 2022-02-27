@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/kataras/iris/v12 v12.2.0-alpha7
+	github.com/kataras/iris/v12 v12.2.0-alpha8
 	gopkg.in/ini.v1 v1.66.4
 )
 
