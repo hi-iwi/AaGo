@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+type CompressedImgSrc [4]interface{}
 type ObjScan interface {
 	Scan(value interface{}) error
 }
@@ -549,12 +550,21 @@ func (t NullSepUint64s) Uint64s(sep string) []uint64 {
 	return v
 }
 
+func ToImgSrcAdto(m CompressedImgSrc) adto.ImgSrc {
+	return adto.ImgSrc{
+		Path:   New(m[0]).String(),
+		Size:   New(m[1]).DefaultUint32(0),
+		Width:  New(m[2]).DefaultUint16(0),
+		Height: New(m[3]).DefaultUint16(0),
+	}
+}
+
 // @warn 这里不是json，为了节省存储空间，这里使用 [path,size,width,height] 数组方式存储
 func ToNullImgSrc(v *adto.ImgSrc) NullImgSrc {
 	if v == nil {
 		return NullImgSrc{}
 	}
-	m := [4]interface{}{v.Path, v.Size, v.Width, v.Height}
+	m := CompressedImgSrc{v.Path, v.Size, v.Width, v.Height}
 	s, _ := json.Marshal(m)
 	if len(s) == 0 {
 		return NullImgSrc{}
@@ -571,17 +581,12 @@ func (t NullImgSrc) ImgSrc(filler func(src adto.ImgSrc) adto.ImgSrc) *adto.ImgSr
 
 	// 为了节省存储空间，这里使用 [path,size,width,height] 数组方式存储
 	//  If you sent the JSON value through browser then any number you sent that will be the type float64
-	var m [4]interface{}
+	var m CompressedImgSrc
 	err := json.Unmarshal([]byte(t.String), &m)
 	if err != nil {
 		return nil
 	}
-	x := filler(adto.ImgSrc{
-		Path:   New(m[0]).String(),
-		Size:   New(m[1]).DefaultUint32(0),
-		Width:  New(m[2]).DefaultUint16(0),
-		Height: New(m[3]).DefaultUint16(0),
-	})
+	x := filler(ToImgSrcAdto(m))
 	return &x
 }
 
@@ -590,9 +595,9 @@ func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
 		return NullImgSrcs{}
 	}
 	// 为了节省存储空间，这里使用 [[path,size,width,height],[path,size,width,height]...] 数组方式存储
-	m := make([][4]interface{}, len(v))
+	m := make([]CompressedImgSrc, len(v))
 	for i, w := range v {
-		m[i] = [4]interface{}{w.Path, w.Size, w.Width, w.Height}
+		m[i] = CompressedImgSrc{w.Path, w.Size, w.Width, w.Height}
 	}
 	s, _ := json.Marshal(m)
 	if len(s) == 0 {
@@ -609,19 +614,14 @@ func (t NullImgSrcs) ImgSrcs(filler func(src adto.ImgSrc) adto.ImgSrc) []adto.Im
 
 	// 为了节省存储空间，这里使用 [[path,size,width,height],[path,size,width,height]...] 数组方式存储
 	//  If you sent the JSON value through browser then any number you sent that will be the type float64
-	var ms [][4]interface{}
+	var ms []CompressedImgSrc
 	err := json.Unmarshal([]byte(t.String), &ms)
 	if err != nil {
 		return nil
 	}
 	v := make([]adto.ImgSrc, len(ms))
 	for i, m := range ms {
-		v[i] = filler(adto.ImgSrc{
-			Path:   New(m[0]).String(),
-			Size:   New(m[1]).DefaultUint32(0),
-			Width:  New(m[2]).DefaultUint16(0),
-			Height: New(m[3]).DefaultUint16(0),
-		})
+		v[i] = filler(ToImgSrcAdto(m))
 	}
 	return v
 }
