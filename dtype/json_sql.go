@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type CompressedImgSrc [4]interface{}
+type CompressedImgSrc []interface{}
 type ObjScan interface {
 	Scan(value interface{}) error
 }
@@ -550,8 +550,11 @@ func (t NullSepUint64s) Uint64s(sep string) []uint64 {
 	return v
 }
 
-func ToImgSrcAdto(m CompressedImgSrc) adto.ImgSrc {
-	return adto.ImgSrc{
+func ToImgSrcAdto(m CompressedImgSrc) *adto.ImgSrc {
+	if m == nil || len(m) != 4 {
+		return nil
+	}
+	return &adto.ImgSrc{
 		Path:   New(m[0]).String(),
 		Size:   New(m[1]).DefaultUint32(0),
 		Width:  New(m[2]).DefaultUint16(0),
@@ -586,8 +589,12 @@ func (t NullImgSrc) ImgSrc(filler func(src adto.ImgSrc) adto.ImgSrc) *adto.ImgSr
 	if err != nil {
 		return nil
 	}
-	x := filler(ToImgSrcAdto(m))
-	return &x
+	x := ToImgSrcAdto(m)
+	if x != nil {
+		xx := filler(*x)
+		x = &xx
+	}
+	return x
 }
 
 func ToNullImgSrcs(v []adto.ImgSrc) NullImgSrcs {
@@ -621,7 +628,10 @@ func (t NullImgSrcs) ImgSrcs(filler func(src adto.ImgSrc) adto.ImgSrc) []adto.Im
 	}
 	v := make([]adto.ImgSrc, len(ms))
 	for i, m := range ms {
-		v[i] = filler(ToImgSrcAdto(m))
+		x := ToImgSrcAdto(m)
+		if x != nil {
+			v[i] = filler(*x)
+		}
 	}
 	return v
 }
