@@ -70,6 +70,40 @@ func (ym YearMonth) Date() (int, time.Month) {
 	month := time.Month(ym % 100)
 	return year, month
 }
+func (ym YearMonth) Time(loc *time.Location) time.Time {
+	y, m := ym.Date()
+	return time.Date(y, m, 0, 00, 00, 00, 0, loc)
+}
+
+// time.Now().In()  loc 直接通过 in 传递
+func ToDate(t time.Time) Date {
+	return Date(t.Format("2006-01-02"))
+}
+func (d Date) Time(loc *time.Location) (time.Time, error) {
+	return time.ParseInLocation("2006-01-02", string(d), loc)
+}
+func (d Date) Int64(loc *time.Location) int64 {
+	tm, err := time.ParseInLocation("2006-01-02", string(d), loc)
+	if err != nil {
+		return 0
+	}
+	return tm.Unix()
+}
+
+// time.Now().In()  loc 直接通过 in 传递
+func ToDatetime(t time.Time) Date {
+	return Date(t.Format("2006-01-02 15:04:05"))
+}
+func (d Datetime) Time(loc *time.Location) (time.Time, error) {
+	return time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
+}
+func (d Datetime) Int64(loc *time.Location) int64 {
+	tm, err := time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
+	if err != nil {
+		return 0
+	}
+	return tm.Unix()
+}
 
 // 保证空字符串不能正常的对象
 func ScanNullObject(obj ObjScan, data string) {
