@@ -20,6 +20,7 @@ type Year uint16      // uint16 date: yyyy
 type YearMonth uint32 // uint24 date: yyyymm
 type Date string      // yyyy-mm-dd
 type Datetime string  // yyyy-mm-dd hh:ii:ss
+type Text struct{ sql.NullString }
 
 type NullJson struct{ sql.NullString }
 type NullUint8s struct{ sql.NullString }        // uint8 json array
