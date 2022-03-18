@@ -6,12 +6,21 @@ import (
 	"github.com/hi-iwi/AaGo/adto"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type CompressedImgSrc []interface{}
 type ObjScan interface {
 	Scan(value interface{}) error
 }
+
+type Boolean uint8
+type Uint24 uint32
+type Year uint16      // uint16 date: yyyy
+type YearMonth uint32 // uint24 date: yyyymm
+type Date string      // yyyy-mm-dd
+type Datetime string  // yyyy-mm-dd hh:ii:ss
+
 type NullJson struct{ sql.NullString }
 type NullUint8s struct{ sql.NullString }        // uint8 json array
 type NullUint16s struct{ sql.NullString }       // uint16 json array
@@ -38,6 +47,28 @@ type NullImgSrc struct{ sql.NullString }     // adto.ImgSrc  @warn 为了节省�
 type NullImgSrcs struct{ sql.NullString }    // []adto.ImgSrc  @warn 为了节省空间，这里使用数组方式存储
 type NullVideoSrc struct{ sql.NullString }   // adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
 type NullVideosSrcs struct{ sql.NullString } // []adto.VideoSrc  @warn 为了节省空间，这里使用数组方式存储
+
+func ToBoolean(b bool) Boolean {
+	if b {
+		return 1
+	}
+	return 0
+}
+func (b Boolean) Bool() bool {
+	return b > 0
+}
+func ToYearMonth(year int, month time.Month) YearMonth {
+	if year < 0 {
+		return 0
+	}
+	ym := year*100 + int(month)
+	return YearMonth(ym)
+}
+func (ym YearMonth) Date() (int, time.Month) {
+	year := int(ym) / 100
+	month := time.Month(ym % 100)
+	return year, month
+}
 
 // 保证空字符串不能正常的对象
 func ScanNullObject(obj ObjScan, data string) {
