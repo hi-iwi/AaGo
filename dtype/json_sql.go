@@ -79,6 +79,7 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 func ToDate(t time.Time) Date {
 	return Date(t.Format("2006-01-02"))
 }
+
 func (d Date) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", string(d), loc)
 }
@@ -91,8 +92,8 @@ func (d Date) Int64(loc *time.Location) int64 {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
-func ToDatetime(t time.Time) Date {
-	return Date(t.Format("2006-01-02 15:04:05"))
+func ToDatetime(t time.Time) Datetime {
+	return Datetime(t.Format("2006-01-02 15:04:05"))
 }
 func (d Datetime) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
