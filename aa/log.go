@@ -2,13 +2,45 @@ package aa
 
 import (
 	"context"
-	"github.com/hi-iwi/AaGo/ae"
 )
 
+type ErrorLevel uint8
 
+const (
+	AllError ErrorLevel = iota
+	Debug
+	Info
+	Notice
+	Warn
+	Err
+	Crit
+	Alert
+	Emerg
+)
+
+func (lvl ErrorLevel) Name() string {
+	switch lvl {
+	case Debug:
+		return "debug"
+	case Info:
+		return "info"
+	case Notice:
+		return "notice"
+	case Warn:
+		return "warn"
+	case Err:
+		return "err"
+	case Crit:
+		return "crit"
+	case Alert:
+		return "alert"
+	case Emerg:
+		return "emerg"
+	}
+	return ""
+}
 
 type Log interface {
-	AError(ctx context.Context, e *ae.Error)
 	// AuthDebug 包含详细的开发情报的信息，通常只在调试一个程序时使用
 	Debug(ctx context.Context, msg string, args ...interface{})
 
@@ -33,17 +65,17 @@ type Log interface {
 	// Emerg 紧急情况，需要立即通知技术人员。
 	Emerg(ctx context.Context, msg string, args ...interface{})
 
-	Printf(ctx context.Context, msg string, args ...interface{})
-
 	Println(ctx context.Context, msg ...interface{})
 
 	// Trace 跟踪请求链路，用于性能监控
 	Trace(ctx context.Context)
 }
 
-
-
 func traceid(ctx context.Context) string {
 	id, _ := ctx.Value(TraceIdKey).(string)
 	return id
+}
+func errorlevel(ctx context.Context) ErrorLevel {
+	level, _ := ctx.Value(ErrorLevelKey).(ErrorLevel)
+	return level
 }

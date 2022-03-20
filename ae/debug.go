@@ -9,7 +9,8 @@ import (
 func Caller(skip int) string {
 	skip++ // 跳出Caller当前函数
 	pc, file, line, _ := runtime.Caller(skip)
-	pcs := runtime.FuncForPC(pc).Name() // 函数名
-	a := strings.Split(file, "/")       // 文件名
-	return a[len(a)-1] + ":" + strconv.Itoa(line) + " " + pcs
+	a := strings.LastIndexByte(file, '/') // 文件名
+	pcs := runtime.FuncForPC(pc).Name()   // 函数名
+	pi := strings.LastIndexByte(pcs, '.')
+	return file[a:] + ":" + strconv.Itoa(line) + " " + pcs[pi:] + "()"
 }

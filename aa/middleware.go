@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
+const ErrorLevelKey = "aa_error_level"
 const TraceIdKey = "aa_trace_id"
 
 // tracePrefix should be captialized

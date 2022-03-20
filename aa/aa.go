@@ -35,9 +35,9 @@ func New() *Aa {
 }
 
 // 快捷方式，对服务器错误记录日志
-func (app *Aa) OK(ctx context.Context, e *ae.Error) bool {
-	if e != nil {
-		app.Log.AError(ctx, e)
+func (app *Aa) Try(ctx context.Context, e *ae.Error) bool {
+	if e != nil && e.IsServerError() {
+		app.Log.Error(ctx, e.Error())
 		return false
 	}
 	return true
