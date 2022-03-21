@@ -17,7 +17,7 @@ type ObjScan interface {
 type Boolean uint8
 type Uint24 uint32
 type Year uint16      // uint16 date: yyyy
-type YearMonth uint32 // uint24 date: yyyymm
+type YearMonth uint32 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
 type Date string      // yyyy-mm-dd
 type Datetime string  // yyyy-mm-dd hh:ii:ss
 type Text struct{ sql.NullString }
