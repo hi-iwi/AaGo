@@ -10,12 +10,12 @@ import (
 func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
 	stringify, _ := resp.req.Query("_stringify", `^[01]$`, false)
 	if stringify.DefaultBool(false) {
-		return stringifyPayloadFields(payload, tagname)
+		return StringifyPayloadFields(payload, tagname)
 	}
 	return payload, nil
 }
 
-func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *ae.Error) {
+func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *ae.Error) {
 	var e *ae.Error
 	t := reflect.TypeOf(payload)
 	v := reflect.ValueOf(payload)
@@ -35,7 +35,7 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		p := make([]interface{}, v.Len())
 		for i := 0; i < v.Len(); i++ {
-			p[i], e = stringifyPayloadFields(v.Index(i).Interface(), tagname)
+			p[i], e = StringifyPayloadFields(v.Index(i).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}
@@ -55,7 +55,7 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			if ks == "-" {
 				continue
 			}
-			w, e := stringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
+			w, e := StringifyPayloadFields(v.FieldByName(f.Name).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}
@@ -87,7 +87,7 @@ func stringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			if ks == "-" {
 				continue
 			}
-			w, e := stringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
+			w, e := StringifyPayloadFields(v.MapIndex(key).Interface(), tagname)
 			if e != nil {
 				return nil, e
 			}
