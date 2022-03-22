@@ -67,6 +67,12 @@ func ToYearMonth(year int, month time.Month) YearMonth {
 	ym := year*100 + int(month)
 	return YearMonth(ym)
 }
+
+// years/months 可为负数
+func (ym YearMonth) Add(years int, months int, loc *time.Location) YearMonth {
+	tm := ym.Time(loc).AddDate(years, months, 0)
+	return ToYearMonth(tm.Year(), tm.Month())
+}
 func (ym YearMonth) Date() (int, time.Month) {
 	year := int(ym) / 100
 	month := time.Month(ym % 100)
