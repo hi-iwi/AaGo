@@ -323,8 +323,8 @@ Search: (start with `:`)
 可以在添加url param : _field=需要的字段名（逗号隔开）
 
 ```txt
-GET http://host/user   获取用户所有属性
-GET http://host/user?_field=name,age   只获取该用户name和age这两个字段
+GET http://host/users/xxx   获取用户所有属性
+GET http://host/users/xxx?_field=name,age   只获取该用户name和age这两个字段
 GET http://host/users  获取用户所有属性列表（数组）
 GET http://host/users?_field=[name,age]  用户列表（数组）只保留name和age字段
 ```
@@ -489,7 +489,7 @@ type Sku struct {
 
 // 根据spu_id 拆表
 func (t Sku) Table() string {
-	return "c_sku_01"
+	return "sku_table_name_" + strconv.Format(t.SpuId,10)
 }
 // 这里在aorm 里面会优先选用 Indexes 里面的索引字段。如果省事的话，可不写这个函数，即不进行智能优先选用索引字段，自己手动处理筛选顺序。
 func (t Sku)Indexes()[]string{              
