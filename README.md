@@ -473,18 +473,15 @@ type Sku struct {
 	SpuId       uint64              `name:"spu_id"`
 	Spec        dtype.NullStringMap `name:"spec"`         // {颜色:白色, 内存:256G}  // 规格名称，如  512G 白色 => sku name = spu name + sku spec name
 	GrossWeight uint32              `name:"gross_weight"` // 毛重 g
-
-	Imgs  dtype.NullImgSrcs  `name:"imgs"`
-	Video dtype.NullVideoSrc `name:"video"`
-
-	Price    uint   `name:"price"`
-	VipPrice uint   `name:"vip_price"` // 会员价
-	Ean13    uint64 `name:"ean13"`     // 13 位全球贸易项目代码，如果Ean13 小于一定阈值，表示采用某种计价方案
-	Stock    uint32 `name:"stock"`     // 库存数量
-
-	Status    ienum.SkuStatus `name:"status"`
-	CreatedAt dtype.Datetime  `name:"created_at"`
-	UpdatedAt dtype.Datetime  `name:"updated_at"`
+	Imgs        dtype.NullImgSrcs   `name:"imgs"`
+	Video       dtype.NullVideoSrc  `name:"video"`
+	Price       uint                `name:"price"`
+	VipPrice    uint                `name:"vip_price"` // 会员价
+	Ean13       uint64              `name:"ean13"`     // 13 位全球贸易项目代码，如果Ean13 小于一定阈值，表示采用某种计价方案
+	Stock       uint32              `name:"stock"`     // 库存数量
+	Status      ienum.SkuStatus     `name:"status"`
+	CreatedAt   dtype.Datetime      `name:"created_at"`
+	UpdatedAt   dtype.Datetime      `name:"updated_at"`
 }
 
 // 根据spu_id 拆表
