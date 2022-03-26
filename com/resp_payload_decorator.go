@@ -64,7 +64,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			if ks == "" {
 				m, ok := w.(map[string]interface{})
 				if !ok {
-					return nil, ae.NewErr("unsolved json stringify %s, maybe tag `json:` not defined", tagname)
+					return nil, ae.NewErr("unsolved json stringify struct `%v`, maybe tag `json:` not defined", w)
 				}
 				for y, z := range m {
 					p[y] = z
@@ -96,7 +96,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 			if ks == "" {
 				m, ok := w.(map[string]interface{})
 				if !ok {
-					return nil, ae.NewErr("unsolved json stringify %s, maybe tag `json:` not defined", tagname)
+					return nil, ae.NewErr("unsolved json stringify map `%v`, maybe tag `json:` not defined", w)
 				}
 				for y, z := range m {
 					p[y] = z
