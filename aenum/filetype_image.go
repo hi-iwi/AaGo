@@ -2,6 +2,7 @@ package aenum
 
 import (
 	"strconv"
+	"strings"
 )
 
 type ImageType uint16
@@ -12,10 +13,12 @@ const (
 	Png              ImageType = 2
 	Gif              ImageType = 3
 	Webp             ImageType = 4
+	Heic             ImageType = 5 // iPhone 拍摄的照片
+	MaxImageType     ImageType = Heic
 )
 
 func NewImageType(mime string) (ImageType, bool) {
-	switch mime {
+	switch strings.ToLower(mime) {
 	case "jpg", ".jpg", "jpeg", ".jpeg", "image/jpeg":
 		return Jpeg, true
 	case "png", ".png", "image/png":
@@ -24,11 +27,13 @@ func NewImageType(mime string) (ImageType, bool) {
 		return Gif, true
 	case "webp", ".webp", "image/webp":
 		return Webp, true
+	case "heic", ".heic", "image/heic", "heif", ".heif", "image/heif":
+		return Heic, true
 	}
 	return UnknownImageType, false
 }
 func (t ImageType) Valid() bool {
-	return t > UnknownImageType && t <= Webp
+	return t > UnknownImageType && t <= MaxImageType
 }
 
 func (t ImageType) Raw() uint16 {
@@ -48,6 +53,8 @@ func (t ImageType) Name() string {
 		return "gif"
 	case Webp:
 		return "webp"
+	case Heic:
+		return "heic"
 	}
 	return t.String()
 }
@@ -66,6 +73,8 @@ func (t ImageType) ContentType() string {
 		return "image/gif"
 	case Webp:
 		return "image/webp"
+	case Heic:
+		return "image/heic"
 	}
 	return ""
 }
