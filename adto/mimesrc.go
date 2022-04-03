@@ -23,3 +23,22 @@ type VideoSrc struct {
 	Height    uint16 `name:"height" json:"height"`
 	Duration  uint32 `name:"duration" json:"duration"` // 时长，秒
 }
+
+func ToImgSrcPtr(path string, filler func(path string) ImgSrc) *ImgSrc {
+	if path == "" {
+		return nil
+	}
+	src := filler(path)
+	return &src
+}
+
+func ToImgSrcs(paths []string, filler func(path string) ImgSrc) []ImgSrc {
+	if len(paths) == 0 {
+		return nil
+	}
+	srcs := make([]ImgSrc, len(paths))
+	for i, path := range paths {
+		srcs[i] = filler(path)
+	}
+	return srcs
+}
