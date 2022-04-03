@@ -69,6 +69,9 @@ func PtrUint(n *uint) uint {
 	}
 	return *n
 }
+func (n Uint24) Raw() uint32 {
+	return uint32(n)
+}
 func PtrUint24(n *Uint24) Uint24 {
 	if n == nil {
 		return 0
