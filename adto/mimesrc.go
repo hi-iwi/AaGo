@@ -1,5 +1,10 @@
 package adto
 
+import (
+	"strconv"
+	"strings"
+)
+
 // 存储在数据库里面，图片列表，为了节省空间，用数组来
 // 数据库存储方式为 dtype.NullImgSrc，即  [path,size,width,height]
 type ImgSrc struct {
@@ -22,6 +27,18 @@ type VideoSrc struct {
 	Width     uint16 `json:"width"`
 	Height    uint16 `json:"height"`
 	Duration  uint32 `json:"duration"` // 时长，秒
+}
+
+func (s ImgSrc) FillTo(width, height uint16) string {
+	u := s.Fill
+	u = strings.ReplaceAll(u, "${WIDTH}", strconv.FormatUint(uint64(width), 10))
+	u = strings.ReplaceAll(u, "${HEIGHT}", strconv.FormatUint(uint64(height), 10))
+	return u
+}
+
+func (s ImgSrc) FitTo(maxwidth uint16) string {
+	u := s.Fit
+	return strings.ReplaceAll(u, "${MAXWIDTH}", strconv.FormatUint(uint64(maxwidth), 10))
 }
 
 func ToImgSrcPtr(path string, filler func(path string) ImgSrc) *ImgSrc {
