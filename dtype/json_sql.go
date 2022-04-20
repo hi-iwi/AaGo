@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/binary"
 	"encoding/json"
+	"io"
 	"net"
 	"strconv"
 	"strings"
@@ -221,31 +222,66 @@ func ToIp(addr string) Ip {
 	return []byte{0} // varbinary(16) NULL DEFAULT 0x00 ;   ==> 等价于 DEFAULT '\0'
 }
 
-func (p Position) Coordinate() Coordinate {
-	var coord Coordinate
-	if len(p) == 25 {
-		buf := bytes.NewReader(p[9:17])
-		binary.Read(buf, binary.LittleEndian, &coord.Latitude)
-		buf = bytes.NewReader(p[17:25])
-		binary.Read(buf, binary.LittleEndian, &coord.Longitude)
-	}
-	return coord
+// https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html
+//	The value length is 25 bytes, made up of these components (as can be seen from the hexadecimal value):
+//	4 bytes for integer SRID (0)       4326 是GPS   WGS84，表示按 lat-lng 保存
+//	1 byte for integer byte order (1 = little-endian)
+//	4 bytes for integer type information (1 = Point)
+//	8 bytes for double-precision X coordinate (1)
+//	8 bytes for double-precision Y coordinate (−1)
+
+func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position {
+	buf := new(bytes.Buffer)
+	buf.Grow(25)
+	// uint32就是4个字节
+	binary.Write(buf, binary.LittleEndian, srid)
+	binary.Write(buf, binary.LittleEndian, order)
+	binary.Write(buf, binary.LittleEndian, typ)
+	binary.Write(buf, binary.LittleEndian, x)
+	binary.Write(buf, binary.LittleEndian, y)
+	return buf.Bytes()
 }
-func (p Position) Point() Point {
-	var point Point
-	if len(p) == 25 {
-		buf := bytes.NewReader(p[9:17])
-		binary.Read(buf, binary.LittleEndian, &point.X)
-		buf = bytes.NewReader(p[17:25])
-		binary.Read(buf, binary.LittleEndian, &point.Y)
-	}
-	return point
+func ToPosition(coord Coordinate) Position {
+	//  4326 是GPS   WGS84，表示按 lat-lng 保存
+	return ToPositionBase(4326, 1, 1, coord.Latitude, coord.Longitude)
 }
 
-func ToPosition(x, y float64) Position {
-	a := strconv.FormatFloat(x, 'f', -1, 64)
-	b := strconv.FormatFloat(y, 'f', -1, 64)
-	return []byte("POINT(" + a + "," + b + ")")        // position=POINT(lat, lng)
+func binaryRead(r io.Reader, littleEndian bool, data interface{}) error {
+	if littleEndian {
+		return binary.Read(r, binary.LittleEndian, data)
+	}
+	return binary.Read(r, binary.BigEndian, data)
+}
+
+func (p Position) Parse() (srid uint32, order byte, typ uint32, x float64, y float64) {
+	if len(p) == 25 {
+		buf := bytes.NewReader(p[4:5])
+		binary.Read(buf, binary.LittleEndian, &order) // 只有1字节，无论bigEndian，还是littleEndian，结果都一样
+		littleEndian := order == 1
+		buf = bytes.NewReader(p[0:4])
+		binaryRead(buf, littleEndian, &srid)
+		buf = bytes.NewReader(p[5:9])
+		binaryRead(buf, littleEndian, &typ)
+		buf = bytes.NewReader(p[9:17])
+		binaryRead(buf, littleEndian, &x)
+		buf = bytes.NewReader(p[17:25])
+		binaryRead(buf, littleEndian, &y)
+	}
+	return
+}
+func (p Position) Coordinate() Coordinate {
+	_, _, _, x, y := p.Parse()
+	return Coordinate{
+		Latitude:  x,
+		Longitude: y,
+	}
+}
+func (p Position) Point() Point {
+	_, _, _, x, y := p.Parse()
+	return Point{
+		X: x,
+		Y: y,
+	}
 }
 
 // 保证空字符串不能正常的对象
