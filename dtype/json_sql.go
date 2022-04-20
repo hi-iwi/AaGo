@@ -1,8 +1,11 @@
 package dtype
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/binary"
 	"encoding/json"
+	"net"
 	"strconv"
 	"strings"
 	"time"
@@ -21,6 +24,16 @@ type Datetime string  // yyyy-mm-dd hh:ii:ss
 type Text struct{ sql.NullString }
 type CityId uint32 // uint24
 type AddrId uint64
+type Ip []byte // IP Address
+type Coordinate struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+type Point struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+type Position []byte // postion, coordinate or point
 
 type NullJson struct{ sql.NullString }
 type NullUint8s struct{ sql.NullString }        // uint8 json array
@@ -186,6 +199,53 @@ func (d Datetime) Int64(loc *time.Location) int64 {
 		return 0
 	}
 	return tm.Unix()
+}
+
+func (ip Ip) String() string {
+	var addr string
+	if len(ip) > 1 {
+		if nip := net.IP(ip).To16(); len(nip) > 0 {
+			addr = nip.String()
+		}
+	}
+	return addr
+}
+
+func ToIp(addr string) Ip {
+	if addr != "" {
+		nip := net.ParseIP(addr)
+		if nip != nil {
+			return Ip(nip)
+		}
+	}
+	return []byte{0} // varbinary(16) NULL DEFAULT 0x00 ;   ==> 等价于 DEFAULT '\0'
+}
+
+func (p Position) Coordinate() Coordinate {
+	var coord Coordinate
+	if len(p) == 25 {
+		buf := bytes.NewReader(p[9:17])
+		binary.Read(buf, binary.LittleEndian, &coord.Latitude)
+		buf = bytes.NewReader(p[17:25])
+		binary.Read(buf, binary.LittleEndian, &coord.Longitude)
+	}
+	return coord
+}
+func (p Position) Point() Point {
+	var point Point
+	if len(p) == 25 {
+		buf := bytes.NewReader(p[9:17])
+		binary.Read(buf, binary.LittleEndian, &point.X)
+		buf = bytes.NewReader(p[17:25])
+		binary.Read(buf, binary.LittleEndian, &point.Y)
+	}
+	return point
+}
+
+func ToPosition(x, y float64) Position {
+	a := strconv.FormatFloat(x, 'f', -1, 64)
+	b := strconv.FormatFloat(y, 'f', -1, 64)
+	return []byte("POINT(" + a + "," + b + ")")        // position=POINT(lat, lng)
 }
 
 // 保证空字符串不能正常的对象
