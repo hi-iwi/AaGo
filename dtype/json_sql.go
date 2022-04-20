@@ -201,7 +201,9 @@ func (d Datetime) Int64(loc *time.Location) int64 {
 	}
 	return tm.Unix()
 }
-
+func (ip Ip) Valid() bool {
+	return len(ip) == net.IPv4len || len(ip) == net.IPv6len
+}
 func (ip Ip) String() string {
 	var addr string
 	if len(ip) > 1 {
@@ -252,9 +254,11 @@ func binaryRead(r io.Reader, littleEndian bool, data interface{}) error {
 	}
 	return binary.Read(r, binary.BigEndian, data)
 }
-
+func (p Position) Valid() bool {
+	return len(p) == 25
+}
 func (p Position) Parse() (srid uint32, order byte, typ uint32, x float64, y float64) {
-	if len(p) == 25 {
+	if p.Valid() {
 		buf := bytes.NewReader(p[4:5])
 		binary.Read(buf, binary.LittleEndian, &order) // 只有1字节，无论bigEndian，还是littleEndian，结果都一样
 		littleEndian := order == 1
