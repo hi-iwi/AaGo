@@ -5,8 +5,7 @@ import (
 	"strings"
 )
 
-// 存储在数据库里面，图片列表，为了节省空间，用数组来
-// 数据库存储方式为 dtype.NullImgSrc，即  [path,size,width,height]
+// 存储在数据库里面，图片列表，为了节省空间，用数组来；具体见 dtype.NullStrings or string
 type ImgSrc struct {
 	Processor int    `json:"processor"` // 图片处理ID，如阿里云图片处理、网易云图片处理等
 	Fill      string `json:"fill"`      // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}

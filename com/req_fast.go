@@ -22,7 +22,7 @@ func (r *Req) Xhost() string {
 
 // 跟踪客户端数据，优先级：url --> header `X-***`  --> cookie
 // 标准：Referer, User-Agent,
-// 自定义：X-Csrf-Token, X-Request-Wid, X-From, X-Inviter
+// 自定义：X-Csrf-Token, X-Request-Id, X-From, X-Inviter
 // @warn 尽量不要通过自定义header传参，因为可能某个web server会基于安全禁止某些无法识别的header
 func (r *Req) XHeader(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
 	key := strings.Title(strings.ReplaceAll(name, "_", "-")) // 首字母大写
