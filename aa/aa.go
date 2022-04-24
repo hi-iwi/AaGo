@@ -42,3 +42,9 @@ func (app *Aa) Try(ctx context.Context, e *ae.Error) bool {
 	}
 	return true
 }
+
+func (app *Aa) TryLog(ctx context.Context, err error) {
+	if err != nil {
+		app.Log.Error(ctx, err.Error())
+	}
+}
