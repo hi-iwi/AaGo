@@ -42,7 +42,7 @@ func (app *Aa) Try(ctx context.Context, e *ae.Error) bool {
 	}
 	return true
 }
-
+// 快捷记录错误
 func (app *Aa) TryLog(ctx context.Context, err error) {
 	if err != nil {
 		app.Log.Error(ctx, err.Error())
