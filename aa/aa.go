@@ -52,7 +52,7 @@ func (app *Aa) TryLog(ctx context.Context, err error) {
 
 // 快捷panic
 func (app *Aa) TryPanic(ctx context.Context, e *ae.Error) {
-	if e != nil && e.IsServerError() {
+	if e != nil {
 		app.Log.Error(ctx, e.Error())
 		panic(e.Error())
 	}
