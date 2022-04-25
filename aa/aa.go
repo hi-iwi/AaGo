@@ -42,9 +42,18 @@ func (app *Aa) Try(ctx context.Context, e *ae.Error) bool {
 	}
 	return true
 }
+
 // 快捷记录错误
 func (app *Aa) TryLog(ctx context.Context, err error) {
 	if err != nil {
 		app.Log.Error(ctx, err.Error())
+	}
+}
+
+// 快捷panic
+func (app *Aa) TryPanic(ctx context.Context, e *ae.Error) {
+	if e != nil && e.IsServerError() {
+		app.Log.Error(ctx, e.Error())
+		panic(e.Error())
 	}
 }
