@@ -16,16 +16,6 @@ type ObjScan interface {
 	Scan(value interface{}) error
 }
 
-type Boolean uint8
-type Uint24 uint32
-type Year uint16      // uint16 date: yyyy
-type YearMonth uint32 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
-type Date string      // yyyy-mm-dd
-type Datetime string  // yyyy-mm-dd hh:ii:ss
-type Text struct{ sql.NullString }
-type CityId uint32 // uint24
-type AddrId uint64
-type Ip []byte // IP Address
 type Coordinate struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -35,6 +25,17 @@ type Point struct {
 	Y float64 `json:"y"`
 }
 type Position []byte // postion, coordinate or point
+type Ip []byte       // IP Address
+
+type Boolean uint8
+type Uint24 uint32
+type Year uint16      // uint16 date: yyyy
+type YearMonth uint32 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
+type Date string      // yyyy-mm-dd
+type Datetime string  // yyyy-mm-dd hh:ii:ss
+type Text struct{ sql.NullString }
+type CityId uint32 // uint24
+type AddrId uint64
 
 type NullJson struct{ sql.NullString }
 type NullUint8s struct{ sql.NullString }        // uint8 json array
@@ -57,6 +58,99 @@ type NullSepUint32s struct{ sql.NullString } // 1,2,3,4
 type NullSepInts struct{ sql.NullString }    // 1,2,3,4
 type NullSepUints struct{ sql.NullString }   // 1,2,3,4
 type NullSepUint64s struct{ sql.NullString } // 1,2,3,4
+// 保证空字符串不能正常的对象
+func ScanNullObject(obj ObjScan, data string) {
+	if data == "" {
+		obj.Scan(nil)
+	}
+	obj.Scan(data)
+}
+
+// https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html
+//	The value length is 25 bytes, made up of these components (as can be seen from the hexadecimal value):
+//	4 bytes for integer SRID (0)       4326 是GPS   WGS84，表示按 lat-lng 保存
+//	1 byte for integer byte order (1 = little-endian)
+//	4 bytes for integer type information (1 = Point)
+//	8 bytes for double-precision X coordinate (1)
+//	8 bytes for double-precision Y coordinate (−1)
+
+func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position {
+	buf := new(bytes.Buffer)
+	buf.Grow(25)
+	// uint32就是4个字节
+	binary.Write(buf, binary.LittleEndian, srid)
+	binary.Write(buf, binary.LittleEndian, order)
+	binary.Write(buf, binary.LittleEndian, typ)
+	binary.Write(buf, binary.LittleEndian, x)
+	binary.Write(buf, binary.LittleEndian, y)
+	return buf.Bytes()
+}
+func ToPosition(coord Coordinate) Position {
+	//  4326 是GPS   WGS84，表示按 lat-lng 保存
+	return ToPositionBase(4326, 1, 1, coord.Latitude, coord.Longitude)
+}
+
+func binaryRead(r io.Reader, littleEndian bool, data interface{}) error {
+	if littleEndian {
+		return binary.Read(r, binary.LittleEndian, data)
+	}
+	return binary.Read(r, binary.BigEndian, data)
+}
+func (p Position) Valid() bool {
+	return len(p) == 25
+}
+func (p Position) Parse() (srid uint32, order byte, typ uint32, x float64, y float64) {
+	if p.Valid() {
+		buf := bytes.NewReader(p[4:5])
+		binary.Read(buf, binary.LittleEndian, &order) // 只有1字节，无论bigEndian，还是littleEndian，结果都一样
+		littleEndian := order == 1
+		buf = bytes.NewReader(p[0:4])
+		binaryRead(buf, littleEndian, &srid)
+		buf = bytes.NewReader(p[5:9])
+		binaryRead(buf, littleEndian, &typ)
+		buf = bytes.NewReader(p[9:17])
+		binaryRead(buf, littleEndian, &x)
+		buf = bytes.NewReader(p[17:25])
+		binaryRead(buf, littleEndian, &y)
+	}
+	return
+}
+func (p Position) Coordinate() Coordinate {
+	_, _, _, x, y := p.Parse()
+	return Coordinate{
+		Latitude:  x,
+		Longitude: y,
+	}
+}
+func (p Position) Point() Point {
+	_, _, _, x, y := p.Parse()
+	return Point{
+		X: x,
+		Y: y,
+	}
+}
+func (ip Ip) Valid() bool {
+	return len(ip) == net.IPv4len || len(ip) == net.IPv6len
+}
+func (ip Ip) String() string {
+	var addr string
+	if len(ip) > 1 {
+		if nip := net.IP(ip).To16(); len(nip) > 0 {
+			addr = nip.String()
+		}
+	}
+	return addr
+}
+
+func ToIp(addr string) Ip {
+	if addr != "" {
+		nip := net.ParseIP(addr)
+		if nip != nil {
+			return Ip(nip)
+		}
+	}
+	return []byte{0} // varbinary(16) NULL DEFAULT 0x00 ;   ==> 等价于 DEFAULT '\0'
+}
 
 func PtrUint64(n *uint64) uint64 {
 	if n == nil {
@@ -201,100 +295,7 @@ func (d Datetime) Int64(loc *time.Location) int64 {
 	}
 	return tm.Unix()
 }
-func (ip Ip) Valid() bool {
-	return len(ip) == net.IPv4len || len(ip) == net.IPv6len
-}
-func (ip Ip) String() string {
-	var addr string
-	if len(ip) > 1 {
-		if nip := net.IP(ip).To16(); len(nip) > 0 {
-			addr = nip.String()
-		}
-	}
-	return addr
-}
 
-func ToIp(addr string) Ip {
-	if addr != "" {
-		nip := net.ParseIP(addr)
-		if nip != nil {
-			return Ip(nip)
-		}
-	}
-	return []byte{0} // varbinary(16) NULL DEFAULT 0x00 ;   ==> 等价于 DEFAULT '\0'
-}
-
-// https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html
-//	The value length is 25 bytes, made up of these components (as can be seen from the hexadecimal value):
-//	4 bytes for integer SRID (0)       4326 是GPS   WGS84，表示按 lat-lng 保存
-//	1 byte for integer byte order (1 = little-endian)
-//	4 bytes for integer type information (1 = Point)
-//	8 bytes for double-precision X coordinate (1)
-//	8 bytes for double-precision Y coordinate (−1)
-
-func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position {
-	buf := new(bytes.Buffer)
-	buf.Grow(25)
-	// uint32就是4个字节
-	binary.Write(buf, binary.LittleEndian, srid)
-	binary.Write(buf, binary.LittleEndian, order)
-	binary.Write(buf, binary.LittleEndian, typ)
-	binary.Write(buf, binary.LittleEndian, x)
-	binary.Write(buf, binary.LittleEndian, y)
-	return buf.Bytes()
-}
-func ToPosition(coord Coordinate) Position {
-	//  4326 是GPS   WGS84，表示按 lat-lng 保存
-	return ToPositionBase(4326, 1, 1, coord.Latitude, coord.Longitude)
-}
-
-func binaryRead(r io.Reader, littleEndian bool, data interface{}) error {
-	if littleEndian {
-		return binary.Read(r, binary.LittleEndian, data)
-	}
-	return binary.Read(r, binary.BigEndian, data)
-}
-func (p Position) Valid() bool {
-	return len(p) == 25
-}
-func (p Position) Parse() (srid uint32, order byte, typ uint32, x float64, y float64) {
-	if p.Valid() {
-		buf := bytes.NewReader(p[4:5])
-		binary.Read(buf, binary.LittleEndian, &order) // 只有1字节，无论bigEndian，还是littleEndian，结果都一样
-		littleEndian := order == 1
-		buf = bytes.NewReader(p[0:4])
-		binaryRead(buf, littleEndian, &srid)
-		buf = bytes.NewReader(p[5:9])
-		binaryRead(buf, littleEndian, &typ)
-		buf = bytes.NewReader(p[9:17])
-		binaryRead(buf, littleEndian, &x)
-		buf = bytes.NewReader(p[17:25])
-		binaryRead(buf, littleEndian, &y)
-	}
-	return
-}
-func (p Position) Coordinate() Coordinate {
-	_, _, _, x, y := p.Parse()
-	return Coordinate{
-		Latitude:  x,
-		Longitude: y,
-	}
-}
-func (p Position) Point() Point {
-	_, _, _, x, y := p.Parse()
-	return Point{
-		X: x,
-		Y: y,
-	}
-}
-
-// 保证空字符串不能正常的对象
-func ScanNullObject(obj ObjScan, data string) {
-	if data == "" {
-		obj.Scan(nil)
-	}
-	obj.Scan(data)
-}
 func ToNullUint8s(v []uint8) NullUint8s {
 	if len(v) == 0 {
 		return NullUint8s{}
