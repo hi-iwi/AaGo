@@ -46,14 +46,14 @@ func (app *Aa) Try(ctx context.Context, e *ae.Error) bool {
 // 快捷记录错误
 func (app *Aa) TryLog(ctx context.Context, err error) {
 	if err != nil {
-		app.Log.Error(ctx, err.Error())
+		app.Log.Error(ctx, ae.Caller(1)+" "+err.Error())
 	}
 }
 
 // 快捷panic
 func (app *Aa) TryPanic(ctx context.Context, e *ae.Error) {
 	if e != nil {
-		app.Log.Error(ctx, e.Error())
+		app.Log.Error(ctx, ae.Caller(1)+" "+e.Error())
 		panic(e.Error())
 	}
 }
