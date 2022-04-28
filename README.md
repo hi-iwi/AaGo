@@ -25,7 +25,7 @@ AaGo
     + aenum  an enum
     + afmt   a format
     + aorm   an simplest orm
-    + cnf    备用
+    + cnf    保留字，备用
     + com    中间件层，处理 request/response
     + crypt  编码加密
     + dict   系统字典
@@ -233,11 +233,11 @@ db = 13
 }
 
 
-// GET /users/3000      show users on page 3000
+// GET /users/jack      
 {
   "code": 204,
   "msg": "No Content",
-  "data": []
+  "data": {}
 }
 
 {
@@ -268,7 +268,7 @@ db = 13
 
 > 上传数据是不区分数据类型的，如 "uid": 10086 或 "uid": "10086" 都可以
 
-* JS 可使用封装的 aa.js 函数，下列函数会自动带上_stringify=1，以及带上客户端 access token，以beartoken方式传递
+* JS 可使用封装的 aa.js 函数，下列函数会自动带上_stringify=1，以及自动更新及带上客户端 access token，以beartoken方式传递
 ```javascript
 Aa.Ajax({
     async: bool,
@@ -301,8 +301,9 @@ Aa.AjaxResp((rdata, resolve, reject, async)=>{}, rdata) // 返回 null|resp
 
 ```txt
 Pagination:
-    users/{page:int}                第N页，每页最多20条
-    users/{page:int}?limit=100      第N页，每页最多100条
+    users/page/{page:int}                第N页，每页最多20条
+    users/page/{page:int}?limit=100      第N页，每页最多100条
+    users?page=10             第N页
     users?offset=200&limit=100     从第offset（200）条数据开始，选择limit（100）条
 
 Search: (start with `:`)

@@ -12,7 +12,11 @@ func Caller(skip int) string {
 	pcs := runtime.FuncForPC(pc).Name() // 函数名
 	pi := strings.LastIndexByte(pcs, '.') + 1
 	fn := pcs[pi:]
-
+	if fn == "func1" {
+		fn = ""
+	} else {
+		fn = " " + fn
+	}
 	var f string
 	seps := strings.Split(file, "/")
 	l := len(seps)
@@ -26,5 +30,5 @@ func Caller(skip int) string {
 		return ""
 	}
 
-	return "[" + f + ":" + strconv.Itoa(line) + " " + fn + "]"
+	return "[" + f + ":" + strconv.Itoa(line) + fn + "]"
 }
