@@ -27,6 +27,13 @@ type Point struct {
 type Position []byte // postion, coordinate or point
 type Ip []byte       // IP Address
 
+type Bitwise struct {
+	BitName       string // 该位名称
+	BitRightIndex uint8  // 位所在位置
+	BitValue      bool   // 该位的值
+	MaxBits       uint8
+}
+
 type Boolean uint8
 type Uint24 uint32
 type Year uint16      // uint16 date: yyyy
@@ -233,6 +240,21 @@ func PtrFloat32(n *float32) float32 {
 	}
 	return *n
 }
+
+//  SET x=x|2
+func (b Bitwise) SetStmt(fieldName string) string {
+	bv := 1 << b.BitRightIndex
+	bs := strconv.FormatUint(uint64(bv), 10)
+	return fieldName + "=" + fieldName + "|" + bs
+}
+
+func (b Bitwise) UnsetStmt(fieldName string) string {
+	max := (1 << b.MaxBits) - 1
+	bv := max - (1 << b.BitRightIndex)
+	bs := strconv.FormatUint(uint64(bv), 10)
+	return fieldName + "=" + fieldName + "&" + bs
+}
+
 func ToBoolean(b bool) Boolean {
 	if b {
 		return 1
