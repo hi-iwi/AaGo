@@ -241,14 +241,17 @@ func PtrFloat32(n *float32) float32 {
 	return *n
 }
 
-//  SET x=x|2
+//  SET x=x|v
 func (b Bitwise) SetStmt(fieldName string) string {
-	bv := 1 << b.BitRightIndex
-	bs := strconv.FormatUint(uint64(bv), 10)
-	return fieldName + "=" + fieldName + "|" + bs
+	if b.BitValue {
+		bv := 1 << b.BitRightIndex
+		bs := strconv.FormatUint(uint64(bv), 10)
+		return fieldName + "=" + fieldName + "|" + bs
+	}
+	return b.unsetStmt(fieldName)
 }
 
-func (b Bitwise) UnsetStmt(fieldName string) string {
+func (b Bitwise) unsetStmt(fieldName string) string {
 	max := (1 << b.MaxBits) - 1
 	bv := max - (1 << b.BitRightIndex)
 	bs := strconv.FormatUint(uint64(bv), 10)
