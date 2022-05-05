@@ -22,6 +22,14 @@ func SafeIncr(field string, n int, max string) string {
 	return s
 }
 
+// INSERT INTO tb (v) VALUES ()
+func SafeUintString(n int) string {
+	if n <= 0 {
+		return "0"
+	}
+	return strconv.FormatUint(uint64(n), 10)
+}
+
 func SafeIncrUint8(field string, n int) string {
 	return SafeIncr(field, n, "255")
 }
