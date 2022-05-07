@@ -7,7 +7,7 @@ import (
 
 func SafeIncr(field string, n int, max string) string {
 	if n == 0 {
-		return field + "=field"
+		return field + "=" + field
 	}
 	s := field + "=CASE"
 	var ns string
