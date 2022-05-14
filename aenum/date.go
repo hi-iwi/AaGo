@@ -4,11 +4,6 @@ import "time"
 
 const AaBirthDate = int64(690134400) // 秒   1991-11-15
 
-const OneDay = int64(24 * 3600) // 一天秒数
-const OneWeek = 7 * OneDay      // 1个礼拜秒数
-const OneMonth = 30 * OneDay    // 30 days
-const OneYear = 365 * OneDay    // 365 days
-
 // https://dev.mysql.com/doc/refman/8.0/en/datetime.html
 // DATETIME values is '1000-01-01 00:00:00.000000' to '9999-12-31 23:59:59.999999',
 // TIMESTAMP values is '1970-01-01 00:00:01.000000' to '2038-01-19 03:14:07.999999'

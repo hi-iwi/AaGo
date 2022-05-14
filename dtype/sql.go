@@ -515,7 +515,7 @@ func (t NullStrings) Strings() []string {
 	return v
 }
 
-func ToNullNullStringMap(v map[string]string) NullStringMap {
+func ToNullStringMap(v map[string]string) NullStringMap {
 	if len(v) == 0 {
 		return NullStringMap{}
 	}
