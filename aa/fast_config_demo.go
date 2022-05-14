@@ -1,6 +1,7 @@
 package aa
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/hi-iwi/AaGo/dtype"
 	"time"
 )
@@ -110,108 +111,61 @@ func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
 	return cf, nil
 }
 
-type RedisPoolConfig struct {
-	// Maximum number of idle connections in the pool.
-	MaxIdle int
-
-	// Maximum number of connections allocated by the pool at a given time.
-	// When zero, there is no limit on the number of connections in the pool.
-	MaxActive int
-
-	// Close connections after remaining idle for this duration. If the value
-	// is zero, then idle connections are not closed. Applications should set
-	// the timeout to a value less than the server's timeout.
-	IdleTimeout time.Duration
-
-	// If Wait is true and the pool is at the MaxActive limit, then Get() waits
-	// for a connection to be returned to the pool before returning.
-	Wait bool
-
-	// Close connections older than this duration. If the value is zero, then
-	// the pool does not close connections based on age.
-	MaxConnLifetime time.Duration
-}
-type RedisConfig struct {
-	TLS  bool
-	Host string
-	Auth string
-	Db   uint8 // 默认0，系统配置为16个，方便flush all，但是不常用
-
-	ConnTimeout  time.Duration
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	Pool         RedisPoolConfig
-}
-
-// @example
-
-/*
-[redis]
-host=localhost
-auth=
-tls=false
-db=0
-timeout=3s,3s,3s
-pool_max_idle=0
-pool_max_active=0
-pool_idle_timeout=0
-pool_wait=false
-pool_conn_life_time=0
-[redis_helloworld]
-db=1
-[redis_helloworld2]
-host=localhost2
-auth=2
-tls=false
-db=2
-timeout=3s,3s,3s
-pool_max_idle=0
-pool_max_active=0
-pool_idle_timeout=0
-pool_wait=false
-pool_conn_life_time=0
-*/
 func (app *Aa) tryGeRedisCfg(section string, key string) (string, error) {
 	k := section + "." + key
 	v, err := app.Config.MustGetString(k)
 	if err == nil {
 		return v, nil
 	}
-
 	return app.Config.MustGetString("redis." + key)
 }
 
-func (app *Aa) RedisConfig(section string) (RedisConfig, error) {
-	host, err := app.tryGeRedisCfg(section, "host")
+func (app *Aa) RedisConfig(section string) (*redis.Options, error) {
+	addr, err := app.tryGeRedisCfg(section, "host")
 	if err != nil {
-		return RedisConfig{}, err
+		return nil, err
 	}
-	auth, _ := app.tryGeRedisCfg(section, "auth") // auth 可以为空
-	tls, _ := app.tryGeRedisCfg(section, "tls")
+	network, _ := app.tryGeRedisCfg(section, "network")
+	username, _ := app.tryGeRedisCfg(section, "username") // username 可以为空
+	password, _ := app.tryGeRedisCfg(section, "password") // password 可以为空
 	db, _ := app.tryGeRedisCfg(section, "db")
-	timeout, _ := app.tryGeRedisCfg(section, "timeout")
-	ct, rt, wt := app.ParseTimeout(timeout)
+	maxRetries, _ := app.tryGeRedisCfg(section, "max_retries")
+	minRetryBackoff, _ := app.tryGeRedisCfg(section, "min_retry_backoff")
+	maxRetryBackoff, _ := app.tryGeRedisCfg(section, "max_retry_backoff")
+	dialTimeout, _ := app.tryGeRedisCfg(section, "dial_timeout")
+	readTimeout, _ := app.tryGeRedisCfg(section, "read_timeout")
+	writeTimeout, _ := app.tryGeRedisCfg(section, "write_timeout")
+	poolFIFO, _ := app.tryGeRedisCfg(section, "pool_fifo")
+	poolSize, _ := app.tryGeRedisCfg(section, "pool_size")
+	minIdleConns, _ := app.tryGeRedisCfg(section, "min_idle_conns")
+	maxConnAge, _ := app.tryGeRedisCfg(section, "max_conn_age")
+	poolTimeout, _ := app.tryGeRedisCfg(section, "pool_timeout")
+	idleTimeout, _ := app.tryGeRedisCfg(section, "idle_timeout")
+	idleCheckFrequency, _ := app.tryGeRedisCfg(section, "idle_check_frequency")
 
-	poolMaxIdle, _ := app.tryGeRedisCfg(section, "pool_max_idle")
-	poolMaxActive, _ := app.tryGeRedisCfg(section, "pool_max_active")
-	poolIdleTimeout, _ := app.tryGeRedisCfg(section, "pool_idle_timeout")
-	poolWait, _ := app.tryGeRedisCfg(section, "pool_wait")
-	poolConnLifeTime, _ := app.tryGeRedisCfg(section, "pool_conn_life_time")
-	cf := RedisConfig{
-		TLS:          dtype.New(tls).DefaultBool(false),
-		Host:         host,
-		Auth:         auth,
-		Db:           dtype.New(db).DefaultUint8(0),
-		ConnTimeout:  ct,
-		ReadTimeout:  rt,
-		WriteTimeout: wt,
-		Pool: RedisPoolConfig{
-			MaxIdle:         dtype.New(poolMaxIdle).DefaultInt(0),
-			MaxActive:       dtype.New(poolMaxActive).DefaultInt(0),
-			IdleTimeout:     time.Duration(dtype.New(poolIdleTimeout).DefaultInt64(0)) * time.Second,
-			Wait:            dtype.New(poolWait).DefaultBool(false),
-			MaxConnLifetime: time.Duration(dtype.New(poolConnLifeTime).DefaultInt64(0)) * time.Second,
-		},
+	opt := redis.Options{
+		Network:            network,
+		Addr:               addr, //  127.0.0.1:6379
+		Dialer:             nil,
+		OnConnect:          nil,
+		Username:           username,
+		Password:           password,
+		DB:                 dtype.New(db).DefaultInt(0),
+		MaxRetries:         dtype.New(maxRetries).DefaultInt(0),
+		MinRetryBackoff:    time.Duration(dtype.New(minRetryBackoff).DefaultInt64(0)),
+		MaxRetryBackoff:    time.Duration(dtype.New(maxRetryBackoff).DefaultInt64(0)),
+		DialTimeout:        time.Duration(dtype.New(dialTimeout).DefaultInt64(0)),
+		ReadTimeout:        time.Duration(dtype.New(readTimeout).DefaultInt64(0)),
+		WriteTimeout:       time.Duration(dtype.New(writeTimeout).DefaultInt64(0)),
+		PoolFIFO:           dtype.New(poolFIFO).DefaultBool(false),
+		PoolSize:           dtype.New(poolSize).DefaultInt(0),
+		MinIdleConns:       dtype.New(minIdleConns).DefaultInt(0),
+		MaxConnAge:         time.Duration(dtype.New(maxConnAge).DefaultInt64(0)),
+		PoolTimeout:        time.Duration(dtype.New(poolTimeout).DefaultInt64(0)),
+		IdleTimeout:        time.Duration(dtype.New(idleTimeout).DefaultInt64(0)),
+		IdleCheckFrequency: time.Duration(dtype.New(idleCheckFrequency).DefaultInt64(0)),
+		TLSConfig:          nil,
+		Limiter:            nil,
 	}
-	return cf, nil
+	return &opt, nil
 }
