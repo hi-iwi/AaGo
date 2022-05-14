@@ -5,7 +5,7 @@ import "github.com/go-redis/redis/v8"
 func NewRedisError(err error) *Error {
 	switch err {
 	case redis.Nil:
-		return NewError(404, "redis key does not exist")
+		return NotFound
 	case nil:
 		return nil
 	default:
