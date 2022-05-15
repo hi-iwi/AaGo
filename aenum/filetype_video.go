@@ -32,8 +32,7 @@ func NewVideoType(mime string) (VideoType, bool) {
 	return UnknownVideoType, false
 }
 func (t VideoType) Valid() bool {return t > UnknownVideoType && t <= X3gp2}
-
-func (t VideoType) Raw() uint16 {return uint16(t)}
+func (t VideoType) Uint16() uint16 {return uint16(t)}
 func (t VideoType) String() string {return strconv.FormatUint(uint64(t), 10)}
 
 func (t VideoType) Name() string {

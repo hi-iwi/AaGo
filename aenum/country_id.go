@@ -228,7 +228,7 @@ func NewCountryId(id uint16) (CountryId, bool) {
 	return c, c.Valid()
 }
 func (c CountryId) Valid() bool {return true}
-func (c CountryId) Raw() uint16 {return uint16(c)}
+func (c CountryId) Uint16() uint16 {return uint16(c)}
 func (c CountryId) String() string {
 	return strconv.Itoa(int(c))
 }

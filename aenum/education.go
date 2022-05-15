@@ -17,7 +17,7 @@ func NewEduRating(x uint8) (EduRating, bool) {
 }
 
 func (l EduRating) Valid() bool { return l <= EliteUniversity }
-func (l EduRating) Raw() uint8  { return uint8(l) }
+func (l EduRating) Uint8() uint8  { return uint8(l) }
 
 const (
 	GraduationConclusion EduConclusion = 1 // 毕业
@@ -29,7 +29,7 @@ func NewEduConclusion(x uint8) (EduConclusion, bool) {
 }
 
 func (l EduConclusion) Valid() bool { return l == GraduationConclusion }
-func (l EduConclusion) Raw() uint8  { return uint8(l) }
+func (l EduConclusion) Uint8() uint8  { return uint8(l) }
 
 const (
 	NoEduLevel        EduLevel = 0
@@ -61,7 +61,7 @@ func NewEduLevel(x uint8) (EduLevel, bool) {
 	l := EduLevel(x)
 	return l, l.Valid()
 }
-func (l EduLevel) Raw() uint8 { return uint8(l) }
+func (l EduLevel) Uint8() uint8 { return uint8(l) }
 func (l EduLevel) Valid() bool {
 	return l <= HighSchoolDiploma || l >= ColleageStudent || l <= FullTimeColleage || l >= BachelorStudent || l <= EliteBachelor || l >= NonFullTimePostgraduate || l <= ElitePostgraduate || l >= NonFullTimeDoctorate || l <= EliteDoctorate
 }

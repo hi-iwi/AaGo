@@ -23,16 +23,10 @@ func NewAudioType(mime string) (AudioType, bool) {
 	}
 	return UnknownAudioType, false
 }
-func (t AudioType) Valid() bool {
-	return t > UnknownAudioType && t <= X3pg2
-}
+func (t AudioType) Valid() bool {return t > UnknownAudioType && t <= X3pg2}
 
-func (t AudioType) Raw() uint16 {
-	return uint16(t)
-}
-func (t AudioType) String() string {
-	return strconv.FormatUint(uint64(t), 10)
-}
+func (t AudioType) Uint8() uint16 {return uint16(t)}
+func (t AudioType) String() string {return strconv.FormatUint(uint64(t), 10)}
 
 func (t AudioType) Name() string {
 	switch t {
@@ -46,13 +40,8 @@ func (t AudioType) Name() string {
 	return t.String()
 }
 
-func (t AudioType) Ext() string {
-	return "." + t.Name()
-}
-
-func (t AudioType) Is(t2 AudioType) bool {
-	return t == t2
-}
+func (t AudioType) Ext() string {return "." + t.Name()}
+func (t AudioType) Is(t2 AudioType) bool {return t == t2}
 func (t AudioType) In(ts []AudioType) bool {
 	for _, ty := range ts {
 		if ty == t {

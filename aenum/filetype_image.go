@@ -33,7 +33,7 @@ func NewImageType(mime string) (ImageType, bool) {
 	return UnknownImageType, false
 }
 func (t ImageType) Valid() bool {return t > UnknownImageType && t <= MaxImageType}
-func (t ImageType) Raw() uint16 {return uint16(t)}
+func (t ImageType) Uint16() uint16 {return uint16(t)}
 func (t ImageType) String() string {return strconv.FormatUint(uint64(t), 10)}
 
 func (t ImageType) Name() string {

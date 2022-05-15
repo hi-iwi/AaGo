@@ -178,9 +178,7 @@ func PtrUint(n *uint) uint {
 	}
 	return *n
 }
-func (n Uint24) Raw() uint32 {
-	return uint32(n)
-}
+func (n Uint24) Uint32() uint32 {return uint32(n)}
 func PtrUint24(n *Uint24) Uint24 {
 	if n == nil {
 		return 0
@@ -265,9 +263,8 @@ func ToBoolean(b bool) Boolean {
 	}
 	return 0
 }
-func (b Boolean) Bool() bool {
-	return b > 0
-}
+func (b Boolean) Uint8() uint8 { return uint8(b) }
+func (b Boolean) Bool() bool { return b > 0 }
 func ToYearMonth(year int, month time.Month) YearMonth {
 	if year < 0 {
 		return 0
@@ -281,6 +278,7 @@ func (ym YearMonth) Add(years int, months int, loc *time.Location) YearMonth {
 	tm := ym.Time(loc).AddDate(years, months, 0)
 	return ToYearMonth(tm.Year(), tm.Month())
 }
+func (ym YearMonth) Uin32() uint32 { return uint32(ym) }
 func (ym YearMonth) Date() (int, time.Month) {
 	year := int(ym) / 100
 	month := time.Month(ym % 100)
@@ -292,9 +290,7 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
-func ToDate(t time.Time) Date {
-	return Date(t.Format("2006-01-02"))
-}
+func ToDate(t time.Time) Date { return Date(t.Format("2006-01-02")) }
 
 func (d Date) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", string(d), loc)
@@ -312,9 +308,7 @@ func (d Date) Unix(loc *time.Location) UnixTime {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
-func ToDatetime(t time.Time) Datetime {
-	return Datetime(t.Format("2006-01-02 15:04:05"))
-}
+func ToDatetime(t time.Time) Datetime { return Datetime(t.Format("2006-01-02 15:04:05")) }
 func (d Datetime) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
 }
@@ -330,9 +324,7 @@ func (d Datetime) Unix(loc *time.Location) UnixTime {
 	return UnixTime(t.Unix())
 }
 
-func (u UnixTime) Int64() int64 {
-	return int64(u)
-}
+func (u UnixTime) Int64() int64 {return int64(u)}
 
 func (u UnixTime) Date(loc *time.Location) Date {
 	return ToDate(time.Unix(u.Int64(), 0).In(loc))

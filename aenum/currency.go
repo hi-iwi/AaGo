@@ -20,7 +20,7 @@ func NewCurrency(x uint16) (Currency, bool) {
 	return c, c.Valid()
 }
 func (c Currency) Valid() bool {return true}
-func (c Currency) Raw() uint16 {return uint16(c)}
+func (c Currency) Uint16() uint16 {return uint16(c)}
 func (c Currency) String() string {return strconv.FormatUint(uint64(c), 10)}
 func (c Currency) Name() string {
 	switch c {
