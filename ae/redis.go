@@ -13,3 +13,7 @@ func NewRedisError(err error) *Error {
 		return NewError(500, pos+" redis: "+err.Error())
 	}
 }
+
+func Redis(cmd *redis.StatusCmd) *Error {
+	return NewRedisError(cmd.Err())
+}
