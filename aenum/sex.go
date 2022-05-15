@@ -30,17 +30,11 @@ func NewSex(s interface{}) (Sex, bool) {
 	return UnknownSex, false
 }
 
-func (x Sex) Valid() bool {
-	return x <= Female || x == OtherSex
-}
+func (x Sex) Valid() bool {return x <= Female || x == OtherSex}
 
-func (x Sex) Raw() uint8 {
-	return uint8(x)
-}
+func (x Sex) Raw() uint8 {return uint8(x)}
 
-func (x Sex) String() string {
-	return strconv.FormatUint(uint64(x), 10)
-}
+func (x Sex) String() string {return strconv.FormatUint(uint64(x), 10)}
 
 func (x Sex) Name() string {
 	switch x {
@@ -55,6 +49,4 @@ func (x Sex) Name() string {
 	}
 	return x.String()
 }
-func (x Sex) Is(x2 Sex) bool {
-	return x == x2
-}
+func (x Sex) Is(x2 Sex) bool {return x == x2}
