@@ -40,6 +40,7 @@ type Year uint16      // uint16 date: yyyy
 type YearMonth uint32 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
 type Date string      // yyyy-mm-dd
 type Datetime string  // yyyy-mm-dd hh:ii:ss
+type UnixTime int64   // int 形式 datetime，可与 datetime, date 互转
 type Text struct{ sql.NullString }
 type CityId uint32 // uint24
 type AddrId uint64
@@ -305,6 +306,10 @@ func (d Date) Int64(loc *time.Location) int64 {
 	}
 	return tm.Unix()
 }
+func (d Date) Unix(loc *time.Location) UnixTime {
+	t, _ := d.Time(loc)
+	return UnixTime(t.Unix())
+}
 
 // time.Now().In()  loc 直接通过 in 传递
 func ToDatetime(t time.Time) Datetime {
@@ -319,6 +324,21 @@ func (d Datetime) Int64(loc *time.Location) int64 {
 		return 0
 	}
 	return tm.Unix()
+}
+func (d Datetime) Unix(loc *time.Location) UnixTime {
+	t, _ := d.Time(loc)
+	return UnixTime(t.Unix())
+}
+
+func (u UnixTime) Int64() int64 {
+	return int64(u)
+}
+
+func (u UnixTime) Date(loc *time.Location) Date {
+	return ToDate(time.Unix(u.Int64(), 0).In(loc))
+}
+func (u UnixTime) Datetime(loc *time.Location) Datetime {
+	return ToDatetime(time.Unix(u.Int64(), 0).In(loc))
 }
 
 func ToNullUint8s(v []uint8) NullUint8s {
