@@ -1,10 +1,10 @@
 package aa
 
 type Job interface {
-	Run(*Aa) error
+	Run(*App) error
 }
 
-func (app *Aa) Run(jobs ...Job) {
+func (app *App) Run(jobs ...Job) {
 	for _, serve := range jobs {
 		if err := serve.Run(app); err != nil {
 			panic(err)

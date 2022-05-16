@@ -31,7 +31,7 @@ type MysqlConfig struct {
 	Pool MysqlPoolConfig
 }
 
-func (app *Aa) tryGetMysqlCfg(section string, key string) (string, error) {
+func (app *App) tryGetMysqlCfg(section string, key string) (string, error) {
 	k := section + "." + key
 	v, err := app.Config.MustGetString(k)
 	if err == nil {
@@ -40,7 +40,7 @@ func (app *Aa) tryGetMysqlCfg(section string, key string) (string, error) {
 
 	return app.Config.MustGetString("mysql." + key)
 }
-func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
+func (app *App) MysqlConfig(section string) (MysqlConfig, error) {
 	host, err := app.tryGetMysqlCfg(section, "host")
 	if err != nil {
 		return MysqlConfig{}, err
@@ -84,7 +84,7 @@ func (app *Aa) MysqlConfig(section string) (MysqlConfig, error) {
 	return cf, nil
 }
 
-func (app *Aa) tryGeRedisCfg(section string, key string) (string, error) {
+func (app *App) tryGeRedisCfg(section string, key string) (string, error) {
 	k := section + "." + key
 	v, err := app.Config.MustGetString(k)
 	if err == nil {
@@ -93,7 +93,7 @@ func (app *Aa) tryGeRedisCfg(section string, key string) (string, error) {
 	return app.Config.MustGetString("redis." + key)
 }
 
-func (app *Aa) RedisConfig(section string) (*redis.Options, error) {
+func (app *App) RedisConfig(section string) (*redis.Options, error) {
 	addr, err := app.tryGeRedisCfg(section, "addr")
 	if err != nil {
 		return nil, err

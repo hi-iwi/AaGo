@@ -68,8 +68,8 @@ func TestString(t *testing.T) {
 		t.Errorf("dtype.Dbyte(A) ==> string(%s)",  dtype.String(dtype.Dbyte('A')))
 	}
 
-	if dtype.String([]byte{'A', 'a'}) != "Aa" {
-		t.Errorf("[]byte(Aa) ==> string(%s)",  dtype.String([]byte{'A', 'a'}))
+	if dtype.String([]byte{'A', 'a'}) != "App" {
+		t.Errorf("[]byte(App) ==> string(%s)",  dtype.String([]byte{'A', 'a'}))
 	}
 
 	if dtype.String("Iwi") != "Iwi" {

@@ -16,7 +16,6 @@ type Configuration struct {
 	TimeLocation *time.Location
 	TimeFormat   string // e.g. "2006-02-01 15:04:05"
 	Mock         bool   // using mock
-
 }
 
 const (
@@ -71,7 +70,7 @@ func (c Configuration) Log() {
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
 // 10s, 1000ms
-func (app *Aa) ParseTimeout(t string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration) {
+func (app *App) ParseTimeout(t string, defaultTimeouts ...time.Duration) (conn time.Duration, read time.Duration, write time.Duration) {
 	for i, t := range defaultTimeouts {
 		switch i {
 		case 0:

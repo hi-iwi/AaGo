@@ -9,7 +9,7 @@ var (
 	cfgMtx sync.RWMutex
 )
 
-type Aa struct {
+type App struct {
 	// self imported configurations, e.g. parsed from ini
 	Config Config
 	// system configuration
@@ -17,17 +17,17 @@ type Aa struct {
 	Log           Log
 }
 
-type AaWithTimer struct {
-	Aa
+type Aa struct {
+	App
 	Timer *timingwheel.TimingWheel
 }
 
-func New(ini string) (*Aa, error) {
+func NewApp(ini string) (*App, error) {
 	cfg, conf, err := LoadIni(ini, AfterConfigLoaded)
 	if err != nil {
 		return nil, err
 	}
-	app := &Aa{
+	app := &App{
 		Config:        cfg,
 		Configuration: conf,
 		Log:           NewDefaultLog(),
@@ -35,13 +35,13 @@ func New(ini string) (*Aa, error) {
 	return app, nil
 }
 
-func NewWithTimer(ini string, timer *timingwheel.TimingWheel) (*AaWithTimer, error) {
-	app, err := New(ini)
+func New(ini string, timer *timingwheel.TimingWheel) (*Aa, error) {
+	app, err := NewApp(ini)
 	if err != nil {
 		return nil, err
 	}
-	a := &AaWithTimer{
-		Aa:    *app,
+	a := &Aa{
+		App:   *app,
 		Timer: timer,
 	}
 	return a, nil
