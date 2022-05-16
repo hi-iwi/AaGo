@@ -6,6 +6,7 @@ import (
 	"github.com/hi-iwi/AaGo/dtype"
 	"gopkg.in/ini.v1"
 	"strings"
+	"sync"
 )
 
 type Ini struct {
@@ -14,6 +15,10 @@ type Ini struct {
 	rsa         map[string][]byte // rsa 是配对出现的，不要使用 sync.Map， 直接对整个map加锁设置
 	otherConfig map[string]string // 不要使用 sync.Map， 直接对整个map加锁设置
 }
+
+var (
+	cfgMtx sync.RWMutex
+)
 
 func LoadIni(path string, after func(Config) Configuration) (Config, Configuration, error) {
 	rsa := make(map[string][]byte)

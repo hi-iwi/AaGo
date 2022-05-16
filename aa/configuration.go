@@ -60,7 +60,7 @@ func ParseToConfiguration(cfg Config) Configuration {
 	return c
 }
 
-func (c Configuration) Log() {
+func (c *Configuration) Log() {
 	n := time.Now()
 	now := n.Format(c.TimeFormat) + "." + strconv.FormatInt(n.UnixMicro(), 10)
 	msg := fmt.Sprintf("lauching...\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Env, c.TimezoneID, c.Mock, util.GitVersion())

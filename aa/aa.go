@@ -6,14 +6,14 @@ import (
 )
 
 var (
-	cfgMtx sync.RWMutex
+	smtx sync.RWMutex
 )
 
 type App struct {
 	// self imported configurations, e.g. parsed from ini
 	Config Config
 	// system configuration
-	Configuration Configuration
+	configuration Configuration
 	Log           Log
 }
 
@@ -29,7 +29,7 @@ func NewApp(ini string) (*App, error) {
 	}
 	app := &App{
 		Config:        cfg,
-		Configuration: conf,
+		configuration: conf,
 		Log:           NewDefaultLog(),
 	}
 	return app, nil
@@ -45,4 +45,20 @@ func New(ini string, timer *timingwheel.TimingWheel) (*Aa, error) {
 		Timer: timer,
 	}
 	return a, nil
+}
+
+func (app *App) ReloadConfig() error {
+	smtx.Lock()
+	defer smtx.Unlock()
+	conf, err := app.Config.Reload(AfterConfigLoaded)
+	if err != nil {
+		return err
+	}
+	app.configuration = conf
+	return nil
+}
+func (app *App) Configuration() *Configuration {
+	smtx.RLock()
+	defer smtx.RUnlock()
+	return &app.configuration
 }
