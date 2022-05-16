@@ -13,17 +13,25 @@ var startingSteps int32
 var gitHash string
 
 func GitVersion() string {
-	if gitHash == "" {
-		s, _ := exec.LookPath(os.Args[0])
-		file, err := os.OpenFile(s, os.O_RDONLY, 0666)
-		if err == nil {
-			defer file.Close()
-			finfo, _ := file.Stat()
-			hash := make([]byte, 40)
-			file.ReadAt(hash, finfo.Size()-40-1)
-			gitHash = string(hash)
+	if gitHash != "" {
+		return gitHash
+	}
+	s, _ := exec.LookPath(os.Args[0])
+	file, err := os.OpenFile(s, os.O_RDONLY, 0666)
+	if err != nil {
+		return ""
+	}
+	defer file.Close()
+	finfo, _ := file.Stat()
+	hash := make([]byte, 40)
+	file.ReadAt(hash, finfo.Size()-40-1)
+	// git log id (or hash) only contains number and lower case alphabet
+	for _, h := range hash {
+		if h < '0' || (h > '9' && h < 'a') || h > 'z' {
+			return ""
 		}
 	}
+	gitHash = string(hash)
 	return gitHash
 }
 func TraceStartup(msg ...string) {
