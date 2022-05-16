@@ -19,7 +19,7 @@ type App struct {
 
 type Aa struct {
 	App
-	Timer *timingwheel.TimingWheel
+	wheelTimer *timingwheel.TimingWheel
 }
 
 func NewApp(ini string) (*App, error) {
@@ -41,8 +41,8 @@ func New(ini string, timer *timingwheel.TimingWheel) (*Aa, error) {
 		return nil, err
 	}
 	a := &Aa{
-		App:   *app,
-		Timer: timer,
+		App:        *app,
+		wheelTimer: timer,
 	}
 	return a, nil
 }
