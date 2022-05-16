@@ -36,8 +36,8 @@ func NewError(code int, msg string) *Error {
 		Msg:  msg,
 	}
 }
-
-func (e *Error) Error() string {
+// 不要用 Error()，要不然跟 error.Error() 容易造成失误性panic
+func (e *Error) Text() string {
 	return e.Msg + " [" + strconv.Itoa(e.Code) + "]"
 }
 func (e *Error) NotFound() bool {

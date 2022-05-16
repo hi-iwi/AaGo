@@ -84,7 +84,7 @@ func errorlevel(ctx context.Context) ErrorLevel {
 // 快捷方式，对服务器错误记录日志
 func (app *App) Try(ctx context.Context, e *ae.Error) bool {
 	if e != nil && e.IsServerError() {
-		app.Log.Error(ctx, e.Error())
+		app.Log.Error(ctx, e.Text())
 		return false
 	}
 	return true
@@ -100,7 +100,7 @@ func (app *App) TryLog(ctx context.Context, err error) {
 // 快捷panic
 func (app *App) TryPanic(ctx context.Context, e *ae.Error) {
 	if e != nil {
-		app.Log.Error(ctx, ae.Caller(1)+" "+e.Error())
-		panic(e.Error())
+		app.Log.Error(ctx, ae.Caller(1)+" "+e.Text())
+		panic(e.Text())
 	}
 }
