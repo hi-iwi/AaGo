@@ -15,29 +15,26 @@ type Ini struct {
 	otherConfig map[string]string // 不要使用 sync.Map， 直接对整个map加锁设置
 }
 
-func (app *Aa) LoadIni(path string) error {
+func LoadIni(path string, after func(Config) Configuration) (Config, Configuration, error) {
 	rsa := make(map[string][]byte)
 	ocfg := make(map[string]string)
-	app.Config = &Ini{path: path, rsa: rsa, otherConfig: ocfg}
-	err := app.Config.Reload(app)
-	if err != nil {
-		return err
-	}
-	return nil
+	cfg := &Ini{path: path, rsa: rsa, otherConfig: ocfg}
+	conf, err := cfg.Reload(after)
+	return cfg, conf, err
 }
 
-func (c *Ini) Reload(app *Aa) error {
+func (c *Ini) Reload(after func(Config) Configuration) (Configuration, error) {
 	data, err := ini.Load(c.path)
 	if err != nil {
-		return err
+		return Configuration{}, err
 	}
 	cfgMtx.Lock()
 	c.data = data
 	cfgMtx.Unlock()
-	// parseToConfiguration 里面有 RLock()
-	app.ParseToConfiguration()
-	err = c.loadRsa()
-	return err
+	if err = c.loadRsa(); err != nil {
+		return Configuration{}, err
+	}
+	return after(c), nil
 }
 func (c *Ini) LoadAIni(cfgs map[string]json.RawMessage) error {
 	g := make(map[string]string)

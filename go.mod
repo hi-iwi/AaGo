@@ -3,6 +3,7 @@ module github.com/hi-iwi/AaGo
 go 1.17
 
 require (
+	github.com/RussellLuo/timingwheel v0.0.0-20220218152713-54845bda3108
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
 	github.com/kataras/iris/v12 v12.2.0-beta2

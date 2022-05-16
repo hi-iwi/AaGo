@@ -2,6 +2,7 @@ package aa
 
 import (
 	"context"
+	"github.com/hi-iwi/AaGo/ae"
 )
 
 type ErrorLevel uint8
@@ -78,4 +79,28 @@ func traceid(ctx context.Context) string {
 func errorlevel(ctx context.Context) ErrorLevel {
 	level, _ := ctx.Value(ErrorLevelKey).(ErrorLevel)
 	return level
+}
+
+// 快捷方式，对服务器错误记录日志
+func (app *Aa) Try(ctx context.Context, e *ae.Error) bool {
+	if e != nil && e.IsServerError() {
+		app.Log.Error(ctx, e.Error())
+		return false
+	}
+	return true
+}
+
+// 快捷记录错误
+func (app *Aa) TryLog(ctx context.Context, err error) {
+	if err != nil {
+		app.Log.Error(ctx, ae.Caller(1)+" "+err.Error())
+	}
+}
+
+// 快捷panic
+func (app *Aa) TryPanic(ctx context.Context, e *ae.Error) {
+	if e != nil {
+		app.Log.Error(ctx, ae.Caller(1)+" "+e.Error())
+		panic(e.Error())
+	}
 }
