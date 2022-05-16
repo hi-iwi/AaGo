@@ -57,7 +57,8 @@ func (app *App) ReloadConfig() error {
 	app.configuration = conf
 	return nil
 }
-func (app *App) Configuration() *Configuration {
+
+func (app *App) Cfg() *Configuration {
 	smtx.RLock()
 	defer smtx.RUnlock()
 	return &app.configuration
