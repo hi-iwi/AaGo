@@ -27,11 +27,13 @@ type Point struct {
 type Position []byte // postion, coordinate or point
 type Ip []byte       // IP Address
 
+// https://en.wikipedia.org/wiki/Bit_numbering
+type BitPos uint8 // bit position (in big endian)
 type Bitwise struct {
-	BitName       string // 该位名称
-	BitRightIndex uint8  // 位所在位置
-	BitValue      bool   // 该位的值
-	MaxBits       uint8
+	BitName  string // 该位名称
+	BitPos   BitPos // big endian 下，位所在位置
+	BitValue bool   // 该位的值
+	MaxBits  uint8
 }
 
 type Boolean uint8
@@ -178,7 +180,7 @@ func PtrUint(n *uint) uint {
 	}
 	return *n
 }
-func (n Uint24) Uint32() uint32 {return uint32(n)}
+func (n Uint24) Uint32() uint32 { return uint32(n) }
 func PtrUint24(n *Uint24) Uint24 {
 	if n == nil {
 		return 0
@@ -239,11 +241,12 @@ func PtrFloat32(n *float32) float32 {
 	}
 	return *n
 }
+func (b BitPos) Uint8() uint8 { return uint8(b) }
 
 //  SET x=x|v
 func (b Bitwise) SetStmt(fieldName string) string {
 	if b.BitValue {
-		bv := 1 << b.BitRightIndex
+		bv := 1 << b.BitPos
 		bs := strconv.FormatUint(uint64(bv), 10)
 		return fieldName + "=" + fieldName + "|" + bs
 	}
@@ -252,7 +255,7 @@ func (b Bitwise) SetStmt(fieldName string) string {
 
 func (b Bitwise) unsetStmt(fieldName string) string {
 	max := (1 << b.MaxBits) - 1
-	bv := max - (1 << b.BitRightIndex)
+	bv := max - (1 << b.BitPos)
 	bs := strconv.FormatUint(uint64(bv), 10)
 	return fieldName + "=" + fieldName + "&" + bs
 }
@@ -264,7 +267,7 @@ func ToBoolean(b bool) Boolean {
 	return 0
 }
 func (b Boolean) Uint8() uint8 { return uint8(b) }
-func (b Boolean) Bool() bool { return b > 0 }
+func (b Boolean) Bool() bool   { return b > 0 }
 func ToYearMonth(year int, month time.Month) YearMonth {
 	if year < 0 {
 		return 0
@@ -324,7 +327,7 @@ func (d Datetime) Unix(loc *time.Location) UnixTime {
 	return UnixTime(t.Unix())
 }
 
-func (u UnixTime) Int64() int64 {return int64(u)}
+func (u UnixTime) Int64() int64 { return int64(u) }
 
 func (u UnixTime) Date(loc *time.Location) Date {
 	return ToDate(time.Unix(u.Int64(), 0).In(loc))
