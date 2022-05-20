@@ -11,23 +11,23 @@ type ImgSrc struct {
 	Fill      string `json:"fill"`      // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
 	Fit       string `json:"fit"`       // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
 	Path      string `json:"path"`      // path 可能是 filename，也可能是 带文件夹的文件名
-	Filename  string `json:"filename"`  // basename + extension
-	Filetype  uint16 `json:"filetype"`  // aenum.Filetype.Int8()
-	Size      uint32 `json:"size"`      // dtype.Uint24.Int8()
-	Width     uint16 `json:"width"`
-	Height    uint16 `json:"height"`
+	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
+	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
+	Size     uint32 `json:"size"`     // dtype.Uint24.Int8()
+	Width    uint16 `json:"width"`
+	Height   uint16 `json:"height"`
 }
 
 type VideoSrc struct {
 	Processor int    `json:"processor"`
 	Fit       string `json:"fit"` // e.g.  https://xxx/video.avi?quality=${QUALITY}
 	Path      string `json:"path"`
-	Filename  string `json:"filename"` // basename + extension
-	Filetype  uint16 `json:"filetype"` // aenum.Filetype.Int8()
-	Size      uint32 `json:"size"`     // dtype.Uint24.Int8()
-	Width     uint16 `json:"width"`
-	Height    uint16 `json:"height"`
-	Duration  uint32 `json:"duration"` // 时长，秒
+	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
+	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
+	Size     uint32 `json:"size"`     // dtype.Uint24.Int8()
+	Width    uint16 `json:"width"`
+	Height   uint16 `json:"height"`
+	Duration uint32 `json:"duration"` // 时长，秒
 }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
