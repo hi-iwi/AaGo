@@ -1,6 +1,7 @@
 package adto
 
 import (
+	"github.com/hi-iwi/AaGo/util"
 	"strconv"
 	"strings"
 )
@@ -31,17 +32,7 @@ type VideoSrc struct {
 }
 
 // similar to path.Base()
-func (s ImgSrc) Filename() string {
-	p := s.Path
-	if p == "" {
-		return "'"
-	}
-	i := strings.LastIndexByte(p, '/')
-	if i == len(p) {
-		return ""
-	}
-	return p[i+1:]
-}
+func (s ImgSrc) Filename() string { return util.Filename(s.Path) }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
 	u := s.Fill
