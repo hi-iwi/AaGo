@@ -32,6 +32,12 @@ func NewError(code int, msg string) *Error {
 		Msg:  msg,
 	}
 }
+func Text(e *Error) string {
+	if e == nil {
+		return "nil"
+	}
+	return e.Text()
+}
 
 // 不要用 Error()，要不然跟 error.Error() 容易造成失误性panic
 func (e *Error) Text() string {
