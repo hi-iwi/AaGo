@@ -30,6 +30,19 @@ type VideoSrc struct {
 	Duration uint32 `json:"duration"` // 时长，秒
 }
 
+// similar to path.Base()
+func (s ImgSrc) Filename() string {
+	p := s.Path
+	if p == "" {
+		return "'"
+	}
+	i := strings.LastIndexByte(p, '/')
+	if i == len(p) {
+		return ""
+	}
+	return p[i+1:]
+}
+
 func (s ImgSrc) FillTo(width, height uint16) string {
 	u := s.Fill
 	u = strings.ReplaceAll(u, "${WIDTH}", strconv.FormatUint(uint64(width), 10))
@@ -55,8 +68,8 @@ func ToImgSrcs(paths []string, filler func(path string) ImgSrc) []ImgSrc {
 		return nil
 	}
 	srcs := make([]ImgSrc, len(paths))
-	for i, path := range paths {
-		srcs[i] = filler(path)
+	for i, p := range paths {
+		srcs[i] = filler(p)
 	}
 	return srcs
 }

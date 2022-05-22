@@ -43,8 +43,8 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/tdewolff/minify/v2 v2.11.2 // indirect
-	github.com/tdewolff/parse/v2 v2.5.29 // indirect
+	github.com/tdewolff/minify/v2 v2.11.4 // indirect
+	github.com/tdewolff/parse/v2 v2.5.31 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
