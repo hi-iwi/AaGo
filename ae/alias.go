@@ -1,7 +1,7 @@
 package ae
 
 var (
-	EmptyParam      = &Error{400, "empty param"} // bad request
+	NoParam         = &Error{400, "no param"} // bad request
 	Unauthorized    = &Error{401, "unauthorized"}
 	PaymentRequired = &Error{402, "payment required"}
 	//403 Forbidden
