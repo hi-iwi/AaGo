@@ -11,10 +11,6 @@ type Error struct {
 	Msg  string `json:"msg"`
 }
 
-var (
-	NotFound = &Error{404, "not found"} // refer to redis.Nil, sql.ErrNoRows
-)
-
 func New(err error) *Error {
 	if err == nil {
 		return nil
@@ -36,6 +32,7 @@ func NewError(code int, msg string) *Error {
 		Msg:  msg,
 	}
 }
+
 // 不要用 Error()，要不然跟 error.Error() 容易造成失误性panic
 func (e *Error) Text() string {
 	return e.Msg + " [" + strconv.Itoa(e.Code) + "]"
