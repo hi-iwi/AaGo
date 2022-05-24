@@ -1,7 +1,6 @@
 package ae
 
 var (
-	NoParam         = &Error{400, "no param"} // bad request
 	Unauthorized    = &Error{401, "unauthorized"}
 	PaymentRequired = &Error{402, "payment required"}
 	//403 Forbidden
@@ -23,4 +22,7 @@ var (
 // 服务端数据存储解析存在异常
 func ParseFailed(k, v string) *Error {
 	return NewErr("parse failed (%s:%s)", k, v)
+}
+func BadParam(param string) *Error {
+	return NewError(400, "bad parameter `"+param+"`")
 }
