@@ -426,7 +426,7 @@ func (c *Controller) PostFastBills(ictx iris.Context) {
 	_missionId, e3 := r.Body("mission_id", `^\d+$`, false)
 	_promoId, e4 := r.Body("promo_id", `^\d+$`, false)
 
-	if err := resp.CatchErrors(e0, e1, e2, e3, e4); err != nil {       // 捕获 400 错误，并准确提示哪个参数错误
+	if e = resp.CatchErrors(e0, e1, e2, e3, e4); err != nil {       // 捕获 400 错误，并准确提示哪个参数错误
 		c.app.Log.Info(ctx, err.Error())
 		return
 	}

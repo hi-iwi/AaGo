@@ -26,3 +26,19 @@ func ParseFailed(k, v string) *Error {
 func BadParam(param string) *Error {
 	return NewError(400, "bad parameter `"+param+"`")
 }
+func Catch(es ...*Error) *Error {
+	for _, e := range es {
+		if e != nil {
+			return e
+		}
+	}
+	return nil
+}
+func CatchError(es ...error) error {
+	for _, e := range es {
+		if e != nil {
+			return e
+		}
+	}
+	return nil
+}
