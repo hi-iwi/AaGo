@@ -125,14 +125,3 @@ func (d *DB) Query(ctx context.Context, query string, args ...interface{}) (*sql
 	rows, err := stmt.QueryContext(ctx, args...)
 	return rows, ae.NewSqlError(err)
 }
-
-//func (d *DB) CloseRows(rows *sql.Rows) *ae.Error {
-//	var err error
-//	if err = rows.Close(); err != nil {
-//		return ae.NewSqlError(err)
-//	}
-//	if err = rows.Err(); err != nil {
-//		return ae.NewSqlError(err)
-//	}
-//	return nil
-//}
