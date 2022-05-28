@@ -58,10 +58,17 @@ func (t *Tx) Insert(ctx context.Context, query string, args ...interface{}) (uin
 	}
 	// 由于事务是先执行，后回滚或提交，所以可以先获取插入的ID，后commit()
 	id, err := res.LastInsertId()
-	if err != nil {
-		return 0, ae.NewSqlError(err)
+	return uint(id), ae.NewSqlError(err)
+}
+
+func (t *Tx) Update(ctx context.Context, query string, args ...interface{}) (int64, *ae.Error) {
+	res, e := t.Exec(ctx, query, args...)
+	if e != nil {
+		return 0, e
 	}
-	return uint(id), nil
+	// 由于事务是先执行，后回滚或提交，所以可以先获取更新结果，后commit()
+	id, err := res.RowsAffected()
+	return id, ae.NewSqlError(err)
 }
 
 func (t *Tx) QueryRow(ctx context.Context, query string, args ...interface{}) (*sql.Row, *ae.Error) {
