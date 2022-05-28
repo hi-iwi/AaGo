@@ -21,10 +21,11 @@
 AaGo
     + aa
     + adto
+    + acache
     + ae     an error
     + aenum  an enum
     + afmt   a format
-    + aorm   an simplest orm
+    + asql   
     + cnf    保留字，备用
     + com    中间件层，处理 request/response
     + crypt  编码加密
@@ -489,7 +490,7 @@ type Sku struct {
 func (t Sku) Table() string {
 	return "sku_table_name_" + strconv.Format(t.SpuId,10)
 }
-// 这里在aorm 里面会优先选用 Indexes 里面的索引字段。如果省事的话，可不写这个函数，即不进行智能优先选用索引字段，自己手动处理筛选顺序。
+// 这里在 asql 里面会优先选用 Indexes 里面的索引字段。如果省事的话，可不写这个函数，即不进行智能优先选用索引字段，自己手动处理筛选顺序。
 func (t Sku)Indexes()[]string{              
     return []string{
         "id", "spu_id"

@@ -1,7 +1,7 @@
 package asql_test
 
 import (
-	"github.com/hi-iwi/AaGo/aorm"
+	"github.com/hi-iwi/AaGo/asql"
 	"testing"
 )
 
@@ -19,12 +19,12 @@ func TestAnd(t *testing.T) {
 	s1 := "`age`=\"18\" AND `name`=\"Iwi\""
 	s2 := "`name`=\"Iwi\" AND `age`=\"18\""
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.And(u, true, ...) == %s", s)
+		t.Errorf("asql.And(u, true, ...) == %s", s)
 	}
 
 	s = asql.And(u, "Name", "Age")
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.And(u, false, ...) == %s", s)
+		t.Errorf("asql.And(u, false, ...) == %s", s)
 	}
 }
 
@@ -37,12 +37,12 @@ func TestOr(t *testing.T) {
 	s1 := "`age`=\"18\" OR `name`=\"Iwi\""
 	s2 := "`name`=\"Iwi\" OR `age`=\"18\""
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.Or(u, true, ...) == %s", s)
+		t.Errorf("asql.Or(u, true, ...) == %s", s)
 	}
 
 	s = asql.Or(u, "Name", "Age")
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.Or(u, false, ...) == %s", s)
+		t.Errorf("asql.Or(u, false, ...) == %s", s)
 	}
 }
 
@@ -55,12 +55,12 @@ func TestAndWithWhere(t *testing.T) {
 	s1 := " WHERE `age`=\"18\" AND `name`=\"Iwi\" "
 	s2 := " WHERE `name`=\"Iwi\" AND `age`=\"18\" "
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.Or(u, true, ...) == %s", s)
+		t.Errorf("asql.Or(u, true, ...) == %s", s)
 	}
 
 	s = asql.AndWithWhere(u, "Name", "Age")
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.Or(u, false, ...) == %s", s)
+		t.Errorf("asql.Or(u, false, ...) == %s", s)
 	}
 }
 
@@ -73,11 +73,11 @@ func TestOrWithWhere(t *testing.T) {
 	s1 := " WHERE `age`=\"18\" OR `name`=\"Iwi\" "
 	s2 := " WHERE `name`=\"Iwi\" OR `age`=\"18\" "
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.Or(u, true, ...) == %s", s)
+		t.Errorf("asql.Or(u, true, ...) == %s", s)
 	}
 
 	s = asql.OrWithWhere(u, "Name", "Age")
 	if s != s1 && s != s2 {
-		t.Errorf("aorm.Or(u, false, ...) == %s", s)
+		t.Errorf("asql.Or(u, false, ...) == %s", s)
 	}
 }
