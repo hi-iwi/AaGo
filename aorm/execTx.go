@@ -26,6 +26,16 @@ func (t *Tx) Rollback() *ae.Error {
 func (t *Tx) Commit() *ae.Error {
 	return ae.NewSqlError(t.Tx.Commit())
 }
+
+// defer tx.Recover
+func (t *Tx) Recover() func() {
+	return func() {
+		if p := recover(); p != nil {
+			t.Tx.Rollback()
+		}
+	}
+}
+
 func (t *Tx) Prepare(ctx context.Context, query string) (*sql.Stmt, *ae.Error) {
 	stmt, err := t.Tx.PrepareContext(ctx, query)
 	return stmt, ae.NewSqlError(err)
@@ -46,6 +56,7 @@ func (t *Tx) Insert(ctx context.Context, query string, args ...interface{}) (uin
 	if e != nil {
 		return 0, e
 	}
+	// 由于事务是先执行，后回滚或提交，所以可以先获取插入的ID，后commit()
 	id, err := res.LastInsertId()
 	if err != nil {
 		return 0, ae.NewSqlError(err)
