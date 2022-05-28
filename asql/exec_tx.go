@@ -102,7 +102,7 @@ func (t *Tx) BatchQueryRow(ctx context.Context, query string, margs ...[]interfa
 	return rows, nil
 }
 
-func (t *Tx) Scan(ctx context.Context, query string, dest ...interface{}) *ae.Error {
+func (t *Tx) ScanRow(ctx context.Context, query string, dest ...interface{}) *ae.Error {
 	row, e := t.QueryRow(ctx, query)
 	if e != nil {
 		return e
@@ -110,7 +110,7 @@ func (t *Tx) Scan(ctx context.Context, query string, dest ...interface{}) *ae.Er
 	return ae.NewSqlError(row.Scan(dest...))
 }
 
-func (t *Tx) ScanRow(ctx context.Context, query string, id uint64, dest ...interface{}) *ae.Error {
+func (t *Tx) Scan(ctx context.Context, query string, id uint64, dest ...interface{}) *ae.Error {
 	row, e := t.QueryRow(ctx, query, id)
 	if e != nil {
 		return e
