@@ -25,6 +25,9 @@ func HourlyKey(prev bool, f func(int) string) string {
 func WeeklyKey(prev bool, f func(int) string) string {
 	day := time.Now().Day()
 	x := day / 7 // 0 1 2 3
+	if x > 3 {
+		x = 3  // 当月29号之后都并入上一周期
+	}
 	return Key(x, 4, prev, f)
 }
 
