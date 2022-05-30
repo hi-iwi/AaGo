@@ -131,7 +131,6 @@ func (r *Req) Uri() string {
 }
 
 func (r *Req) Headers() map[string]interface{} {
-
 	if !r.parsed && r.r != nil {
 		r.data.hlck.Lock()
 		// @note 这里必须要判断 map[string]string 是否为空，并分配内存空间

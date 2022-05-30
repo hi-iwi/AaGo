@@ -9,63 +9,16 @@ import (
 	"time"
 )
 
-// final 不包括
-func Key(n int, final int, prev bool, f func(int) string) string {
-	if prev {
-		n--
+func weekIndex() int {
+	i := time.Now().Day() / 7 // 0 1 2 3
+	if i > 3 {
+		i = 3 // 当月29号之后都并入上一周期
 	}
-	if n < 0 || n >= final {
-		n = final - 1
-	}
-	return f(n)
-}
-func HourlyKey(prev bool, f func(int) string) string {
-	return Key(time.Now().Hour(), 24, prev, f)
+	return i
 }
 
-func WeeklyKey(prev bool, f func(int) string) string {
-	x := time.Now().Day() / 7 // 0 1 2 3
-	if x > 3 {
-		x = 3 // 当月29号之后都并入上一周期
-	}
-	return Key(x, 4, prev, f)
-}
 
-// 使当前时段的放到最后
-func BatchKeys(n int, final int, ignoreCurrent bool, f func(int) string) []string {
-	l := final
-	if ignoreCurrent {
-		l--
-	}
-	ks := make([]string, l)
-	j := 0
-	// 当前时段一定要在最后
-	if n+1 < final {
-		for i := n + 1; i < final; i++ {
-			ks[j] = f(i)
-			j++
-		}
-	}
-	for i := 0; i < n; i++ {
-		ks[j] = f(i)
-		j++
-	}
-	if ignoreCurrent {
-		return ks
-	}
 
-	ks[j] = f(n)
-
-	return ks
-}
-func HourlyKeys(ignoreCurrent bool, f func(int) string) []string {
-	return BatchKeys(time.Now().Hour(), 24, ignoreCurrent, f)
-}
-func WeeklyKeys(ignoreCurrent bool, f func(int) string) []string {
-	day := time.Now().Day()
-	x := day / 7 // 0 1 2 3
-	return BatchKeys(x, 4, ignoreCurrent, f)
-}
 
 // 一般用于 SUnion
 func Uint64s(vs []string, err error) ([]uint64, *ae.Error) {
@@ -134,4 +87,54 @@ func HIncrBy(ctx context.Context, rdb *redis.Client, expires time.Duration, k st
 
 func HIncr(ctx context.Context, rdb *redis.Client, ttl time.Duration, k string, field string) (int64, *ae.Error) {
 	return HIncrBy(ctx, rdb, ttl, k, field, 1)
+}
+
+
+// 使当前时段的放到最后
+func BatchKeys(n int, final int, ignoreCurrent bool, f func(int) string) []string {
+	l := final
+	if ignoreCurrent {
+		l--
+	}
+	ks := make([]string, l)
+	j := 0
+	// 当前时段一定要在最后
+	if n+1 < final {
+		for i := n + 1; i < final; i++ {
+			ks[j] = f(i)
+			j++
+		}
+	}
+	for i := 0; i < n; i++ {
+		ks[j] = f(i)
+		j++
+	}
+	if ignoreCurrent {
+		return ks
+	}
+
+	ks[j] = f(n)
+
+	return ks
+}
+// final 不包括
+func Key(n int, final int, prev bool, f func(int) string) string {
+	if prev {
+		n--
+	}
+	if n < 0 || n >= final {
+		n = final - 1
+	}
+	return f(n)
+}
+func HourlyKey(prev bool, f func(int) string) string {
+	return Key(time.Now().Hour(), 24, prev, f)
+}
+
+func WeeklyKey(prev bool, f func(int) string) string { return Key(weekIndex(), 4, prev, f) }
+func HourlyKeys(ignoreCurrent bool, f func(int) string) []string {
+	return BatchKeys(time.Now().Hour(), 24, ignoreCurrent, f)
+}
+func WeeklyKeys(ignoreCurrent bool, f func(int) string) []string {
+	return BatchKeys(weekIndex(), 4, ignoreCurrent, f)
 }
