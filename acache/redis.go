@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/hi-iwi/AaGo/ae"
+	"github.com/kataras/iris/v12/middleware/jwt/blocklist/redis"
 	"log"
 	"strconv"
 	"time"

@@ -5,65 +5,6 @@ import (
 	"strings"
 )
 
-func (r *Req) QueryDigit(p string, xargs ...bool) (*ReqProp, *ae.Error) {
-	required := len(xargs) == 0 || xargs[0]
-	return r.Query(p, `^\d+$`, required)
-}
-
-// 允许0
-func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultInt8(0), e
-}
-func (r *Req) QueryInt16(p string, required ...bool) (int16, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultInt16(0), e
-}
-func (r *Req) QueryInt32(p string, required ...bool) (int32, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultInt32(0), e
-}
-func (r *Req) QueryInt(p string, required ...bool) (int, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultInt(0), e
-}
-func (r *Req) QueryInt64(p string, required ...bool) (int64, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultInt64(0), e
-}
-func (r *Req) QueryUint8(p string, required ...bool) (uint8, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultUint8(0), e
-}
-func (r *Req) QueryUint16(p string, required ...bool) (uint16, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultUint16(0), e
-}
-func (r *Req) QueryUint32(p string, required ...bool) (uint32, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultUint32(0), e
-}
-func (r *Req) QueryUint(p string, required ...bool) (uint, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultUint(0), e
-}
-func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
-	return _x.DefaultUint64(0), e
-}
-
-// ID:uint64, required 情况ID必须>0；optional 情况，可以为0
-func (r *Req) QueryId(p string, required ...bool) (uint64, *ae.Error) {
-	id, e := r.QueryUint64(p, required...)
-	if len(required) == 1 && !required[0] {
-		return id, e // optional
-	}
-	if id == 0 {
-		return 0, ae.NewError(400, "bad "+p)
-	}
-	return id, nil
-}
-
 func (r *Req) Xhost() string {
 	scheme := r.r.URL.Scheme
 	if scheme == "" {
@@ -136,4 +77,120 @@ func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Er
 func (r *Req) FastXparam(name string) *ReqProp {
 	v, _ := r.Xparam(name, false)
 	return v
+}
+
+func (r *Req) QueryDigit(p string, xargs ...bool) (*ReqProp, *ae.Error) {
+	required := len(xargs) == 0 || xargs[0]
+	return r.Query(p, `^\d+$`, required)
+}
+func (r *Req) BodyDigit(p string, xargs ...bool) (*ReqProp, *ae.Error) {
+	required := len(xargs) == 0 || xargs[0]
+	return r.Body(p, `^\d+$`, required)
+}
+
+// 允许0
+func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultInt8(0), e
+}
+func (r *Req) QueryInt16(p string, required ...bool) (int16, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultInt16(0), e
+}
+func (r *Req) QueryInt32(p string, required ...bool) (int32, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultInt32(0), e
+}
+func (r *Req) QueryInt(p string, required ...bool) (int, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultInt(0), e
+}
+func (r *Req) QueryInt64(p string, required ...bool) (int64, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultInt64(0), e
+}
+func (r *Req) QueryUint8(p string, required ...bool) (uint8, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultUint8(0), e
+}
+func (r *Req) QueryUint16(p string, required ...bool) (uint16, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultUint16(0), e
+}
+func (r *Req) QueryUint32(p string, required ...bool) (uint32, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultUint32(0), e
+}
+func (r *Req) QueryUint(p string, required ...bool) (uint, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultUint(0), e
+}
+func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
+	_x, e := r.QueryDigit(p, required...)
+	return _x.DefaultUint64(0), e
+}
+
+func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultInt8(0), e
+}
+func (r *Req) BodyInt16(p string, required ...bool) (int16, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultInt16(0), e
+}
+func (r *Req) BodyInt32(p string, required ...bool) (int32, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultInt32(0), e
+}
+func (r *Req) BodyInt(p string, required ...bool) (int, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultInt(0), e
+}
+func (r *Req) BodyInt64(p string, required ...bool) (int64, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultInt64(0), e
+}
+func (r *Req) BodyUint8(p string, required ...bool) (uint8, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultUint8(0), e
+}
+func (r *Req) BodyUint16(p string, required ...bool) (uint16, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultUint16(0), e
+}
+func (r *Req) BodyUint32(p string, required ...bool) (uint32, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultUint32(0), e
+}
+func (r *Req) BodyUint(p string, required ...bool) (uint, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultUint(0), e
+}
+func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
+	_x, e := r.BodyDigit(p, required...)
+	return _x.DefaultUint64(0), e
+}
+
+// ID:uint64, required 情况ID必须>0；optional 情况，可以为0
+func (r *Req) QueryId(p string, required ...bool) (uint64, *ae.Error) {
+	id, e := r.QueryUint64(p, required...)
+	if len(required) == 1 && !required[0] {
+		return id, e // optional
+	}
+	if id == 0 {
+		return 0, ae.NewError(400, "bad "+p)
+	}
+	return id, nil
+}
+
+// ID:uint64, required 情况ID必须>0；optional 情况，可以为0
+func (r *Req) BodyId(p string, required ...bool) (uint64, *ae.Error) {
+	id, e := r.BodyUint64(p, required...)
+	if len(required) == 1 && !required[0] {
+		return id, e // optional
+	}
+	if id == 0 {
+		return 0, ae.NewError(400, "bad "+p)
+	}
+	return id, nil
 }
