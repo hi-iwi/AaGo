@@ -1,6 +1,7 @@
 package com
 
 import (
+	"github.com/hi-iwi/AaGo/adto"
 	"github.com/hi-iwi/AaGo/ae"
 	"strings"
 )
@@ -201,4 +202,36 @@ func (r *Req) BodyId(p string, required ...bool) (uint64, *ae.Error) {
 		return 0, ae.NewError(400, "bad "+p)
 	}
 	return id, nil
+}
+
+func (r *Req) QueryPaging(args ...int) adto.Paging {
+	page, _ := r.QueryInt("page", false)
+	offset, _ := r.QueryInt("offset", false)
+	limit, _ := r.QueryInt("limit", false)
+
+	if limit < 1 {
+		if len(args) > 0 {
+			limit = args[0]
+		} else {
+			limit = 20
+		}
+	} else if limit > 100 {
+		limit = 100
+	}
+
+	if offset > 0 {
+		page = (offset / limit) + 1
+	} else {
+		if page < 1 {
+			page = 1
+		}
+	}
+	// change ?limit=3&offset=10 to ?limit=0&offset=10
+	offset = (page - 1) * limit
+
+	return adto.Paging{
+		Page:   page,
+		Offset: offset,
+		Limit:  limit,
+	}
 }
