@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/kataras/iris/v12/middleware/jwt/blocklist/redis"
 	"log"
 	"strconv"
 	"time"
@@ -17,9 +16,6 @@ func weekIndex() int {
 	}
 	return i
 }
-
-
-
 
 // 一般用于 SUnion
 func Uint64s(vs []string, err error) ([]uint64, *ae.Error) {
@@ -90,7 +86,6 @@ func HIncr(ctx context.Context, rdb *redis.Client, ttl time.Duration, k string, 
 	return HIncrBy(ctx, rdb, ttl, k, field, 1)
 }
 
-
 // 使当前时段的放到最后
 func BatchKeys(n int, final int, ignoreCurrent bool, f func(int) string) []string {
 	l := final
@@ -118,6 +113,7 @@ func BatchKeys(n int, final int, ignoreCurrent bool, f func(int) string) []strin
 
 	return ks
 }
+
 // final 不包括
 func Key(n int, final int, prev bool, f func(int) string) string {
 	if prev {
