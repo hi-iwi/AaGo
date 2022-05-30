@@ -79,95 +79,103 @@ func (r *Req) FastXparam(name string) *ReqProp {
 	return v
 }
 
-func (r *Req) QueryDigit(p string, xargs ...bool) (*ReqProp, *ae.Error) {
+func (r *Req) QueryDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	required := len(xargs) == 0 || xargs[0]
-	return r.Query(p, `^\d+$`, required)
+	reg := `^[-\d]\d*$`
+	if positive {
+		reg = `^\d+$`
+	}
+	return r.Query(p, reg, required)
 }
-func (r *Req) BodyDigit(p string, xargs ...bool) (*ReqProp, *ae.Error) {
+func (r *Req) BodyDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	required := len(xargs) == 0 || xargs[0]
-	return r.Body(p, `^\d+$`, required)
+	reg := `^[-\d]\d*$`
+	if positive {
+		reg = `^\d+$`
+	}
+	return r.Body(p, reg, required)
 }
 
 // 允许0
 func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, false, required...)
 	return _x.DefaultInt8(0), e
 }
 func (r *Req) QueryInt16(p string, required ...bool) (int16, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, false, required...)
 	return _x.DefaultInt16(0), e
 }
 func (r *Req) QueryInt32(p string, required ...bool) (int32, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, false, required...)
 	return _x.DefaultInt32(0), e
 }
 func (r *Req) QueryInt(p string, required ...bool) (int, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, false, required...)
 	return _x.DefaultInt(0), e
 }
 func (r *Req) QueryInt64(p string, required ...bool) (int64, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, false, required...)
 	return _x.DefaultInt64(0), e
 }
 func (r *Req) QueryUint8(p string, required ...bool) (uint8, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint8(0), e
 }
 func (r *Req) QueryUint16(p string, required ...bool) (uint16, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint16(0), e
 }
 func (r *Req) QueryUint32(p string, required ...bool) (uint32, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint32(0), e
 }
 func (r *Req) QueryUint(p string, required ...bool) (uint, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint(0), e
 }
 func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
-	_x, e := r.QueryDigit(p, required...)
+	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
 }
 
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt8(0), e
 }
 func (r *Req) BodyInt16(p string, required ...bool) (int16, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt16(0), e
 }
 func (r *Req) BodyInt32(p string, required ...bool) (int32, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt32(0), e
 }
 func (r *Req) BodyInt(p string, required ...bool) (int, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt(0), e
 }
 func (r *Req) BodyInt64(p string, required ...bool) (int64, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt64(0), e
 }
 func (r *Req) BodyUint8(p string, required ...bool) (uint8, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint8(0), e
 }
 func (r *Req) BodyUint16(p string, required ...bool) (uint16, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint16(0), e
 }
 func (r *Req) BodyUint32(p string, required ...bool) (uint32, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint32(0), e
 }
 func (r *Req) BodyUint(p string, required ...bool) (uint, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint(0), e
 }
 func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
-	_x, e := r.BodyDigit(p, required...)
+	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
 }
 
