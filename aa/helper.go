@@ -1,8 +1,21 @@
 package aa
 
 import (
+	"context"
+	"fmt"
+	"log"
 	"time"
 )
+
+func Hint(msg string) {
+	ns := time.Now().Format("2006-01-02 15:04:05")
+	log.Println(msg)
+	fmt.Println(ns + " " + msg)
+}
+func (app *Aa) Hint(ctx context.Context, msg string) {
+	app.Log.Warn(ctx, msg)
+	fmt.Println(app.Datetime() + " " + msg)
+}
 
 func (app *Aa) Now() time.Time {
 	return time.Now().In(app.Cfg().TimeLocation)

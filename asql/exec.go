@@ -132,6 +132,7 @@ func (d *DB) Scan(ctx context.Context, query string, id interface{}, dest ...int
 
 // do not forget to close *sql.Rows
 // 不要忘了关闭 rows
+// 只有 QueryRow 找不到才会返回 ae.NotFound；Query 即使不存在，也是 nil
 func (d *DB) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, *ae.Error) {
 	stmt, e := d.Prepare(ctx, query)
 	if e != nil {
