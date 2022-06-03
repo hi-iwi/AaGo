@@ -3,15 +3,29 @@ package aa
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/hi-iwi/AaGo/util"
 )
 
+type Env string
+
+func (env Env) String() string        { return string(env) }
+func (env Env) IsLocal() bool         { return env == "local" || env == "loc" }
+func (env Env) IsDevelopment() bool   { return env == "development" || env == "dev" }
+func (env Env) IsIntegration() bool   { return env == "integration" }
+func (env Env) IsTesting() bool       { return env == "testing" || env == "test" || env == "qc" }
+func (env Env) IsPreProduction() bool { return env == "pre-production" || env == "pre" || env == "demo" }
+func (env Env) IsProduction() bool    { return env == "production" || env == "pro" || env == "live" }
+
 type Configuration struct {
-	Env          string // dev test preprod product
+	/*
+		https://en.wikipedia.org/wiki/Deployment_environment
+		local -> development/trunk -> integration -> testing/test/qc/internal acceptnace -> staging/stage/model/pre-production/demo -> production/live
+		development -> test -> pre-production -> production
+	*/
+	Env          Env
 	TimezoneID   string // e.g. "Asia/Shanghai"
 	TimeLocation *time.Location
 	TimeFormat   string // e.g. "2006-02-01 15:04:05"
@@ -34,7 +48,7 @@ func AfterConfigLoaded(cfg Config) Configuration {
 func ParseToConfiguration(cfg Config) Configuration {
 	zone, _ := time.Now().Zone()
 	c := Configuration{
-		Env:          cfg.GetString(CkEnv),
+		Env:          Env(cfg.GetString(CkEnv)),
 		TimezoneID:   zone,
 		TimeLocation: time.Local,
 		TimeFormat:   cfg.GetString(CkTimeFormat),
@@ -61,11 +75,8 @@ func ParseToConfiguration(cfg Config) Configuration {
 }
 
 func (c *Configuration) Log() {
-	n := time.Now()
-	now := n.Format(c.TimeFormat) + "." + strconv.FormatInt(n.UnixMicro(), 10)
 	msg := fmt.Sprintf("lauching...\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Env, c.TimezoneID, c.Mock, util.GitVersion())
-	log.Println(msg)
-	fmt.Println(now + " " + msg)
+	Hint(msg)
 }
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
