@@ -3,6 +3,7 @@ package com
 import (
 	"github.com/hi-iwi/AaGo/adto"
 	"github.com/hi-iwi/AaGo/ae"
+	"strconv"
 	"strings"
 )
 
@@ -79,22 +80,19 @@ func (r *Req) FastXparam(name string) *ReqProp {
 	v, _ := r.Xparam(name, false)
 	return v
 }
-
-func (r *Req) QueryDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
+func reqDigit(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	required := len(xargs) == 0 || xargs[0]
 	reg := `^[-\d]\d*$`
 	if positive {
 		reg = `^\d+$`
 	}
-	return r.Query(p, reg, required)
+	return method(p, reg, required)
+}
+func (r *Req) QueryDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
+	return reqDigit(r.Query, p, positive, xargs...)
 }
 func (r *Req) BodyDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
-	required := len(xargs) == 0 || xargs[0]
-	reg := `^[-\d]\d*$`
-	if positive {
-		reg = `^\d+$`
-	}
-	return r.Body(p, reg, required)
+	return reqDigit(r.Body, p, positive, xargs...)
 }
 
 // 允许0
@@ -178,6 +176,83 @@ func (r *Req) BodyUint(p string, required ...bool) (uint, *ae.Error) {
 func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
+}
+
+// 逗号隔开的 string digits
+func reqDigits(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, required ...bool) ([]string, *ae.Error) {
+	rq := len(required) == 0 || required[0]
+	s, e := method(p, `^[\d,]$`, rq)
+	if e != nil {
+		return nil, e
+	}
+	arr := strings.Split(s.String(), ",")
+	b := make([]string, 0)
+	for _, a := range arr {
+		if a != "" {
+			b = append(b, a)
+		}
+	}
+	if len(b) == 0 && rq {
+		return nil, ae.BadParam(p)
+	}
+	return b, nil
+}
+
+func (r *Req) BodyDigits(p string, required ...bool) ([]string, *ae.Error) {
+	return reqDigits(r.Body, p, required...)
+}
+func (r *Req) QueryDigits(p string, required ...bool) ([]string, *ae.Error) {
+	return reqDigits(r.Query, p, required...)
+}
+
+// 逗号隔开的 uint
+func (r *Req) QueryUints(p string, required ...bool) ([]uint, *ae.Error) {
+	arr, e := r.QueryDigits(p, required...)
+	if e != nil {
+		return nil, e
+	}
+	ids := make([]uint, len(arr))
+	for i, a := range arr {
+		id, _ := strconv.ParseUint(a, 10, 32)
+		ids[i] = uint(id)
+	}
+	return ids, nil
+}
+func (r *Req) QueryUint64s(p string, required ...bool) ([]uint64, *ae.Error) {
+	arr, e := r.QueryDigits(p, required...)
+	if e != nil {
+		return nil, e
+	}
+	ids := make([]uint64, len(arr))
+	for i, a := range arr {
+		ids[i], _ = strconv.ParseUint(a, 10, 32)
+	}
+	return ids, nil
+}
+func (r *Req) BodyUints(p string, required ...bool) ([]uint, *ae.Error) {
+	arr, e := r.BodyDigits(p, required...)
+	if e != nil {
+		return nil, e
+	}
+	ids := make([]uint, len(arr))
+	for i, a := range arr {
+		id, _ := strconv.ParseUint(a, 10, 32)
+		ids[i] = uint(id)
+	}
+	return ids, nil
+}
+
+// 逗号隔开的 uint64
+func (r *Req) BodyUint64s(p string, required ...bool) ([]uint64, *ae.Error) {
+	arr, e := r.BodyDigits(p, required...)
+	if e != nil {
+		return nil, e
+	}
+	ids := make([]uint64, len(arr))
+	for i, a := range arr {
+		ids[i], _ = strconv.ParseUint(a, 10, 32)
+	}
+	return ids, nil
 }
 
 // ID:uint64, required 情况ID必须>0；optional 情况，可以为0
