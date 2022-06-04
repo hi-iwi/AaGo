@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 )
 
 /*
@@ -12,7 +12,7 @@ import (
 Filter(pattern string, required bool)
 Filter(required bool)
 Filter(pattern string)
-Filter(default dtype.Dtype)
+Filter(default atype.Atype)
 
 */
 func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
@@ -25,7 +25,7 @@ func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
 			pattern = s
 		} else if b, ok := pat.(bool); ok {
 			required = b
-		} else if d, ok := pat.(*dtype.Dtype); ok && p.String() == "" {
+		} else if d, ok := pat.(*atype.Atype); ok && p.String() == "" {
 			p.Reload(d.Raw())
 		}
 	}

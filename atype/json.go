@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 import (
 	"encoding/json"

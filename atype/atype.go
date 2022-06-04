@@ -1,26 +1,27 @@
-package dtype
+package atype
 
 import (
 	"database/sql"
 )
 
-// Dbyte String('A') will returns "97". So you have to use String(Dbyte('A')) to return "A"
-type Dbyte byte
+// Abyte String('A') will returns "97". So you have to use String(Abyte('A')) to return "A"
+type Abyte byte
 
-type Dtype struct {
+// fastjson 命名就是 autotype
+type Atype struct {
 	raw interface{}
 }
 
-func New(data interface{}) *Dtype {
-	return &Dtype{
+func New(data interface{}) *Atype {
+	return &Atype{
 		raw: data,
 	}
 }
 
-func (p *Dtype) Raw() interface{} {
+func (p *Atype) Raw() interface{} {
 	return p.raw
 }
-func (p *Dtype) Reload(v interface{}) {
+func (p *Atype) Reload(v interface{}) {
 	p.raw = v
 }
 
@@ -28,37 +29,37 @@ func (p *Dtype) Reload(v interface{}) {
 // p.Get("users.1.name") is short for p.Get("user", "1", "name")
 // @warn p.Get("user", "1", "name") is diffirent with p.Get("user", 1, "name")
 
-func (p *Dtype) Get(keys ...interface{}) (*Dtype, error) {
+func (p *Atype) Get(keys ...interface{}) (*Atype, error) {
 	v, err := NewMap(p.raw).Get(keys[0], keys[1:]...)
 	return New(v), err
 }
 
-func (p *Dtype) SqlNullString() sql.NullString {
+func (p *Atype) SqlNullString() sql.NullString {
 	return sql.NullString{String: p.String(), Valid: p.NotEmpty()}
 }
 
-func (p *Dtype) SqlNullInt64() sql.NullInt64 {
+func (p *Atype) SqlNullInt64() sql.NullInt64 {
 	v, _ := p.Int64()
 	return sql.NullInt64{Int64: v, Valid: p.NotEmpty()}
 }
 
-func (p *Dtype) SqlNullFloat64() sql.NullFloat64 {
+func (p *Atype) SqlNullFloat64() sql.NullFloat64 {
 	v, _ := p.Float64()
 	return sql.NullFloat64{Float64: v, Valid: p.NotEmpty()}
 }
 
-func (p *Dtype) IsEmpty() bool {
+func (p *Atype) IsEmpty() bool {
 	return IsEmpty(p.raw)
 }
-func (p *Dtype) NotEmpty() bool {
+func (p *Atype) NotEmpty() bool {
 	return NotEmpty(p.raw)
 }
 
-func (p *Dtype) Bool() (bool, error) {
+func (p *Atype) Bool() (bool, error) {
 	return Bool(p.raw)
 }
 
-func (p *Dtype) DefaultBool(defaultValue bool) bool {
+func (p *Atype) DefaultBool(defaultValue bool) bool {
 	v, err := p.Bool()
 	if err != nil {
 		return defaultValue
@@ -66,11 +67,11 @@ func (p *Dtype) DefaultBool(defaultValue bool) bool {
 	return v
 }
 
-func (p *Dtype) Slice() ([]interface{}, error) {
+func (p *Atype) Slice() ([]interface{}, error) {
 	return Slice(p.raw)
 }
 
-func (p *Dtype) DefaultSlice(defaultValue []interface{}) []interface{} {
+func (p *Atype) DefaultSlice(defaultValue []interface{}) []interface{} {
 	v, err := p.Slice()
 	if err != nil {
 		return defaultValue
@@ -78,10 +79,10 @@ func (p *Dtype) DefaultSlice(defaultValue []interface{}) []interface{} {
 	return v
 }
 
-func (p *Dtype) String() string {
+func (p *Atype) String() string {
 	return String(p.raw)
 }
-func (p *Dtype) DefaultString(defaultValue string) string {
+func (p *Atype) DefaultString(defaultValue string) string {
 	v := p.String()
 	if v == "" {
 		return defaultValue
@@ -89,11 +90,11 @@ func (p *Dtype) DefaultString(defaultValue string) string {
 	return v
 }
 
-func (p *Dtype) Bytes() []byte {
+func (p *Atype) Bytes() []byte {
 	return Bytes(p.raw)
 }
 
-func (p *Dtype) DefaultBytes(defaultValue []byte) []byte {
+func (p *Atype) DefaultBytes(defaultValue []byte) []byte {
 	v := p.Bytes()
 	if len(v) == 0 {
 		return defaultValue
@@ -101,11 +102,11 @@ func (p *Dtype) DefaultBytes(defaultValue []byte) []byte {
 	return v
 }
 
-func (p *Dtype) Int8() (int8, error) {
+func (p *Atype) Int8() (int8, error) {
 	return Int8(p.raw)
 }
 
-func (p *Dtype) DefaultInt8(defaultValue int8) int8 {
+func (p *Atype) DefaultInt8(defaultValue int8) int8 {
 	v, err := p.Int8()
 	if err != nil {
 		return defaultValue
@@ -113,10 +114,10 @@ func (p *Dtype) DefaultInt8(defaultValue int8) int8 {
 	return v
 }
 
-func (p *Dtype) Int16() (int16, error) {
+func (p *Atype) Int16() (int16, error) {
 	return Int16(p.raw)
 }
-func (p *Dtype) DefaultInt16(defaultValue int16) int16 {
+func (p *Atype) DefaultInt16(defaultValue int16) int16 {
 	v, err := p.Int16()
 	if err != nil {
 		return defaultValue
@@ -124,11 +125,11 @@ func (p *Dtype) DefaultInt16(defaultValue int16) int16 {
 	return v
 }
 
-func (p *Dtype) Int32() (int32, error) {
+func (p *Atype) Int32() (int32, error) {
 	return Int32(p.raw)
 }
 
-func (p *Dtype) DefaultInt32(defaultValue int32) int32 {
+func (p *Atype) DefaultInt32(defaultValue int32) int32 {
 	v, err := p.Int32()
 	if err != nil {
 		return defaultValue
@@ -136,11 +137,11 @@ func (p *Dtype) DefaultInt32(defaultValue int32) int32 {
 	return v
 }
 
-func (p *Dtype) Int() (int, error) {
+func (p *Atype) Int() (int, error) {
 	return Int(p.raw)
 }
 
-func (p *Dtype) DefaultInt(defaultValue int) int {
+func (p *Atype) DefaultInt(defaultValue int) int {
 	v, err := p.Int()
 	if err != nil {
 		return defaultValue
@@ -148,11 +149,11 @@ func (p *Dtype) DefaultInt(defaultValue int) int {
 	return v
 }
 
-func (p *Dtype) Int64() (int64, error) {
+func (p *Atype) Int64() (int64, error) {
 	return Int64(p.raw)
 }
 
-func (p *Dtype) DefaultInt64(defaultValue int64) int64 {
+func (p *Atype) DefaultInt64(defaultValue int64) int64 {
 	v, err := p.Int64()
 	if err != nil {
 		return defaultValue
@@ -160,11 +161,11 @@ func (p *Dtype) DefaultInt64(defaultValue int64) int64 {
 	return v
 }
 
-func (p *Dtype) Uint8() (uint8, error) {
+func (p *Atype) Uint8() (uint8, error) {
 	return Uint8(p.raw)
 }
 
-func (p *Dtype) DefaultUint8(defaultValue uint8) uint8 {
+func (p *Atype) DefaultUint8(defaultValue uint8) uint8 {
 	v, err := p.Uint8()
 	if err != nil {
 		return defaultValue
@@ -172,33 +173,33 @@ func (p *Dtype) DefaultUint8(defaultValue uint8) uint8 {
 	return v
 }
 
-func (p *Dtype) Uint16() (uint16, error) {
+func (p *Atype) Uint16() (uint16, error) {
 	return Uint16(p.raw)
 }
 
-func (p *Dtype) DefaultUint16(defaultValue uint16) uint16 {
+func (p *Atype) DefaultUint16(defaultValue uint16) uint16 {
 	v, err := p.Uint16()
 	if err != nil {
 		return defaultValue
 	}
 	return v
 }
-func (p *Dtype) Uint32() (uint32, error) {
+func (p *Atype) Uint32() (uint32, error) {
 	return Uint32(p.raw)
 }
 
-func (p *Dtype) DefaultUint32(defaultValue uint32) uint32 {
+func (p *Atype) DefaultUint32(defaultValue uint32) uint32 {
 	v, err := p.Uint32()
 	if err != nil {
 		return defaultValue
 	}
 	return v
 }
-func (p *Dtype) Uint() (uint, error) {
+func (p *Atype) Uint() (uint, error) {
 	return Uint(p.raw)
 }
 
-func (p *Dtype) DefaultUint(defaultValue uint) uint {
+func (p *Atype) DefaultUint(defaultValue uint) uint {
 	v, err := p.Uint()
 	if err != nil {
 		return defaultValue
@@ -206,11 +207,11 @@ func (p *Dtype) DefaultUint(defaultValue uint) uint {
 	return v
 }
 
-func (p *Dtype) Uint64() (uint64, error) {
+func (p *Atype) Uint64() (uint64, error) {
 	return Uint64(p.raw)
 }
 
-func (p *Dtype) DefaultUint64(defaultValue uint64) uint64 {
+func (p *Atype) DefaultUint64(defaultValue uint64) uint64 {
 	v, err := p.Uint64()
 	if err != nil {
 		return defaultValue
@@ -218,11 +219,11 @@ func (p *Dtype) DefaultUint64(defaultValue uint64) uint64 {
 	return v
 }
 
-func (p *Dtype) Float32() (float32, error) {
+func (p *Atype) Float32() (float32, error) {
 	return Float32(p.raw)
 }
 
-func (p *Dtype) DefaultFloat32(defaultValue float32) float32 {
+func (p *Atype) DefaultFloat32(defaultValue float32) float32 {
 	v, err := p.Float32()
 	if err != nil {
 		return defaultValue
@@ -230,11 +231,11 @@ func (p *Dtype) DefaultFloat32(defaultValue float32) float32 {
 	return v
 }
 
-func (p *Dtype) Float64() (float64, error) {
+func (p *Atype) Float64() (float64, error) {
 	return Float64(p.raw)
 }
 
-func (p *Dtype) DefaultFloat64(defaultValue float64) float64 {
+func (p *Atype) DefaultFloat64(defaultValue float64) float64 {
 	v, err := p.Float64()
 	if err != nil {
 		return defaultValue

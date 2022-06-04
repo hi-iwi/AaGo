@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// 存储在数据库里面，图片列表，为了节省空间，用数组来；具体见 dtype.NullStrings or string
+// 存储在数据库里面，图片列表，为了节省空间，用数组来；具体见 atype.NullStrings or string
 type ImgSrc struct {
 	Processor int    `json:"processor"` // 图片处理ID，如阿里云图片处理、网易云图片处理等
 	Fill      string `json:"fill"`      // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
@@ -14,7 +14,7 @@ type ImgSrc struct {
 	Path      string `json:"path"`      // path 可能是 filename，也可能是 带文件夹的文件名
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
 	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
-	Size     uint32 `json:"size"`     // dtype.Uint24.Int8()
+	Size     uint32 `json:"size"`     // atype.Uint24.Int8()
 	Width    uint16 `json:"width"`
 	Height   uint16 `json:"height"`
 }
@@ -25,7 +25,7 @@ type VideoSrc struct {
 	Path      string `json:"path"`
 	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
 	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
-	Size     uint32 `json:"size"`     // dtype.Uint24.Int8()
+	Size     uint32 `json:"size"`     // atype.Uint24.Int8()
 	Width    uint16 `json:"width"`
 	Height   uint16 `json:"height"`
 	Duration uint32 `json:"duration"` // 时长，秒

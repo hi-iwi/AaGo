@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 // Tag Get tag of a struct.
-// e.g.  struct { Iwi string `name:"iwi"`, Nation string `name:"nation"`}   dtype.Tag(stru, "Iwi", "name")
+// e.g.  struct { Iwi string `name:"iwi"`, Nation string `name:"nation"`}   atype.Tag(stru, "Iwi", "name")
 func Tag(u interface{}, field string, tagname string) string {
 	defer func() {
 		if err := recover(); err != nil {

@@ -2,7 +2,7 @@ package aa
 
 import (
 	"github.com/go-redis/redis/v8"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"time"
 )
 
@@ -75,10 +75,10 @@ func (app *App) MysqlConfig(section string) (MysqlConfig, error) {
 		ReadTimeout:  rt,
 		WriteTimeout: wt,
 		Pool: MysqlPoolConfig{
-			MaxIdleConns:    dtype.New(poolMaxIdleConns).DefaultInt(0),
-			MaxOpenConns:    dtype.New(poolMaxOpenConns).DefaultInt(0),
-			ConnMaxLifetime: time.Duration(dtype.New(poolConnMaxLifetime).DefaultInt64(0)) * time.Second,
-			ConnMaxIdleTime: time.Duration(dtype.New(poolConnMaxIdleTime).DefaultInt64(0)) * time.Second,
+			MaxIdleConns:    atype.New(poolMaxIdleConns).DefaultInt(0),
+			MaxOpenConns:    atype.New(poolMaxOpenConns).DefaultInt(0),
+			ConnMaxLifetime: time.Duration(atype.New(poolConnMaxLifetime).DefaultInt64(0)) * time.Second,
+			ConnMaxIdleTime: time.Duration(atype.New(poolConnMaxIdleTime).DefaultInt64(0)) * time.Second,
 		},
 	}
 	return cf, nil
@@ -123,20 +123,20 @@ func (app *App) RedisConfig(section string) (*redis.Options, error) {
 		OnConnect:          nil,
 		Username:           username,
 		Password:           password,
-		DB:                 dtype.New(db).DefaultInt(0),
-		MaxRetries:         dtype.New(maxRetries).DefaultInt(0),
-		MinRetryBackoff:    time.Duration(dtype.New(minRetryBackoff).DefaultInt64(0)),
-		MaxRetryBackoff:    time.Duration(dtype.New(maxRetryBackoff).DefaultInt64(0)),
-		DialTimeout:        time.Duration(dtype.New(dialTimeout).DefaultInt64(0)),
-		ReadTimeout:        time.Duration(dtype.New(readTimeout).DefaultInt64(0)),
-		WriteTimeout:       time.Duration(dtype.New(writeTimeout).DefaultInt64(0)),
-		PoolFIFO:           dtype.New(poolFIFO).DefaultBool(false),
-		PoolSize:           dtype.New(poolSize).DefaultInt(0),
-		MinIdleConns:       dtype.New(minIdleConns).DefaultInt(0),
-		MaxConnAge:         time.Duration(dtype.New(maxConnAge).DefaultInt64(0)),
-		PoolTimeout:        time.Duration(dtype.New(poolTimeout).DefaultInt64(0)),
-		IdleTimeout:        time.Duration(dtype.New(idleTimeout).DefaultInt64(0)),
-		IdleCheckFrequency: time.Duration(dtype.New(idleCheckFrequency).DefaultInt64(0)),
+		DB:                 atype.New(db).DefaultInt(0),
+		MaxRetries:         atype.New(maxRetries).DefaultInt(0),
+		MinRetryBackoff:    time.Duration(atype.New(minRetryBackoff).DefaultInt64(0)),
+		MaxRetryBackoff:    time.Duration(atype.New(maxRetryBackoff).DefaultInt64(0)),
+		DialTimeout:        time.Duration(atype.New(dialTimeout).DefaultInt64(0)),
+		ReadTimeout:        time.Duration(atype.New(readTimeout).DefaultInt64(0)),
+		WriteTimeout:       time.Duration(atype.New(writeTimeout).DefaultInt64(0)),
+		PoolFIFO:           atype.New(poolFIFO).DefaultBool(false),
+		PoolSize:           atype.New(poolSize).DefaultInt(0),
+		MinIdleConns:       atype.New(minIdleConns).DefaultInt(0),
+		MaxConnAge:         time.Duration(atype.New(maxConnAge).DefaultInt64(0)),
+		PoolTimeout:        time.Duration(atype.New(poolTimeout).DefaultInt64(0)),
+		IdleTimeout:        time.Duration(atype.New(idleTimeout).DefaultInt64(0)),
+		IdleCheckFrequency: time.Duration(atype.New(idleCheckFrequency).DefaultInt64(0)),
 		TLSConfig:          nil,
 		Limiter:            nil,
 	}

@@ -1,13 +1,13 @@
 package com
 
 import (
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
 )
 
 type ReqProp struct {
-	dtype.Dtype
+	atype.Atype
 	param string
 }
 
@@ -31,7 +31,7 @@ func rexp(elems string) string {
 func UintsRegExp(set ...interface{}) string {
 	elems := make([]string, len(set))
 	for i, v := range set {
-		w, err := dtype.Uint64(v)
+		w, err := atype.Uint64(v)
 		if err != nil {
 			continue
 		}
@@ -43,7 +43,7 @@ func UintsRegExp(set ...interface{}) string {
 func IntsRegExp(ies []interface{}) string {
 	elems := make([]string, len(ies))
 	for i, v := range ies {
-		w, err := dtype.Int64(v)
+		w, err := atype.Int64(v)
 		if err != nil {
 			continue
 		}
@@ -57,7 +57,7 @@ func StringsRegExp(elems []string) string {
 	case 0:
 		return rexp("")
 	case 1:
-		return rexp(dtype.String(elems[0]))
+		return rexp(atype.String(elems[0]))
 	}
 	n := len(elems) - 1
 	for i := 0; i < len(elems); i++ {

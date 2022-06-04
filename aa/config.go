@@ -2,7 +2,7 @@ package aa
 
 import (
 	"encoding/json"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
 	"time"
@@ -17,8 +17,8 @@ type Config interface {
 	//GetRsa(name string) ([]byte, bool) // 不要获取太细分，否则容易导致错误不容易被排查
 	MustGetString(key string) (string, error)
 	GetString(key string, defaultValue ...string) string
-	MustGet(key string) (*dtype.Dtype, error)
-	Get(key string, defaultValue ...interface{}) *dtype.Dtype
+	MustGet(key string) (*atype.Atype, error)
+	Get(key string, defaultValue ...interface{}) *atype.Atype
 }
 
 func parseToDuration(d string) time.Duration {

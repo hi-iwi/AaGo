@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 func Bool2Uint8(b bool) uint8 {
 	if b {

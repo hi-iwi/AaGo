@@ -1,19 +1,19 @@
-package dtype_test
+package atype_test
 
 import (
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"testing"
 )
 
-func TestDtype(t *testing.T) {
+func TestAtype(t *testing.T) {
 	b := 234242342342423.3
-	s := dtype.New(b).String()
+	s := atype.New(b).String()
 	if s != "234242342342423.3" {
 		t.Errorf("float64(%f) ==> string(%s)", b, s)
 	}
 
 }
-func TestDtypeGet(t *testing.T) {
+func TestAtypeGet(t *testing.T) {
 	arr := map[interface{}]interface{}{
 		1:      100,
 		"name": "Iwi",
@@ -27,7 +27,7 @@ func TestDtypeGet(t *testing.T) {
 		},
 	}
 
-	d := dtype.New(arr)
+	d := atype.New(arr)
 	v, err := d.Get("name")
 	t.Log("[\"name\"]", v, err)
 

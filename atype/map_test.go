@@ -1,11 +1,11 @@
-package dtype_test
+package atype_test
 
 import (
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"testing"
 )
 
-func TestDtypeMap(t *testing.T) {
+func TestAtypeMap(t *testing.T) {
 	arr := map[interface{}]interface{}{
 		1:      100,
 		"name": "Iwi",
@@ -19,7 +19,7 @@ func TestDtypeMap(t *testing.T) {
 		},
 	}
 
-	name := dtype.String(dtype.NewMap(arr).Get("name"))
+	name := atype.String(atype.NewMap(arr).Get("name"))
 
 	t.Log("[\"name\"]", name)
 
@@ -27,7 +27,7 @@ func TestDtypeMap(t *testing.T) {
 		t.Error("[\"name\"] != Iwi")
 	}
 
-	v, err := dtype.Int(dtype.NewMap(arr).Get(1))
+	v, err := atype.Int(atype.NewMap(arr).Get(1))
 
 	if v != 100 {
 		t.Error("[1] != 100")
@@ -35,20 +35,20 @@ func TestDtypeMap(t *testing.T) {
 		t.Logf(`[1] == %d %s`, v, err)
 	}
 
-	if dtype.String(dtype.NewMap(arr).Get("1")) != "999" {
+	if atype.String(atype.NewMap(arr).Get("1")) != "999" {
 		t.Error("[\"1\"] != 999")
 	} else {
-		t.Logf("[\"1\"] == %s", dtype.String(dtype.NewMap(arr).Get("1")))
+		t.Logf("[\"1\"] == %s", atype.String(atype.NewMap(arr).Get("1")))
 	}
 
-	nation := dtype.String(dtype.NewMap(arr).Get("test.nation"))
+	nation := atype.String(atype.NewMap(arr).Get("test.nation"))
 	if nation != "China" {
 		t.Log("[\"test\".\"nation\"] != China")
 	} else {
 		t.Log("[\"test\".\"nation\"]", nation)
 	}
 
-	t.Log(dtype.NewMap(arr).Get(2, "sex"))
-	sex := dtype.String(dtype.NewMap(arr).Get(2, "sex"))
+	t.Log(atype.NewMap(arr).Get(2, "sex"))
+	sex := atype.String(atype.NewMap(arr).Get(2, "sex"))
 	t.Logf("[2.\"sex\"] == %s", sex)
 }

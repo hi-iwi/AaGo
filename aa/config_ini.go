@@ -3,7 +3,7 @@ package aa
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"gopkg.in/ini.v1"
 	"strings"
 	"sync"
@@ -49,7 +49,7 @@ func (c *Ini) LoadAIni(cfgs map[string]json.RawMessage) error {
 			return err
 		}
 		for jk, jv := range c {
-			g[k+"."+jk] = dtype.String(jv)
+			g[k+"."+jk] = atype.String(jv)
 		}
 	}
 	c.AddOtherConfigs(g)
@@ -120,23 +120,23 @@ func (c *Ini) GetString(key string, defaultValue ...string) string {
 	return v
 }
 
-func (c *Ini) MustGet(key string) (*dtype.Dtype, error) {
+func (c *Ini) MustGet(key string) (*atype.Atype, error) {
 	v, err := c.MustGetString(key)
 	if err != nil {
 		return nil, err
 	}
-	return dtype.New(v), nil
+	return atype.New(v), nil
 }
 
 // Get(key) or Get(key, defaultValue)
 // 先从 ini 文件读取，找不到再去从其他 provider （如数据库拉下来的配置）里面找
-func (c *Ini) Get(key string, defaultValue ...interface{}) *dtype.Dtype {
+func (c *Ini) Get(key string, defaultValue ...interface{}) *atype.Atype {
 	v, _ := c.MustGetString(key)
 	if v != "" {
-		return dtype.New(v)
+		return atype.New(v)
 	}
 	if len(defaultValue) > 0 {
-		return dtype.New(defaultValue[0])
+		return atype.New(defaultValue[0])
 	}
-	return dtype.New("")
+	return atype.New("")
 }

@@ -1,11 +1,11 @@
-package dtype
+package atype
 
 import (
 	"encoding/json"
 	"reflect"
 )
 
-func (p *Dtype) IsNil() bool {
+func (p *Atype) IsNil() bool {
 	if p.raw == nil {
 		return true
 	}
@@ -15,35 +15,35 @@ func (p *Dtype) IsNil() bool {
 	}
 	return false
 }
-func (p *Dtype) Strings() ([]string, bool) {
+func (p *Atype) Strings() ([]string, bool) {
 	v, ok := p.raw.([]string)
 	return v, ok
 }
-func (p *Dtype) Ints() ([]int, bool) {
+func (p *Atype) Ints() ([]int, bool) {
 	v, ok := p.raw.([]int)
 	return v, ok
 }
-func (p *Dtype) Uints() ([]uint, bool) {
+func (p *Atype) Uints() ([]uint, bool) {
 	v, ok := p.raw.([]uint)
 	return v, ok
 }
-func (p *Dtype) Int64s() ([]int64, bool) {
+func (p *Atype) Int64s() ([]int64, bool) {
 	v, ok := p.raw.([]int64)
 	return v, ok
 }
-func (p *Dtype) Uint64s() ([]uint64, bool) {
+func (p *Atype) Uint64s() ([]uint64, bool) {
 	v, ok := p.raw.([]uint64)
 	return v, ok
 }
-func (p *Dtype) Float32s() ([]float32, bool) {
+func (p *Atype) Float32s() ([]float32, bool) {
 	v, ok := p.raw.([]float32)
 	return v, ok
 }
-func (p *Dtype) Float64s() ([]float64, bool) {
+func (p *Atype) Float64s() ([]float64, bool) {
 	v, ok := p.raw.([]float64)
 	return v, ok
 }
-func (p *Dtype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
+func (p *Atype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 	arr, ok := p.raw.([]interface{})
 	if ok {
 		v, _ := json.Marshal(arr)
@@ -68,7 +68,7 @@ func (p *Dtype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 
 	return nil, false
 }
-func (p *Dtype) MapJson(allowNil bool) (json.RawMessage, bool) {
+func (p *Atype) MapJson(allowNil bool) (json.RawMessage, bool) {
 	arr, ok := p.raw.(map[string]interface{})
 	if ok {
 		v, _ := json.Marshal(arr)

@@ -38,7 +38,7 @@ func Uint64s(vs []string, err error) ([]uint64, *ae.Error) {
 func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
 	var err error
 	ttl, _ := rdb.TTL(ctx, k).Result()
-	if ttl < expires {
+	if ttl > 0 && ttl < expires {
 		_, err = rdb.HSet(ctx, k, values...).Result()
 	} else {
 		_, err = rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -53,7 +53,7 @@ func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k strin
 func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
 	var err error
 	ttl, _ := rdb.TTL(ctx, k).Result()
-	if ttl < expires {
+	if ttl > 0 && ttl < expires {
 		_, err = rdb.HMSet(ctx, k, values...).Result()
 	} else {
 		_, err = rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -69,7 +69,7 @@ func HIncrBy(ctx context.Context, rdb *redis.Client, expires time.Duration, k st
 	var reply int64
 	var err error
 	ttl, _ := rdb.TTL(ctx, k).Result()
-	if ttl < expires {
+	if ttl > 0 && ttl < expires {
 		reply, err = rdb.HIncrBy(ctx, k, field, incr).Result()
 	} else {
 		_, err = rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -84,6 +84,35 @@ func HIncrBy(ctx context.Context, rdb *redis.Client, expires time.Duration, k st
 
 func HIncr(ctx context.Context, rdb *redis.Client, ttl time.Duration, k string, field string) (int64, *ae.Error) {
 	return HIncrBy(ctx, rdb, ttl, k, field, 1)
+}
+
+func HMIncr(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, fields []string) ([]int64, *ae.Error) {
+	replies := make([]int64, len(fields))
+	var err error
+	ttl, _ := rdb.TTL(ctx, k).Result()
+
+	_, err = rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		var err1 error
+		for i, field := range fields {
+			if replies[i], err1 = pipe.HIncrBy(ctx, k, field, 1).Result(); err1 != nil {
+				return err1
+			}
+		}
+		if ttl <= 0 {
+			err1 = pipe.Expire(ctx, k, expires).Err()
+		}
+		return err1
+	})
+
+	return replies, ae.NewRedisError(err)
+}
+
+func HMIncrIds(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, ids []uint64) ([]int64, *ae.Error) {
+	fields := make([]string, len(ids))
+	for i, id := range ids {
+		fields[i] = strconv.FormatUint(id, 10)
+	}
+	return HMIncr(ctx, rdb, expires, k, fields)
 }
 
 // 使当前时段的放到最后

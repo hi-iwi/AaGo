@@ -1,7 +1,7 @@
 package aenum
 
 import (
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
 )
@@ -16,7 +16,7 @@ const (
 )
 
 func NewSex(s interface{}) (Sex, bool) {
-	ss := strings.ToUpper(dtype.String(s))
+	ss := strings.ToUpper(atype.String(s))
 	switch ss {
 	case "0", "U", "UNKNOWN":
 		return UnknownSex, true

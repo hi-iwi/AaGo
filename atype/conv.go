@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 import (
 	"errors"
@@ -8,11 +8,11 @@ import (
 )
 
 // String convert into string
-// @warn byte is a built-in alias of uint8, String('A') returns "97"; String(Dbyte('A')) returns "A"
+// @warn byte is a built-in alias of uint8, String('A') returns "97"; String(Abyte('A')) returns "A"
 func String(d interface{}, errs ...error) string {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case Dbyte: // Name(Dbyte('A')) returns "A"
+		case Abyte: // Name(Abyte('A')) returns "A"
 			return string([]byte{byte(v)})
 		case bool:
 			return strconv.FormatBool(v)
@@ -109,7 +109,7 @@ func Int64(d interface{}, errs ...error) (int64, error) {
 func BaseInt64(d interface{}, bitSize int, errs ...error) (int64, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case Dbyte:
+		case Abyte:
 			return int64(v), nil
 		case bool:
 			if v {
@@ -179,7 +179,7 @@ func Uint64(d interface{}, errs ...error) (uint64, error) {
 func BaseUint64(d interface{}, bitSize int, errs ...error) (uint64, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case Dbyte:
+		case Abyte:
 			return uint64(v), nil
 		case bool:
 			if v {
@@ -227,7 +227,7 @@ func BaseUint64(d interface{}, bitSize int, errs ...error) (uint64, error) {
 func Float32(d interface{}, errs ...error) (float32, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case Dbyte:
+		case Abyte:
 			return float32(v), nil
 		case bool:
 			if v {
@@ -276,7 +276,7 @@ func Float32(d interface{}, errs ...error) (float32, error) {
 func Float64(d interface{}, errs ...error) (float64, error) {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case Dbyte:
+		case Abyte:
 			return float64(v), nil
 		case bool:
 			if v {
@@ -331,7 +331,7 @@ func IsEmpty(d interface{}, errs ...error) bool {
 func NotEmpty(d interface{}, errs ...error) bool {
 	if (len(errs) == 0 || errs[0] == nil) && d != nil {
 		switch v := d.(type) {
-		case Dbyte:
+		case Abyte:
 			return v != 0
 		case bool:
 			return v

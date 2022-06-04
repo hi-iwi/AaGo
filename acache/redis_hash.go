@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 )
 
@@ -18,7 +18,7 @@ func HScan(ctx context.Context, rdb *redis.Client, dest interface{}, k string, f
 		return ae.NotFound
 	}
 	for _, x := range v {
-		if dtype.IsNil(x) {
+		if atype.IsNil(x) {
 			return ae.NotFound
 		}
 	}
@@ -72,7 +72,7 @@ func TryHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string
 	ok := true
 	e := ae.NotFound
 	for _, x := range v {
-		if !dtype.IsNil(x) {
+		if !atype.IsNil(x) {
 			e = nil // 只要存在一个不是nil，都正确
 			if !ok {
 				break
@@ -93,10 +93,10 @@ func TryHMGetUint64(ctx context.Context, rdb *redis.Client, k string, fields []s
 	}
 	v := make([]uint64, len(fields))
 	for i, x := range iv {
-		if dtype.IsNil(x) {
+		if atype.IsNil(x) {
 			v[i] = defaultValue
 		} else {
-			v[i] = dtype.New(x).DefaultUint64(0)
+			v[i] = atype.New(x).DefaultUint64(0)
 		}
 	}
 	return v, ok, nil
@@ -108,10 +108,10 @@ func TryHMGetInt64(ctx context.Context, rdb *redis.Client, k string, fields []st
 	}
 	v := make([]int64, len(fields))
 	for i, x := range iv {
-		if dtype.IsNil(x) {
+		if atype.IsNil(x) {
 			v[i] = defaultValue
 		} else {
-			v[i] = dtype.New(x).DefaultInt64(0)
+			v[i] = atype.New(x).DefaultInt64(0)
 		}
 	}
 	return v, ok, nil
@@ -123,10 +123,10 @@ func TryHMGetInt(ctx context.Context, rdb *redis.Client, k string, fields []stri
 	}
 	v := make([]int, len(fields))
 	for i, x := range iv {
-		if dtype.IsNil(x) {
+		if atype.IsNil(x) {
 			v[i] = defaultValue
 		} else {
-			v[i] = dtype.New(x).DefaultInt(0)
+			v[i] = atype.New(x).DefaultInt(0)
 		}
 	}
 	return v, ok, nil
@@ -142,7 +142,7 @@ func MustHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...strin
 		return nil, ae.NotFound
 	}
 	for _, x := range v {
-		if dtype.IsNil(x) {
+		if atype.IsNil(x) {
 			return v, ae.NotFound
 		}
 	}
@@ -155,7 +155,7 @@ func MustHMGetUint64(ctx context.Context, rdb *redis.Client, k string, fields ..
 	}
 	v := make([]uint64, len(fields))
 	for i, a := range iv {
-		v[i] = dtype.New(a).DefaultUint64(0)
+		v[i] = atype.New(a).DefaultUint64(0)
 	}
 	return v, nil
 }
@@ -166,7 +166,7 @@ func MustHMGetInt64(ctx context.Context, rdb *redis.Client, k string, fields ...
 	}
 	v := make([]int64, len(fields))
 	for i, a := range iv {
-		v[i] = dtype.New(a).DefaultInt64(0)
+		v[i] = atype.New(a).DefaultInt64(0)
 	}
 	return v, nil
 }

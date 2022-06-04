@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 import (
 	"database/sql"
@@ -122,7 +122,7 @@ func JoinByTags(u interface{}, ty JoinType, sep string, tagname string, tags ...
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("[error] dtype.JoinByTags %s(%s %s): %s", sep, tagname, strings.Join(tags, ","), err)
+			log.Printf("[error] atype.JoinByTags %s(%s %s): %s", sep, tagname, strings.Join(tags, ","), err)
 		}
 	}()
 

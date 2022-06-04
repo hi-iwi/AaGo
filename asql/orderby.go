@@ -3,15 +3,15 @@ package asql
 import (
 	"strings"
 
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 )
 
 func Fields(u interface{}, fields ...string) string {
 	s := ""
 	if byAlias(fields...) {
-		s = dtype.JoinByNames(u, dtype.JoinKeys, ",", fields...)
+		s = atype.JoinByNames(u, atype.JoinKeys, ",", fields...)
 	} else {
-		s = dtype.JoinNamesByElements(u, dtype.JoinKeys, ",", fields...)
+		s = atype.JoinNamesByElements(u, atype.JoinKeys, ",", fields...)
 
 	}
 	return strings.Trim(s, " ")

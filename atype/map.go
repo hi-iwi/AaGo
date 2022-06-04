@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 import (
 	"fmt"
@@ -72,5 +72,5 @@ func (m Map) Get(key interface{}, keys ...interface{}) (interface{}, error) {
 	for _, key := range keys {
 		s += "." + String(key)
 	}
-	return nil, fmt.Errorf("map dtype field `%s` not found", s[1:])
+	return nil, fmt.Errorf("map atype field `%s` not found", s[1:])
 }

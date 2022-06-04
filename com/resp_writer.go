@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/dict"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"github.com/hi-iwi/AaGo/util"
 	"net/http"
 	"reflect"
@@ -192,7 +192,7 @@ func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
 		if len(d) == 0 {
 			cs.Msg = dict.Code2Msg(code)
 		} else {
-			cs.Msg = dtype.New(d[0]).String()
+			cs.Msg = atype.New(d[0]).String()
 		}
 	} else if (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) && v.Len() == 0 {
 		cs.Code = 204

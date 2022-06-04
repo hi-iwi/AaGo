@@ -2,7 +2,7 @@ package com
 
 import (
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"reflect"
 )
 
@@ -107,5 +107,5 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 		}
 		return p, nil
 	}
-	return dtype.String(payload), nil
+	return atype.String(payload), nil
 }

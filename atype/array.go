@@ -1,4 +1,4 @@
-package dtype
+package atype
 
 // 主要用于 redis.Values
 func StringItem(arr []interface{}, i int) string {

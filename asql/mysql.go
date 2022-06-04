@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/dtype"
+	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
 )
@@ -21,7 +21,7 @@ func uniqueKey(xargs []interface{}) string {
 	var k strings.Builder
 	for _, arg := range xargs {
 		if !isInArgsTag(arg) {
-			k.WriteString(dtype.New(arg).String())
+			k.WriteString(atype.New(arg).String())
 		}
 	}
 	return k.String()
