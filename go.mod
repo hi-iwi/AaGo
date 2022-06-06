@@ -6,7 +6,7 @@ require (
 	github.com/RussellLuo/timingwheel v0.0.0-20220218152713-54845bda3108
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
-	github.com/kataras/iris/v12 v12.2.0-beta2
+	github.com/kataras/iris/v12 v12.2.0-beta3
 	gopkg.in/ini.v1 v1.66.6
 )
 
@@ -43,7 +43,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/tdewolff/minify/v2 v2.11.8 // indirect
+	github.com/tdewolff/minify/v2 v2.11.9 // indirect
 	github.com/tdewolff/parse/v2 v2.5.33 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
