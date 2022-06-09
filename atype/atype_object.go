@@ -17,31 +17,132 @@ func (p *Atype) IsNil() bool {
 }
 func (p *Atype) Strings() ([]string, bool) {
 	v, ok := p.raw.([]string)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	v = make([]string, len(ar))
+	for i, a := range ar {
+		if v[i], ok = a.(string); !ok {
+			if bs, ok := a.([]byte); !ok {
+				return nil, false
+			} else {
+				v[i] = string(bs)
+			}
+		}
+	}
+	return v, true
 }
 func (p *Atype) Ints() ([]int, bool) {
 	v, ok := p.raw.([]int)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	var err error
+	v = make([]int, len(ar))
+	for i, a := range ar {
+		if v[i], err = New(a).Int(); err != nil {
+			return nil, false
+		}
+	}
+	return v, true
 }
 func (p *Atype) Uints() ([]uint, bool) {
 	v, ok := p.raw.([]uint)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	var err error
+	v = make([]uint, len(ar))
+	for i, a := range ar {
+		if v[i], err = New(a).Uint(); err != nil {
+			return nil, false
+		}
+	}
+	return v, true
 }
 func (p *Atype) Int64s() ([]int64, bool) {
 	v, ok := p.raw.([]int64)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	var err error
+	v = make([]int64, len(ar))
+	for i, a := range ar {
+		if v[i], err = New(a).Int64(); err != nil {
+			return nil, false
+		}
+	}
+	return v, true
 }
 func (p *Atype) Uint64s() ([]uint64, bool) {
 	v, ok := p.raw.([]uint64)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	var err error
+	v = make([]uint64, len(ar))
+	for i, a := range ar {
+		if v[i], err = New(a).Uint64(); err != nil {
+			return nil, false
+		}
+	}
+	return v, true
 }
 func (p *Atype) Float32s() ([]float32, bool) {
 	v, ok := p.raw.([]float32)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	var err error
+	v = make([]float32, len(ar))
+	for i, a := range ar {
+		if v[i], err = New(a).Float32(); err != nil {
+			return nil, false
+		}
+	}
+	return v, true
 }
 func (p *Atype) Float64s() ([]float64, bool) {
 	v, ok := p.raw.([]float64)
-	return v, ok
+	if ok {
+		return v, true
+	}
+	ar, ok := p.raw.([]interface{})
+	if !ok {
+		return nil, false
+	}
+	var err error
+	v = make([]float64, len(ar))
+	for i, a := range ar {
+		if v[i], err = New(a).Float64(); err != nil {
+			return nil, false
+		}
+	}
+	return v, true
 }
 func (p *Atype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 	arr, ok := p.raw.([]interface{})
