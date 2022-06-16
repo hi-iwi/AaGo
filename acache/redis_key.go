@@ -4,7 +4,7 @@ import "time"
 
 const (
 	HourlyTtl = 24 * time.Hour     // 要求每小时会自动清除之前表；为了避免宕机等影响，ttl设计长一点，24小时内宕机恢复，就能使用
-	DailyTtl  = 2 * 24 * time.Hour // 要求每天会自动清除之前表；为了避免宕机等影响，ttl设计长一点；
+	DailyTtl  = 3 * 24 * time.Hour // 要求每天会自动清除之前表；为了避免宕机等影响，ttl设计长一点；
 )
 
 // 使当前时段的放到最后
