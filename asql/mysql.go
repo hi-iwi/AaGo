@@ -68,6 +68,8 @@ func qsInUnion(ctx context.Context, db *DB, unionAll bool, format string, ids []
 // 全表union all
 // union 会过滤重复数据，性能稍差点；union all 不会过滤
 // 尾部会自动添加 LIMIT ?
+// @warn 有些拆表表不一定依赖于该表id，可能是关联表id；
+// @note 这里会对重复表、重复参数的情况进行优化
 func InUnionAllTablesQs(ctx context.Context, db *DB, format string, ids []uint64, ptbs []string, xargs func(string, uint64) []interface{}) (*sql.Rows, *ae.Error) {
 	args := make(map[string][]interface{}, 0)
 	inArgs := make(map[string][]uint64, 0)
@@ -92,12 +94,13 @@ func InUnionAllTablesQs(ctx context.Context, db *DB, format string, ids []uint64
 
 // 处理按查询id分表的连表操作，不用全表union all
 // union 会过滤重复数据，性能稍差点；union all 不会过滤
+// @note 这里会对重复表、重复参数的情况进行优化
 func InUnionAllQs(ctx context.Context, db *DB, format string, ids []uint64, xargs func(uint64) []interface{}) (*sql.Rows, *ae.Error) {
 	args := make(map[string][]interface{}, 0)
 	inArgs := make(map[string][]uint64, 0)
 	var demoTable string
 	for _, id := range ids {
-		arg := xargs(id)
+		arg := xargs(id)   // format 中 xargs
 		k := uniqueKey(arg)
 		if _, ok := args[k]; ok {
 			inArgs[k] = append(inArgs[k], id)
