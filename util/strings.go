@@ -1,7 +1,7 @@
 package util
 
-// 参考 strings.Index 写法
-// 方便多字节字符查找 Index
+// 参考 strings.Service 写法
+// 方便多字节字符查找 Service
 func IndexRunes(s []rune, substr []rune) int {
 	n := len(substr)
 	switch {
