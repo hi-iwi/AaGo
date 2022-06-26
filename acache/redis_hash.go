@@ -69,6 +69,10 @@ func TryHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string
 	if err != nil {
 		return nil, false, ae.NewRedisError(err)
 	}
+	n := len(v)
+	if n != len(fields) {
+		return nil, false, ae.NotFound
+	}
 	ok := true
 	e := ae.NotFound
 	for _, x := range v {
@@ -85,6 +89,23 @@ func TryHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string
 		}
 	}
 	return v, ok, e
+}
+
+// 只要存在一个，就不报错；全是nil，返回 ae.NotFound
+func TryHMGetString(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]string, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, ok, e
+	}
+	v := make([]string, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = ""
+		} else {
+			v[i] = atype.New(x).String()
+		}
+	}
+	return v, ok, nil
 }
 func TryHMGetUint64(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue uint64) ([]uint64, bool, *ae.Error) {
 	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
