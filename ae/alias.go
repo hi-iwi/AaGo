@@ -18,6 +18,9 @@ var (
 	BadMediaType = &Error{415, "unsupported media type"} // 上传的数据格式非法
 	Locked       = &Error{423, "locked"}
 	Illegal      = &Error{449, "unavailable for legal reasons"} // 该请求因法律原因不可用。
+
+	InternalServerError = &Error{500, "internal server error"}
+	NotImplemented      = &Error{501, "not implemented"} // 服务器不支持当前请求所需要的某个功能。当服务器无法识别请求的方法，并且无法支持其对任何资源的请求。
 )
 
 // 服务端数据存储解析存在异常
