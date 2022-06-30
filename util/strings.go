@@ -1,10 +1,5 @@
 package util
 
-import (
-	"math/rand"
-	"time"
-)
-
 // 参考 strings.Service 写法
 // 方便多字节字符查找 Service
 func IndexRunes(s []rune, substr []rune) int {
@@ -61,39 +56,6 @@ func PadRight(str string, pad string, minlen int) string {
 	}
 	for {
 		str += pad
-		if len(str) >= minlen {
-			return str
-		}
-	}
-}
-
-// 随机从  randStart-randEnd 之间找一个字符填充
-func RandPad(str string, minlen int, randStart, randEnd byte) string {
-	if len(str) >= minlen {
-		return str
-	}
-	rand.Seed(time.Now().UnixNano())
-	n := int(randEnd) - int(randStart) + 1
-	for {
-
-		pad := byte(rand.Intn(n)) + randStart
-		str = string(pad) + str
-		if len(str) >= minlen {
-			return str
-		}
-	}
-}
-
-// 随机从  randStart-randEnd 之间找一个字符填充
-func RandPadRight(str string, minlen int, randStart, randEnd byte) string {
-	if len(str) >= minlen {
-		return str
-	}
-	rand.Seed(time.Now().UnixNano())
-	n := int(randEnd) - int(randStart) + 1
-	for {
-		pad := byte(rand.Intn(n)) + randStart
-		str += string(pad)
 		if len(str) >= minlen {
 			return str
 		}
