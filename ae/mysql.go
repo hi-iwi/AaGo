@@ -39,7 +39,7 @@ func NewSqlError(err error) *Error {
 	dupMatches := dupExp.FindAllStringSubmatch(m, -1)
 	if dupMatches != nil && len(dupMatches) > 0 && len(dupMatches[0]) == 3 {
 		m = pos + " duplicate entry `" + dupMatches[0][1] + "` for parameter `" + dupMatches[0][2] + "`"
-		return NewError(400, m)
+		return NewError(409, m)
 	}
 
 	return NewError(500, pos+" sql error: "+m)
