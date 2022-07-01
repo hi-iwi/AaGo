@@ -68,13 +68,6 @@ type NullSepUint32s struct{ sql.NullString } // 1,2,3,4
 type NullSepInts struct{ sql.NullString }    // 1,2,3,4
 type NullSepUints struct{ sql.NullString }   // 1,2,3,4
 type NullSepUint64s struct{ sql.NullString } // 1,2,3,4
-// 保证空字符串不能正常的对象
-func ScanNullObject(obj ObjScan, data string) {
-	if data == "" {
-		obj.Scan(nil)
-	}
-	obj.Scan(data)
-}
 
 // https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html
 //	The value length is 25 bytes, made up of these components (as can be seen from the hexadecimal value):
@@ -162,85 +155,8 @@ func ToIp(addr string) Ip {
 	return []byte{0} // varbinary(16) NULL DEFAULT 0x00 ;   ==> 等价于 DEFAULT '\0'
 }
 
-func PtrUint64(n *uint64) uint64 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrUint32(n *uint32) uint32 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrUint(n *uint) uint {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
 func (n Uint24) Uint32() uint32 { return uint32(n) }
-func PtrUint24(n *Uint24) Uint24 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrUint16(n *uint16) uint16 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrUint8(n *uint8) uint8 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrInt64(n *int64) int64 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrInt32(n *int32) int32 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrInt(n *int) int {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrInt16(n *int16) int16 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrInt8(n *int8) int8 {
-	if n == nil {
-		return 0
-	}
-	return *n
-}
-func PtrFloat64(n *float64) float64 {
-	if n == nil {
-		return 0.00
-	}
-	return *n
-}
-func PtrFloat32(n *float32) float32 {
-	if n == nil {
-		return 0.00
-	}
-	return *n
-}
+
 func (b BitPos) Uint8() uint8 { return uint8(b) }
 
 //  SET x=x|v
@@ -294,7 +210,7 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 
 // time.Now().In()  loc 直接通过 in 传递
 func ToDate(t time.Time) Date { return Date(t.Format("2006-01-02")) }
-func (d Date) String() string     { return string(d) }
+func (d Date) String() string { return string(d) }
 func (d Date) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", string(d), loc)
 }
@@ -336,7 +252,13 @@ func (u UnixTime) Date(loc *time.Location) Date {
 func (u UnixTime) Datetime(loc *time.Location) Datetime {
 	return ToDatetime(time.Unix(u.Int64(), 0).In(loc))
 }
-
+func NewNullUint8s(s string) NullUint8s {
+	var x NullUint8s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullUint8s(v []uint8) NullUint8s {
 	if len(v) == 0 {
 		return NullUint8s{}
@@ -345,9 +267,8 @@ func ToNullUint8s(v []uint8) NullUint8s {
 	if len(s) == 0 {
 		return NullUint8s{}
 	}
-	var x NullUint8s
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullUint8s(string(s))
 }
 
 func (t NullUint8s) Uint8s() []uint8 {
@@ -365,7 +286,13 @@ func (t NullUint8s) Uint8s() []uint8 {
 	}
 	return w
 }
-
+func NewNullUint16s(s string) NullUint16s {
+	var x NullUint16s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullUint16s(v []uint16) NullUint16s {
 	if len(v) == 0 {
 		return NullUint16s{}
@@ -374,9 +301,8 @@ func ToNullUint16s(v []uint16) NullUint16s {
 	if len(s) == 0 {
 		return NullUint16s{}
 	}
-	var x NullUint16s
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullUint16s(string(s))
 }
 
 func (t NullUint16s) Uint16s() []uint16 {
@@ -394,7 +320,13 @@ func (t NullUint16s) Uint16s() []uint16 {
 	}
 	return w
 }
-
+func NewNullUint32s(s string) NullUint32s {
+	var x NullUint32s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullUint32s(v []uint32) NullUint32s {
 	if len(v) == 0 {
 		return NullUint32s{}
@@ -403,9 +335,7 @@ func ToNullUint32s(v []uint32) NullUint32s {
 	if len(s) == 0 {
 		return NullUint32s{}
 	}
-	var x NullUint32s
-	ScanNullObject(&x, string(s))
-	return x
+	return NewNullUint32s(string(s))
 }
 
 func (t NullUint32s) Uint32s() []uint32 {
@@ -423,7 +353,13 @@ func (t NullUint32s) Uint32s() []uint32 {
 	}
 	return w
 }
-
+func NewNullInts(s string) NullInts {
+	var x NullInts
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullInts(v []int) NullInts {
 	if len(v) == 0 {
 		return NullInts{}
@@ -432,9 +368,7 @@ func ToNullInts(v []int) NullInts {
 	if len(s) == 0 {
 		return NullInts{}
 	}
-	var x NullInts
-	ScanNullObject(&x, string(s))
-	return x
+	return NewNullInts(string(s))
 }
 
 func (t NullInts) Ints() []int {
@@ -452,7 +386,13 @@ func (t NullInts) Ints() []int {
 	}
 	return w
 }
-
+func NewNullUints(s string) NullUints {
+	var x NullUints
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullUints(v []uint) NullUints {
 	if len(v) == 0 {
 		return NullUints{}
@@ -461,9 +401,8 @@ func ToNullUints(v []uint) NullUints {
 	if len(s) == 0 {
 		return NullUints{}
 	}
-	var x NullUints
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullUints(string(s))
 }
 func (t NullUints) Uints() []uint {
 	if t.String == "" {
@@ -481,6 +420,13 @@ func (t NullUints) Uints() []uint {
 	return w
 }
 
+func NewNullUint64s(s string) NullUint64s {
+	var x NullUint64s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullUint64s(v []uint64) NullUint64s {
 	if len(v) == 0 {
 		return NullUint64s{}
@@ -489,9 +435,8 @@ func ToNullUint64s(v []uint64) NullUint64s {
 	if len(s) == 0 {
 		return NullUint64s{}
 	}
-	var x NullUint64s
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullUint64s(string(s))
 }
 
 func (t NullUint64s) Uint64s() []uint64 {
@@ -509,7 +454,13 @@ func (t NullUint64s) Uint64s() []uint64 {
 	}
 	return w
 }
-
+func NewNullStrings(s string) NullStrings {
+	var x NullStrings
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullStrings(v []string) NullStrings {
 	if len(v) == 0 {
 		return NullStrings{}
@@ -518,9 +469,8 @@ func ToNullStrings(v []string) NullStrings {
 	if len(s) == 0 {
 		return NullStrings{}
 	}
-	var x NullStrings
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullStrings(string(s))
 }
 func (t NullStrings) Strings() []string {
 	if t.String == "" {
@@ -530,7 +480,13 @@ func (t NullStrings) Strings() []string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func NewNullStringMap(s string) NullStringMap {
+	var x NullStringMap
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullStringMap(v map[string]string) NullStringMap {
 	if len(v) == 0 {
 		return NullStringMap{}
@@ -539,9 +495,8 @@ func ToNullStringMap(v map[string]string) NullStringMap {
 	if len(s) == 0 {
 		return NullStringMap{}
 	}
-	var x NullStringMap
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullStringMap(string(s))
 }
 
 func (t NullStringMap) StringMap() map[string]string {
@@ -552,7 +507,13 @@ func (t NullStringMap) StringMap() map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func NewNull2dStringMap(s string) Null2dStringMap {
+	var x Null2dStringMap
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
 	if len(v) == 0 {
 		return Null2dStringMap{}
@@ -561,9 +522,8 @@ func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
 	if len(s) == 0 {
 		return Null2dStringMap{}
 	}
-	var x Null2dStringMap
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNull2dStringMap(string(s))
 }
 func (t Null2dStringMap) TStringMap() map[string]map[string]string {
 	if t.String == "" {
@@ -573,7 +533,13 @@ func (t Null2dStringMap) TStringMap() map[string]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func NewNullStringMaps(s string) NullStringMaps {
+	var x NullStringMaps
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullStringMaps(v []map[string]string) NullStringMaps {
 	if len(v) == 0 {
 		return NullStringMaps{}
@@ -582,9 +548,8 @@ func ToNullStringMaps(v []map[string]string) NullStringMaps {
 	if len(s) == 0 {
 		return NullStringMaps{}
 	}
-	var x NullStringMaps
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullStringMaps(string(s))
 }
 
 func (t NullStringMaps) StringMaps() []map[string]string {
@@ -595,7 +560,13 @@ func (t NullStringMaps) StringMaps() []map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func NewNullStringMapsMap(s string) NullStringMapsMap {
+	var x NullStringMapsMap
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
 	if len(v) == 0 {
 		return NullStringMapsMap{}
@@ -604,9 +575,8 @@ func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
 	if len(s) == 0 {
 		return NullStringMapsMap{}
 	}
-	var x NullStringMapsMap
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullStringMapsMap(string(s))
 }
 func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	if t.String == "" {
@@ -616,7 +586,13 @@ func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
+func NewNullStringsMap(s string) NullStringsMap {
+	var x NullStringsMap
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullStringsMap(v map[string][]string) NullStringsMap {
 	if len(v) == 0 {
 		return NullStringsMap{}
@@ -625,9 +601,8 @@ func ToNullStringsMap(v map[string][]string) NullStringsMap {
 	if len(s) == 0 {
 		return NullStringsMap{}
 	}
-	var x NullStringsMap
-	ScanNullObject(&x, string(s))
-	return x
+
+	return NewNullStringsMap(string(s))
 }
 
 func (t NullStringsMap) StringsMap() map[string][]string {
@@ -638,11 +613,15 @@ func (t NullStringsMap) StringsMap() map[string][]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-
-func ToNullSepStrings(elems []string, sep string) NullSepStrings {
+func NewNullSepStrings(s string) NullSepStrings {
 	var x NullSepStrings
-	ScanNullObject(&x, strings.Join(elems, sep))
+	if s != "" {
+		x.Scan(s)
+	}
 	return x
+}
+func ToNullSepStrings(elems []string, sep string) NullSepStrings {
+	return NewNullSepStrings(strings.Join(elems, sep))
 }
 func (t NullSepStrings) Strings(sep string) []string {
 	if t.String == "" {
@@ -650,16 +629,20 @@ func (t NullSepStrings) Strings(sep string) []string {
 	}
 	return strings.Split(t.String, sep)
 }
-
+func NewNullSepUint8s(s string) NullSepUint8s {
+	var x NullSepUint8s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullSepUint8s(elems []uint8, sep string) NullSepUint8s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
 		return NullSepUint8s{}
 	case 1:
-		var x NullSepUint8s
-		x.Scan(strconv.FormatUint(uint64(elems[0]), 10))
-		return x
+		return NewNullSepUint8s(strconv.FormatUint(uint64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 3) // uint8 -> 0~256, max 3 bytes
@@ -672,9 +655,7 @@ func ToNullSepUint8s(elems []uint8, sep string) NullSepUint8s {
 		b.WriteByte(s)
 	}
 
-	var x NullSepUint8s
-	ScanNullObject(&x, b.String())
-	return x
+	return NewNullSepUint8s(b.String())
 }
 func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 	if t.String == "" {
@@ -688,16 +669,20 @@ func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 	}
 	return v
 }
-
+func NewNullSepUint16s(s string) NullSepUint16s {
+	var x NullSepUint16s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullSepUint16s(elems []uint16, sep string) NullSepUint16s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
 		return NullSepUint16s{}
 	case 1:
-		var x NullSepUint16s
-		x.Scan(strconv.FormatUint(uint64(elems[0]), 10))
-		return x
+		return NewNullSepUint16s(strconv.FormatUint(uint64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 5) // uint16 -> 0~65535, max 5 bytes
@@ -710,9 +695,7 @@ func ToNullSepUint16s(elems []uint16, sep string) NullSepUint16s {
 		b.WriteRune(rune(s))
 	}
 
-	var x NullSepUint16s
-	ScanNullObject(&x, b.String())
-	return x
+	return NewNullSepUint16s(b.String())
 }
 func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 	if t.String == "" {
@@ -726,16 +709,20 @@ func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 	}
 	return v
 }
-
+func NewNullSepUint32s(s string) NullSepUint32s {
+	var x NullSepUint32s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullSepUint32s(elems []uint32, sep string) NullSepUint32s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
 		return NullSepUint32s{}
 	case 1:
-		var x NullSepUint32s
-		x.Scan(strconv.FormatUint(uint64(elems[0]), 10))
-		return x
+		return NewNullSepUint32s(strconv.FormatUint(uint64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 10) // uint32 -> 0~4294967295, max 10 bytes
@@ -748,9 +735,7 @@ func ToNullSepUint32s(elems []uint32, sep string) NullSepUint32s {
 		b.WriteString(strconv.FormatUint(uint64(s), 10))
 	}
 
-	var x NullSepUint32s
-	ScanNullObject(&x, b.String())
-	return x
+	return NewNullSepUint32s(b.String())
 }
 
 func (t NullSepUint32s) Uint32s(sep string) []uint32 {
@@ -765,16 +750,20 @@ func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 	}
 	return v
 }
-
+func NewNullSepInts(s string) NullSepInts {
+	var x NullSepInts
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullSepInts(elems []int, sep string) NullSepInts {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
 		return NullSepInts{}
 	case 1:
-		var x NullSepInts
-		x.Scan(strconv.FormatInt(int64(elems[0]), 10))
-		return x
+		return NewNullSepInts(strconv.FormatInt(int64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
@@ -787,9 +776,7 @@ func ToNullSepInts(elems []int, sep string) NullSepInts {
 		b.WriteString(strconv.FormatInt(int64(s), 10))
 	}
 
-	var x NullSepInts
-	ScanNullObject(&x, b.String())
-	return x
+	return NewNullSepInts(b.String())
 }
 func (t NullSepInts) Ints(sep string) []int {
 	if t.String == "" {
@@ -803,16 +790,60 @@ func (t NullSepInts) Ints(sep string) []int {
 	}
 	return v
 }
+func NewNullSepUints(s string) NullSepUints {
+	var x NullSepUints
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
+func ToNullSepUints(elems []uint, sep string) NullSepUints {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
+		return NullSepUints{}
+	case 1:
+		return NewNullSepUints(strconv.FormatUint(uint64(elems[0]), 10))
+	}
 
+	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
+
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteString(strconv.FormatUint(uint64(s), 10))
+	}
+
+	return NewNullSepUints(b.String())
+}
+func (t NullSepUints) Uints(sep string) []uint {
+	if t.String == "" {
+		return nil
+	}
+	arr := strings.Split(t.String, sep)
+	v := make([]uint, len(arr))
+	for i, a := range arr {
+		x, _ := strconv.ParseUint(a, 10, 32)
+		v[i] = uint(x)
+	}
+	return v
+}
+func NewNullSepUint64s(s string) NullSepUint64s {
+	var x NullSepUint64s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
 func ToNullSepUint64s(elems []uint64, sep string) NullSepUint64s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
 		return NullSepUint64s{}
 	case 1:
-		var x NullSepUint64s
-		x.Scan(strconv.FormatUint(elems[0], 10))
-		return x
+		return NewNullSepUint64s(strconv.FormatUint(elems[0], 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
@@ -825,9 +856,7 @@ func ToNullSepUint64s(elems []uint64, sep string) NullSepUint64s {
 		b.WriteString(strconv.FormatUint(s, 10))
 	}
 
-	var x NullSepUint64s
-	ScanNullObject(&x, b.String())
-	return x
+	return NewNullSepUint64s(b.String())
 }
 func (t NullSepUint64s) Uint64s(sep string) []uint64 {
 	if t.String == "" {
