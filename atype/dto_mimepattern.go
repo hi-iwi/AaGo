@@ -1,4 +1,4 @@
-package adto
+package atype
 
 import (
 	"regexp"

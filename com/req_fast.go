@@ -1,8 +1,8 @@
 package com
 
 import (
-	"github.com/hi-iwi/AaGo/adto"
 	"github.com/hi-iwi/AaGo/ae"
+	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
 )
@@ -279,7 +279,7 @@ func (r *Req) BodyId(p string, required ...bool) (uint64, *ae.Error) {
 	return id, nil
 }
 
-func (r *Req) QueryPaging(args ...int) adto.Paging {
+func (r *Req) QueryPaging(args ...int) atype.Paging {
 	page, _ := r.QueryInt("page", false)
 	offset, _ := r.QueryInt("offset", false)
 	limit, _ := r.QueryInt("limit", false)
@@ -304,7 +304,7 @@ func (r *Req) QueryPaging(args ...int) adto.Paging {
 	// change ?limit=3&offset=10 to ?limit=0&offset=10
 	offset = (page - 1) * limit
 
-	return adto.Paging{
+	return atype.Paging{
 		Page:   page,
 		Offset: offset,
 		Limit:  limit,

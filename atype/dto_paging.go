@@ -1,4 +1,4 @@
-package adto
+package atype
 
 type Paging struct {
 	Page   int `json:"page"`

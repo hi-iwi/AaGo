@@ -1,4 +1,4 @@
-package adto
+package atype
 
 import (
 	"github.com/hi-iwi/AaGo/util"
@@ -14,7 +14,7 @@ type ImgSrc struct {
 	Path      string `json:"path"`      // path 可能是 filename，也可能是 带文件夹的文件名
 	/*
 	 不要独立出来 filename，一方面太多内容了；另一方面增加业务侧复杂度
-	 */
+	*/
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
 	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
 	Size     uint32 `json:"size"`     // atype.Uint24.Int8()
