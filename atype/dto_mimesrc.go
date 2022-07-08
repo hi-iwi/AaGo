@@ -34,22 +34,96 @@ type VideoSrc struct {
 	Width    uint16          `json:"width"`
 	Height   uint16          `json:"height"`
 	Duration uint32          `json:"duration"` // 时长，秒
-	Allowed  [][2]uint16     `json:"allowed"`  // 允许的width,height
+	Allowed  [][2]uint16     `json:"allowed"`  // 限定允许的width,height
 }
 
 // similar to path.Base()
 func (s ImgSrc) Filename() string { return util.Filename(s.Path) }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
+	if s.Allowed != nil {
+		var matched, found bool
+		var mw, mh uint16
+		w := width
+		h := height
+		for _, a := range s.Allowed {
+			if a[0] == width && a[1] == height {
+				found = true
+				break
+			}
+			if !matched {
+				if a[0] > mw {
+					mw = a[0]
+					mh = a[1]
+				}
+				// 首先找到比缩放比例大过需求的
+				if a[0] >= w && a[1] >= h {
+					w = a[0]
+					h = a[1]
+					matched = true
+				}
+			} else {
+				// 后面的都跟第一次匹配的比，找到最小匹配
+				if a[0] >= width && a[0] <= w && a[1] >= height && a[1] <= h {
+					w = a[0]
+					h = a[1]
+				}
+			}
+		}
+		if !found {
+			if !matched {
+				width = mw
+				height = mh
+			} else {
+				width = w
+				height = h
+			}
+		}
+	}
+
 	u := s.Fill
 	u = strings.ReplaceAll(u, "${WIDTH}", strconv.FormatUint(uint64(width), 10))
 	u = strings.ReplaceAll(u, "${HEIGHT}", strconv.FormatUint(uint64(height), 10))
 	return u
 }
 
-func (s ImgSrc) FitTo(maxwidth uint16) string {
+func (s ImgSrc) FitTo(maxWidth uint16) string {
+	if s.Allowed != nil {
+		var matched, found bool
+		var mw uint16
+		w := maxWidth
+		for _, a := range s.Allowed {
+			if a[0] == maxWidth {
+				found = true
+				break
+			}
+			if !matched {
+				if a[0] > mw {
+					mw = a[0]
+				}
+				// 首先找到比缩放比例大过需求的
+				if a[0] >= w {
+					w = a[0]
+					matched = true
+				}
+			} else {
+				// 后面的都跟第一次匹配的比，找到最小匹配
+				if a[0] >= maxWidth && a[0] <= w {
+					w = a[0]
+				}
+			}
+		}
+		if !found {
+			if !matched {
+				maxWidth = mw
+			} else {
+				maxWidth = w
+			}
+		}
+	}
+
 	u := s.Fit
-	return strings.ReplaceAll(u, "${MAXWIDTH}", strconv.FormatUint(uint64(maxwidth), 10))
+	return strings.ReplaceAll(u, "${MAXWIDTH}", strconv.FormatUint(uint64(maxWidth), 10))
 }
 
 func ToImgSrcPtr(path string, filler func(path string) ImgSrc) *ImgSrc {
