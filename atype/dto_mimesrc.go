@@ -17,7 +17,7 @@ type ImgSrc struct {
 	*/
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
 	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
-	Size     uint32 `json:"size"`     // atype.Uint24.Int8()
+	Size     Uint24 `json:"size"`     // atype.Uint24.Int8()
 	Width    uint16 `json:"width"`
 	Height   uint16 `json:"height"`
 }
@@ -28,7 +28,7 @@ type VideoSrc struct {
 	Path      string `json:"path"`
 	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
 	Filetype uint16 `json:"filetype"` // aenum.Filetype.Int8()
-	Size     uint32 `json:"size"`     // atype.Uint24.Int8()
+	Size     Uint24 `json:"size"`     // atype.Uint24.Int8()
 	Width    uint16 `json:"width"`
 	Height   uint16 `json:"height"`
 	Duration uint32 `json:"duration"` // 时长，秒

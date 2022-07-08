@@ -2,9 +2,9 @@ package atype
 
 import "encoding/json"
 
-type Image string
-type Video string
-type Audio string
+type Image string // varchar(45)
+type Video string // varchar(45)
+type Audio string // varchar(45)
 type Images struct{ NullStrings }
 type Videos struct{ NullStrings }
 type Audios struct{ NullStrings }
