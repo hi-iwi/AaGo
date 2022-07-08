@@ -1,7 +1,6 @@
 package aenum
 
 import (
-	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
 )
@@ -16,7 +15,14 @@ const (
 )
 
 func NewSex(s interface{}) (Sex, bool) {
-	ss := strings.ToUpper(atype.String(s))
+	var ss string
+	switch v := s.(type) {
+	case string:
+		ss = strings.ToUpper(v)
+	case uint8:
+		ss = strconv.FormatUint(uint64(v), 10)
+	}
+
 	switch ss {
 	case "0", "U", "UNKNOWN":
 		return UnknownSex, true
