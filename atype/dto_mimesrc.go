@@ -1,6 +1,7 @@
 package atype
 
 import (
+	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/util"
 	"strconv"
 	"strings"
@@ -16,11 +17,11 @@ type ImgSrc struct {
 	 不要独立出来 filename，一方面太多内容了；另一方面增加业务侧复杂度
 	*/
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
-	Filetype uint16      `json:"filetype"` // aenum.Filetype.Int8()
-	Size     Uint24      `json:"size"`     // atype.Uint24.Int8()
-	Width    uint16      `json:"width"`
-	Height   uint16      `json:"height"`
-	Allowed  [][2]uint16 `json:"allowed"` // 允许的width,height
+	Filetype aenum.ImageType `json:"filetype"` // aenum.Filetype.Int8()
+	Size     Uint24          `json:"size"`     // atype.Uint24.Int8()
+	Width    uint16          `json:"width"`
+	Height   uint16          `json:"height"`
+	Allowed  [][2]uint16     `json:"allowed"` // 允许的width,height
 }
 
 type VideoSrc struct {
@@ -28,12 +29,12 @@ type VideoSrc struct {
 	Fit       string `json:"fit"` // e.g.  https://xxx/video.avi?quality=${QUALITY}
 	Path      string `json:"path"`
 	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
-	Filetype uint16      `json:"filetype"` // aenum.Filetype.Int8()
-	Size     Uint24      `json:"size"`     // atype.Uint24.Int8()
-	Width    uint16      `json:"width"`
-	Height   uint16      `json:"height"`
-	Duration uint32      `json:"duration"` // 时长，秒
-	Allowed  [][2]uint16 `json:"allowed"`  // 允许的width,height
+	Filetype aenum.VideoType `json:"filetype"` // aenum.Filetype.Int8()
+	Size     Uint24          `json:"size"`     // atype.Uint24.Int8()
+	Width    uint16          `json:"width"`
+	Height   uint16          `json:"height"`
+	Duration uint32          `json:"duration"` // 时长，秒
+	Allowed  [][2]uint16     `json:"allowed"`  // 允许的width,height
 }
 
 // similar to path.Base()
