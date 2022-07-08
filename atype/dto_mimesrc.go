@@ -12,6 +12,7 @@ type ImgSrc struct {
 	Processor int    `json:"processor"` // 图片处理ID，如阿里云图片处理、网易云图片处理等
 	Fill      string `json:"fill"`      // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
 	Fit       string `json:"fit"`       // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
+	Origin    string `json:"origin"`    // 不一定是真实的
 	Path      string `json:"path"`      // path 可能是 filename，也可能是 带文件夹的文件名
 	/*
 	 不要独立出来 filename，一方面太多内容了；另一方面增加业务侧复杂度
@@ -26,7 +27,8 @@ type ImgSrc struct {
 
 type VideoSrc struct {
 	Processor int    `json:"processor"`
-	Fit       string `json:"fit"` // e.g.  https://xxx/video.avi?quality=${QUALITY}
+	Fit       string `json:"fit"`    // e.g.  https://xxx/video.avi?quality=${QUALITY}
+	Origin    string `json:"origin"` // 不一定是真实的
 	Path      string `json:"path"`
 	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
 	Filetype aenum.VideoType `json:"filetype"` // aenum.Filetype.Int8()
@@ -41,6 +43,9 @@ type VideoSrc struct {
 func (s ImgSrc) Filename() string { return util.Filename(s.Path) }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
+	if width >= s.Width && height >= s.Height && s.Origin != "" {
+		return s.Origin
+	}
 	if s.Allowed != nil {
 		var matched, found bool
 		var mw, mh uint16
@@ -88,6 +93,10 @@ func (s ImgSrc) FillTo(width, height uint16) string {
 }
 
 func (s ImgSrc) FitTo(maxWidth uint16) string {
+	if maxWidth >= s.Width && s.Origin != "" {
+		return s.Origin
+	}
+
 	if s.Allowed != nil {
 		var matched, found bool
 		var mw uint16
