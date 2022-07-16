@@ -110,7 +110,15 @@ func (t *Tx) ScanRow(ctx context.Context, query string, dest ...interface{}) *ae
 	return ae.NewSqlError(row.Scan(dest...))
 }
 
-func (t *Tx) Scan(ctx context.Context, query string, id interface{}, dest ...interface{}) *ae.Error {
+func (t *Tx) Scan(ctx context.Context, query string, id uint64, dest ...interface{}) *ae.Error {
+	row, e := t.QueryRow(ctx, query, id)
+	if e != nil {
+		return e
+	}
+	return ae.NewSqlError(row.Scan(dest...))
+}
+
+func (t *Tx) ScanX(ctx context.Context, query string, id string, dest ...interface{}) *ae.Error {
 	row, e := t.QueryRow(ctx, query, id)
 	if e != nil {
 		return e
