@@ -50,6 +50,7 @@ type AddrId uint64
 type NullJson struct{ sql.NullString }
 type NullUint8s struct{ sql.NullString }        // uint8 json array
 type NullUint16s struct{ sql.NullString }       // uint16 json array
+type NullUint24s struct{ sql.NullString }       // Uint24 json array
 type NullUint32s struct{ sql.NullString }       // uint32 json array
 type NullInts struct{ sql.NullString }          // int json array
 type NullUints struct{ sql.NullString }         // uint json array
@@ -61,13 +62,14 @@ type NullStringMaps struct{ sql.NullString }    // []map[string]string
 type NullStringMapsMap struct{ sql.NullString } // map[string][]map[string]string
 type NullStringsMap struct{ sql.NullString }    // map[string][]string
 
-type NullSepStrings struct{ sql.NullString } // a,b,c,d,e
-type NullSepUint8s struct{ sql.NullString }  // 1,2,3,4
-type NullSepUint16s struct{ sql.NullString } // 1,2,3,4
-type NullSepUint32s struct{ sql.NullString } // 1,2,3,4
-type NullSepInts struct{ sql.NullString }    // 1,2,3,4
-type NullSepUints struct{ sql.NullString }   // 1,2,3,4
-type NullSepUint64s struct{ sql.NullString } // 1,2,3,4
+type SepStrings string // a,b,c,d,e
+type SepUint8s string  // 1,2,3,4
+type SepUint16s string // 1,2,3,4
+type SepUint24s string // 1,2,3,4
+type SepUint32s string // 1,2,3,4
+type SepInts string    // 1,2,3,4
+type SepUints string   // 1,2,3,4
+type SepUint64s string // 1,2,3,4
 
 // https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html
 //	The value length is 25 bytes, made up of these components (as can be seen from the hexadecimal value):
@@ -317,6 +319,39 @@ func (t NullUint16s) Uint16s() []uint16 {
 	w := make([]uint16, len(v))
 	for i, x := range v {
 		w[i] = New(x).DefaultUint16(0)
+	}
+	return w
+}
+func NewNullUint24s(s string) NullUint24s {
+	var x NullUint24s
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
+func ToNullUint24s(v []uint32) NullUint24s {
+	if len(v) == 0 {
+		return NullUint24s{}
+	}
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return NullUint24s{}
+	}
+	return NewNullUint24s(string(s))
+}
+
+func (t NullUint24s) Uint24s() []Uint24 {
+	if t.String == "" {
+		return nil
+	}
+	var v []interface{}
+	json.Unmarshal([]byte(t.String), &v)
+	if len(v) == 0 {
+		return nil
+	}
+	w := make([]Uint24, len(v))
+	for i, x := range v {
+		w[i] = New(x).DefaultUint24(0)
 	}
 	return w
 }
@@ -613,36 +648,23 @@ func (t NullStringsMap) StringsMap() map[string][]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func NewNullSepStrings(s string) NullSepStrings {
-	var x NullSepStrings
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
+
+func ToSepStrings(elems []string, sep string) SepStrings {
+	return SepStrings(strings.Join(elems, sep))
 }
-func ToNullSepStrings(elems []string, sep string) NullSepStrings {
-	return NewNullSepStrings(strings.Join(elems, sep))
-}
-func (t NullSepStrings) Strings(sep string) []string {
-	if t.String == "" {
+func (t SepStrings) Strings(sep string) []string {
+	if t == "" {
 		return nil
 	}
-	return strings.Split(t.String, sep)
+	return strings.Split(string(t), sep)
 }
-func NewNullSepUint8s(s string) NullSepUint8s {
-	var x NullSepUint8s
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
-}
-func ToNullSepUint8s(elems []uint8, sep string) NullSepUint8s {
+func ToSepUint8s(elems []uint8, sep string) SepUint8s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
-		return NullSepUint8s{}
+		return ""
 	case 1:
-		return NewNullSepUint8s(strconv.FormatUint(uint64(elems[0]), 10))
+		return SepUint8s(strconv.FormatUint(uint64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 3) // uint8 -> 0~256, max 3 bytes
@@ -655,13 +677,13 @@ func ToNullSepUint8s(elems []uint8, sep string) NullSepUint8s {
 		b.WriteByte(s)
 	}
 
-	return NewNullSepUint8s(b.String())
+	return SepUint8s(b.String())
 }
-func (t NullSepUint8s) Uint8s(sep string) []uint8 {
-	if t.String == "" {
+func (t SepUint8s) Uint8s(sep string) []uint8 {
+	if t == "" {
 		return nil
 	}
-	arr := strings.Split(t.String, sep)
+	arr := strings.Split(string(t), sep)
 	v := make([]uint8, len(arr))
 	for i, a := range arr {
 		b, _ := strconv.ParseUint(a, 10, 8)
@@ -669,24 +691,16 @@ func (t NullSepUint8s) Uint8s(sep string) []uint8 {
 	}
 	return v
 }
-func NewNullSepUint16s(s string) NullSepUint16s {
-	var x NullSepUint16s
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
-}
-func ToNullSepUint16s(elems []uint16, sep string) NullSepUint16s {
+
+func ToSepUint16s(elems []uint16, sep string) SepUint16s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
-		return NullSepUint16s{}
+		return ""
 	case 1:
-		return NewNullSepUint16s(strconv.FormatUint(uint64(elems[0]), 10))
+		return SepUint16s(strconv.FormatUint(uint64(elems[0]), 10))
 	}
-
 	n := len(sep)*(len(elems)-1) + (len(elems) * 5) // uint16 -> 0~65535, max 5 bytes
-
 	var b strings.Builder
 	b.Grow(n)
 	b.WriteRune(rune(elems[0]))
@@ -695,13 +709,13 @@ func ToNullSepUint16s(elems []uint16, sep string) NullSepUint16s {
 		b.WriteRune(rune(s))
 	}
 
-	return NewNullSepUint16s(b.String())
+	return SepUint16s(b.String())
 }
-func (t NullSepUint16s) Uint16s(sep string) []uint16 {
-	if t.String == "" {
+func (t SepUint16s) Uint16s(sep string) []uint16 {
+	if t == "" {
 		return nil
 	}
-	arr := strings.Split(t.String, sep)
+	arr := strings.Split(string(t), sep)
 	v := make([]uint16, len(arr))
 	for i, a := range arr {
 		b, _ := strconv.ParseUint(a, 10, 16)
@@ -709,24 +723,16 @@ func (t NullSepUint16s) Uint16s(sep string) []uint16 {
 	}
 	return v
 }
-func NewNullSepUint32s(s string) NullSepUint32s {
-	var x NullSepUint32s
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
-}
-func ToNullSepUint32s(elems []uint32, sep string) NullSepUint32s {
+
+func ToSepUint24s(elems []Uint24, sep string) SepUint24s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
-		return NullSepUint32s{}
+		return ""
 	case 1:
-		return NewNullSepUint32s(strconv.FormatUint(uint64(elems[0]), 10))
+		return SepUint24s(strconv.FormatUint(uint64(elems[0]), 10))
 	}
-
 	n := len(sep)*(len(elems)-1) + (len(elems) * 10) // uint32 -> 0~4294967295, max 10 bytes
-
 	var b strings.Builder
 	b.Grow(n)
 	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
@@ -735,14 +741,47 @@ func ToNullSepUint32s(elems []uint32, sep string) NullSepUint32s {
 		b.WriteString(strconv.FormatUint(uint64(s), 10))
 	}
 
-	return NewNullSepUint32s(b.String())
+	return SepUint24s(b.String())
 }
 
-func (t NullSepUint32s) Uint32s(sep string) []uint32 {
-	if t.String == "" {
+func (t SepUint24s) Uint32s(sep string) []Uint24 {
+	if t == "" {
 		return nil
 	}
-	arr := strings.Split(t.String, sep)
+	arr := strings.Split(string(t), sep)
+	v := make([]Uint24, len(arr))
+	for i, a := range arr {
+		b, _ := strconv.ParseUint(a, 10, 24)
+		v[i] = Uint24(b)
+	}
+	return v
+}
+
+func ToSepUint32s(elems []uint32, sep string) SepUint32s {
+	// strings.Join 类同
+	switch len(elems) {
+	case 0:
+		return ""
+	case 1:
+		return SepUint32s(strconv.FormatUint(uint64(elems[0]), 10))
+	}
+	n := len(sep)*(len(elems)-1) + (len(elems) * 10) // uint32 -> 0~4294967295, max 10 bytes
+	var b strings.Builder
+	b.Grow(n)
+	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
+	for _, s := range elems[1:] {
+		b.WriteString(sep)
+		b.WriteString(strconv.FormatUint(uint64(s), 10))
+	}
+
+	return SepUint32s(b.String())
+}
+
+func (t SepUint32s) Uint32s(sep string) []uint32 {
+	if t == "" {
+		return nil
+	}
+	arr := strings.Split(string(t), sep)
 	v := make([]uint32, len(arr))
 	for i, a := range arr {
 		b, _ := strconv.ParseUint(a, 10, 32)
@@ -750,20 +789,14 @@ func (t NullSepUint32s) Uint32s(sep string) []uint32 {
 	}
 	return v
 }
-func NewNullSepInts(s string) NullSepInts {
-	var x NullSepInts
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
-}
-func ToNullSepInts(elems []int, sep string) NullSepInts {
+
+func ToSepInts(elems []int, sep string) SepInts {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
-		return NullSepInts{}
+		return ""
 	case 1:
-		return NewNullSepInts(strconv.FormatInt(int64(elems[0]), 10))
+		return SepInts(strconv.FormatInt(int64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
@@ -776,13 +809,13 @@ func ToNullSepInts(elems []int, sep string) NullSepInts {
 		b.WriteString(strconv.FormatInt(int64(s), 10))
 	}
 
-	return NewNullSepInts(b.String())
+	return SepInts(b.String())
 }
-func (t NullSepInts) Ints(sep string) []int {
-	if t.String == "" {
+func (t SepInts) Ints(sep string) []int {
+	if t == "" {
 		return nil
 	}
-	arr := strings.Split(t.String, sep)
+	arr := strings.Split(string(t), sep)
 	v := make([]int, len(arr))
 	for i, a := range arr {
 		b, _ := strconv.ParseInt(a, 10, 64)
@@ -790,20 +823,14 @@ func (t NullSepInts) Ints(sep string) []int {
 	}
 	return v
 }
-func NewNullSepUints(s string) NullSepUints {
-	var x NullSepUints
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
-}
-func ToNullSepUints(elems []uint, sep string) NullSepUints {
+
+func ToSepUints(elems []uint, sep string) SepUints {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
-		return NullSepUints{}
+		return ""
 	case 1:
-		return NewNullSepUints(strconv.FormatUint(uint64(elems[0]), 10))
+		return SepUints(strconv.FormatUint(uint64(elems[0]), 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
@@ -816,13 +843,13 @@ func ToNullSepUints(elems []uint, sep string) NullSepUints {
 		b.WriteString(strconv.FormatUint(uint64(s), 10))
 	}
 
-	return NewNullSepUints(b.String())
+	return SepUints(b.String())
 }
-func (t NullSepUints) Uints(sep string) []uint {
-	if t.String == "" {
+func (t SepUints) Uints(sep string) []uint {
+	if t == "" {
 		return nil
 	}
-	arr := strings.Split(t.String, sep)
+	arr := strings.Split(string(t), sep)
 	v := make([]uint, len(arr))
 	for i, a := range arr {
 		x, _ := strconv.ParseUint(a, 10, 32)
@@ -830,20 +857,14 @@ func (t NullSepUints) Uints(sep string) []uint {
 	}
 	return v
 }
-func NewNullSepUint64s(s string) NullSepUint64s {
-	var x NullSepUint64s
-	if s != "" {
-		x.Scan(s)
-	}
-	return x
-}
-func ToNullSepUint64s(elems []uint64, sep string) NullSepUint64s {
+
+func ToSepUint64s(elems []uint64, sep string) SepUint64s {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
-		return NullSepUint64s{}
+		return ""
 	case 1:
-		return NewNullSepUint64s(strconv.FormatUint(elems[0], 10))
+		return SepUint64s(strconv.FormatUint(elems[0], 10))
 	}
 
 	n := len(sep)*(len(elems)-1) + (len(elems) * 11) // int -> -2147483648到2147483647, max 11 bytes
@@ -856,13 +877,13 @@ func ToNullSepUint64s(elems []uint64, sep string) NullSepUint64s {
 		b.WriteString(strconv.FormatUint(s, 10))
 	}
 
-	return NewNullSepUint64s(b.String())
+	return SepUint64s(b.String())
 }
-func (t NullSepUint64s) Uint64s(sep string) []uint64 {
-	if t.String == "" {
+func (t SepUint64s) Uint64s(sep string) []uint64 {
+	if t == "" {
 		return nil
 	}
-	arr := strings.Split(t.String, sep)
+	arr := strings.Split(string(t), sep)
 	v := make([]uint64, len(arr))
 	for i, a := range arr {
 		v[i], _ = strconv.ParseUint(a, 10, 64)

@@ -184,6 +184,17 @@ func (p *Atype) DefaultUint16(defaultValue uint16) uint16 {
 	}
 	return v
 }
+func (p *Atype) Uint24() (Uint24, error) {
+	return Uint24b(p.raw)
+}
+
+func (p *Atype) DefaultUint24(defaultValue Uint24) Uint24 {
+	v, err := p.Uint24()
+	if err != nil {
+		return defaultValue
+	}
+	return v
+}
 func (p *Atype) Uint32() (uint32, error) {
 	return Uint32(p.raw)
 }

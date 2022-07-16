@@ -52,26 +52,28 @@ func (s ImgSrc) FillTo(width, height uint16) string {
 		w := width
 		h := height
 		for _, a := range s.Allowed {
-			if a[0] == width && a[1] == height {
+			aw := a[0]
+			ah := a[1]
+			if aw == width && ah == height {
 				found = true
 				break
 			}
 			if !matched {
-				if a[0] > mw {
-					mw = a[0]
-					mh = a[1]
+				if aw > mw {
+					mw = aw
+					mh = ah
 				}
 				// 首先找到比缩放比例大过需求的
-				if a[0] >= w && a[1] >= h {
-					w = a[0]
-					h = a[1]
+				if aw >= w && ah >= h {
+					w = aw
+					h = ah
 					matched = true
 				}
 			} else {
 				// 后面的都跟第一次匹配的比，找到最小匹配
-				if a[0] >= width && a[0] <= w && a[1] >= height && a[1] <= h {
-					w = a[0]
-					h = a[1]
+				if aw >= width && aw <= w && ah >= height && ah <= h {
+					w = aw
+					h = ah
 				}
 			}
 		}
@@ -86,9 +88,11 @@ func (s ImgSrc) FillTo(width, height uint16) string {
 		}
 	}
 
+	sw := strconv.FormatUint(uint64(width), 10)
+	sh := strconv.FormatUint(uint64(height), 10)
 	u := s.Fill
-	u = strings.ReplaceAll(u, "${WIDTH}", strconv.FormatUint(uint64(width), 10))
-	u = strings.ReplaceAll(u, "${HEIGHT}", strconv.FormatUint(uint64(height), 10))
+	u = strings.ReplaceAll(u, "${WIDTH}", sw)
+	u = strings.ReplaceAll(u, "${HEIGHT}", sh)
 	return u
 }
 
@@ -102,23 +106,24 @@ func (s ImgSrc) FitTo(maxWidth uint16) string {
 		var mw uint16
 		w := maxWidth
 		for _, a := range s.Allowed {
-			if a[0] == maxWidth {
+			aw := a[0]
+			if aw == maxWidth {
 				found = true
 				break
 			}
 			if !matched {
-				if a[0] > mw {
-					mw = a[0]
+				if aw > mw {
+					mw = aw
 				}
 				// 首先找到比缩放比例大过需求的
-				if a[0] >= w {
-					w = a[0]
+				if aw >= w {
+					w = aw
 					matched = true
 				}
 			} else {
 				// 后面的都跟第一次匹配的比，找到最小匹配
-				if a[0] >= maxWidth && a[0] <= w {
-					w = a[0]
+				if aw >= maxWidth && aw <= w {
+					w = aw
 				}
 			}
 		}
@@ -130,9 +135,8 @@ func (s ImgSrc) FitTo(maxWidth uint16) string {
 			}
 		}
 	}
-
-	u := s.Fit
-	return strings.ReplaceAll(u, "${MAXWIDTH}", strconv.FormatUint(uint64(maxWidth), 10))
+	sw := strconv.FormatUint(uint64(maxWidth), 10)
+	return strings.ReplaceAll(s.Fit, "${MAXWIDTH}", sw)
 }
 
 func ToImgSrcPtr(path string, filler func(path string) ImgSrc) *ImgSrc {

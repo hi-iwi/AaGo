@@ -163,6 +163,10 @@ func Uint16(d interface{}, errs ...error) (uint16, error) {
 	v, err := BaseUint64(d, 16, errs...)
 	return uint16(v), err
 }
+func Uint24b(d interface{}, errs ...error) (Uint24, error) {
+	v, err := BaseUint64(d, 24, errs...)
+	return Uint24(v), err
+}
 func Uint32(d interface{}, errs ...error) (uint32, error) {
 	r, err := BaseUint64(d, 32, errs...)
 	return uint32(r), err

@@ -17,13 +17,13 @@ const GoDateLayout = "2006-01-02"
 const GoDatetimeLayout = "2006-01-02 15:04:05"
 
 func IsMinDate(d string) bool {
-	return d == "" || d == "0000" || d == "0000-00" || d == DateMin || d == "1970" || d == "1970-01" || d == "1970-01-01"
+	return d == "" || d == "0000" || d == "0000-00" || d == DateMin || d == "1000" || d == "1000-01" || d == "1000-01-01"
 }
 func IsMaxDate(d string) bool {
 	return d == "9999" || d == "9999-12" || d == DateMax
 }
 func IsMinDatetime(d string) bool {
-	return d == DatetimeMin || d == "1970-01-01 00:00:01" || IsMinDate(d)
+	return d == DatetimeMin || d == "1000-01-01 00:00:00" || IsMinDate(d)
 }
 func IsMaxDatetime(d string) bool {
 	return d == DatetimeMax || IsMaxDate(d)
