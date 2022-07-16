@@ -44,8 +44,8 @@ type Date string      // yyyy-mm-dd
 type Datetime string  // yyyy-mm-dd hh:ii:ss
 type UnixTime int64   // int 形式 datetime，可与 datetime, date 互转
 type Text struct{ sql.NullString }
-type CityId uint32 // uint24
-type AddrId uint64
+type Distri Uint24 // 6 位地址简码
+type AddrId uint64 // 12 位地址码
 
 type NullJson struct{ sql.NullString }
 type NullUint8s struct{ sql.NullString }        // uint8 json array
