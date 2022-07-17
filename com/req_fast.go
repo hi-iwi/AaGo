@@ -221,7 +221,7 @@ func (r *Req) BodyJsonStrings(p string, required bool) ([]string, *ae.Error) {
 			v[i] = atype.String(s.Index(i).Interface())
 		}
 	}
-	if len(v) == 0 {
+	if len(v) == 0 && required {
 		return nil, ae.BadParam(p)
 	}
 	return v, nil
