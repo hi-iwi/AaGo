@@ -3,6 +3,7 @@ package com
 import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/atype"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -177,11 +178,16 @@ func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
 }
-
-// 逗号隔开的 string digits
-func reqDigits(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, required ...bool) ([]string, *ae.Error) {
+func reqStrings(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, re string, required ...bool) ([]string, *ae.Error) {
 	rq := len(required) == 0 || required[0]
-	s, e := method(p, `^[\d,]$`, rq)
+	var s *ReqProp
+	var e *ae.Error
+	if re == "" {
+		s, e = method(p, rq)
+	} else {
+		s, e = method(p, re, rq)
+	}
+
 	if e != nil {
 		return nil, e
 	}
@@ -196,6 +202,37 @@ func reqDigits(method func(string, ...interface{}) (*ReqProp, *ae.Error), p stri
 		return nil, ae.BadParam(p)
 	}
 	return b, nil
+}
+func (r *Req) BodyStrings(p string, required ...bool) ([]string, *ae.Error) {
+	return reqStrings(r.Body, p, "", required...)
+}
+func (r *Req) BodyJsonStrings(p string, required bool) ([]string, *ae.Error) {
+	q, e := r.Body(p, required)
+	if e != nil {
+		return nil, e
+	}
+	var v []string
+	d := q.Raw()
+	switch reflect.TypeOf(d).Kind() {
+	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
+		s := reflect.ValueOf(d)
+		v = make([]string, s.Len())
+		for i := 0; i < s.Len(); i++ {
+			v[i] = atype.String(s.Index(i).Interface())
+		}
+	}
+	if len(v) == 0 {
+		return nil, ae.BadParam(p)
+	}
+	return v, nil
+}
+func (r *Req) QueryStrings(p string, required ...bool) ([]string, *ae.Error) {
+	return reqStrings(r.Query, p, "", required...)
+}
+
+// 逗号隔开的 string digits
+func reqDigits(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, required ...bool) ([]string, *ae.Error) {
+	return reqStrings(method, p, `^[\d,]$`, required...)
 }
 
 func (r *Req) BodyDigits(p string, required ...bool) ([]string, *ae.Error) {
