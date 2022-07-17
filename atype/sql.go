@@ -211,6 +211,7 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
+func MinDate() Date           { return "0000-00-00" }
 func ToDate(t time.Time) Date { return Date(t.Format("2006-01-02")) }
 func (d Date) String() string { return string(d) }
 func (d Date) Time(loc *time.Location) (time.Time, error) {
@@ -229,6 +230,7 @@ func (d Date) Unix(loc *time.Location) UnixTime {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
+func MinDatetime() Datetime           { return "0000-00-00 00:00:00" }
 func ToDatetime(t time.Time) Datetime { return Datetime(t.Format("2006-01-02 15:04:05")) }
 func (d Datetime) String() string     { return string(d) }
 func (d Datetime) Time(loc *time.Location) (time.Time, error) {
