@@ -122,6 +122,81 @@ func TryHMGetUint64(ctx context.Context, rdb *redis.Client, k string, fields []s
 	}
 	return v, ok, nil
 }
+func TryHMGetUint(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue uint) ([]uint, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, ok, e
+	}
+	v := make([]uint, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultUint(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetUint32(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue uint32) ([]uint32, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, ok, e
+	}
+	v := make([]uint32, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultUint32(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetUint24(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue atype.Uint24) ([]atype.Uint24, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, ok, e
+	}
+	v := make([]atype.Uint24, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultUint24(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetUint16(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue uint16) ([]uint16, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, ok, e
+	}
+	v := make([]uint16, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultUint16(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetUint8(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue uint8) ([]uint8, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, ok, e
+	}
+	v := make([]uint8, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultUint8(0)
+		}
+	}
+	return v, ok, nil
+}
 func TryHMGetInt64(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue int64) ([]int64, bool, *ae.Error) {
 	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
 	if e != nil {
@@ -148,6 +223,51 @@ func TryHMGetInt(ctx context.Context, rdb *redis.Client, k string, fields []stri
 			v[i] = defaultValue
 		} else {
 			v[i] = atype.New(x).DefaultInt(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetInt32(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue int32) ([]int32, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, false, e
+	}
+	v := make([]int32, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultInt32(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetInt16(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue int16) ([]int16, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, false, e
+	}
+	v := make([]int16, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultInt16(0)
+		}
+	}
+	return v, ok, nil
+}
+func TryHMGetInt8(ctx context.Context, rdb *redis.Client, k string, fields []string, defaultValue int8) ([]int8, bool, *ae.Error) {
+	iv, ok, e := TryHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, false, e
+	}
+	v := make([]int8, len(fields))
+	for i, x := range iv {
+		if atype.IsNil(x) {
+			v[i] = defaultValue
+		} else {
+			v[i] = atype.New(x).DefaultInt8(0)
 		}
 	}
 	return v, ok, nil
@@ -180,6 +300,61 @@ func MustHMGetUint64(ctx context.Context, rdb *redis.Client, k string, fields ..
 	}
 	return v, nil
 }
+func MustHMGetUint(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]uint, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]uint, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultUint(0)
+	}
+	return v, nil
+}
+func MustHMGetUint32(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]uint32, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]uint32, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultUint32(0)
+	}
+	return v, nil
+}
+func MustHMGetUint24(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]atype.Uint24, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]atype.Uint24, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultUint24(0)
+	}
+	return v, nil
+}
+func MustHMGetUint16(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]uint16, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]uint16, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultUint16(0)
+	}
+	return v, nil
+}
+func MustHMGetUint8(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]uint8, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]uint8, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultUint8(0)
+	}
+	return v, nil
+}
 func MustHMGetInt64(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]int64, *ae.Error) {
 	iv, e := MustHMGet(ctx, rdb, k, fields...)
 	if e != nil {
@@ -188,6 +363,51 @@ func MustHMGetInt64(ctx context.Context, rdb *redis.Client, k string, fields ...
 	v := make([]int64, len(fields))
 	for i, a := range iv {
 		v[i] = atype.New(a).DefaultInt64(0)
+	}
+	return v, nil
+}
+func MustHMGetInt(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]int, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]int, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultInt(0)
+	}
+	return v, nil
+}
+func MustHMGetInt32(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]int32, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]int32, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultInt32(0)
+	}
+	return v, nil
+}
+func MustHMGetInt16(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]int16, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]int16, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultInt16(0)
+	}
+	return v, nil
+}
+
+func MustHMGetInt8(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]int8, *ae.Error) {
+	iv, e := MustHMGet(ctx, rdb, k, fields...)
+	if e != nil {
+		return nil, e
+	}
+	v := make([]int8, len(fields))
+	for i, a := range iv {
+		v[i] = atype.New(a).DefaultInt8(0)
 	}
 	return v, nil
 }
