@@ -71,16 +71,6 @@ func (t *Tx) Update(ctx context.Context, query string, args ...interface{}) (int
 	return id, ae.NewSqlError(err)
 }
 
-func (t *Tx) QueryRow(ctx context.Context, query string, args ...interface{}) (*sql.Row, *ae.Error) {
-	stmt, e := t.Prepare(ctx, query)
-	if e != nil {
-		return nil, e
-	}
-	defer stmt.Close()
-	row := stmt.QueryRowContext(ctx, args...)
-	return row, ae.NewSqlError(row.Err())
-}
-
 // 批量查询
 /*
 	stmt,_ := db.Prepare("select count(*) from tb where id=?")
@@ -100,6 +90,24 @@ func (t *Tx) BatchQueryRow(ctx context.Context, query string, margs ...[]interfa
 		rows[i] = stmt.QueryRowContext(ctx, args...)
 	}
 	return rows, nil
+}
+
+func (t *Tx) QueryRow(ctx context.Context, query string, args ...interface{}) (*sql.Row, *ae.Error) {
+	stmt, e := t.Prepare(ctx, query)
+	if e != nil {
+		return nil, e
+	}
+	defer stmt.Close()
+	row := stmt.QueryRowContext(ctx, args...)
+	return row, ae.NewSqlError(row.Err())
+}
+
+func (t *Tx) ScanArgs(ctx context.Context, query string, args []interface{}, dest ...interface{}) *ae.Error {
+	row, e := t.QueryRow(ctx, query, args...)
+	if e != nil {
+		return e
+	}
+	return ae.NewSqlError(row.Scan(dest...))
 }
 
 func (t *Tx) ScanRow(ctx context.Context, query string, dest ...interface{}) *ae.Error {
