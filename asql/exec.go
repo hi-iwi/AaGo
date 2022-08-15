@@ -90,7 +90,7 @@ func (d *DB) QueryRow(ctx context.Context, query string, args ...interface{}) (*
 	}
 	defer stmt.Close()
 	row := stmt.QueryRowContext(ctx, args...)
-	return row, nil
+	return row, ae.NewSqlError(row.Err())
 }
 
 // 批量查询
