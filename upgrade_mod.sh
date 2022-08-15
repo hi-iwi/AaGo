@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 更新 Go mod
+# 更新 Go mod 
 
 readonly root="../"
 comment="NO_COMMENT"
