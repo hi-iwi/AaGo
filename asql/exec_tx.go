@@ -54,6 +54,14 @@ func (t *Tx) Exec(ctx context.Context, query string, args ...interface{}) (*sql.
 	return stmt, res, nil
 }
 
+func (t *Tx) Execute(ctx context.Context, query string, args ...interface{}) *ae.Error {
+	stmt, _, e := t.Exec(ctx, query, args...)
+	if e == nil {
+		stmt.Close()
+	}
+	return e
+}
+
 func (t *Tx) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
 	stmt, res, e := t.Exec(ctx, query, args...)
 	if e != nil {

@@ -69,6 +69,14 @@ func (d *DB) Exec(ctx context.Context, query string, args ...interface{}) (*sql.
 	return stmt, res, nil
 }
 
+func (d *DB) Execute(ctx context.Context, query string, args ...interface{}) *ae.Error {
+	stmt, _, e := d.Exec(ctx, query, args...)
+	if e == nil {
+		stmt.Close()
+	}
+	return e
+}
+
 func (d *DB) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
 	stmt, res, e := d.Exec(ctx, query, args...)
 	if e != nil {
