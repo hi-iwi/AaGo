@@ -28,11 +28,18 @@ type Position []byte // postion, coordinate or point
 type Ip []byte       // IP Address
 
 // https://en.wikipedia.org/wiki/Bit_numbering
-type BitPos uint8 // bit position (in big endian)
+type BitPos uint8       // bit position (in big endian)
+type BitPosition uint16 // bit position (in big endian)
 type Bitwise struct {
 	BitName  string // 该位名称
 	BitPos   BitPos // big endian 下，位所在位置
 	BitValue bool   // 该位的值
+	MaxBits  uint8
+}
+type Bitwiser struct {
+	BitName  string      // 该位名称
+	BitPos   BitPosition // big endian 下，位所在位置
+	BitValue bool        // 该位的值
 	MaxBits  uint8
 }
 
