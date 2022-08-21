@@ -166,7 +166,8 @@ func ToIp(addr string) Ip {
 
 func (n Uint24) Uint32() uint32 { return uint32(n) }
 
-func (b BitPos) Uint8() uint8 { return uint8(b) }
+func (b BitPos) Uint8() uint8        { return uint8(b) }
+func (b BitPosition) Uint16() uint16 { return uint16(b) }
 
 //  SET x=x|v
 func (b Bitwise) SetStmt(fieldName string) string {
