@@ -83,11 +83,13 @@ func errorlevel(ctx context.Context) ErrorLevel {
 
 // 快捷方式，对服务器错误记录日志
 func (app *App) Try(ctx context.Context, e *ae.Error) bool {
-	if e != nil && e.IsServerError() {
-		app.Log.Error(ctx, e.Text())
-		return false
+	if e == nil {
+		return true
 	}
-	return true
+	if e.IsServerError() {
+		app.Log.Error(ctx, e.Text())
+	}
+	return false
 }
 
 // 快捷记录错误
