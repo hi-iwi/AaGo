@@ -101,7 +101,7 @@ func (app *App) TryLog(ctx context.Context, err error) {
 
 // 快捷panic
 func (app *App) TryPanic(ctx context.Context, e *ae.Error) {
-	if e != nil {
+	if e != nil && e.IsServerError() {
 		app.Log.Error(ctx, ae.Caller(1)+" "+e.Text())
 		panic(e.Text())
 	}
