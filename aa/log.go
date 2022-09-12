@@ -93,10 +93,12 @@ func (app *App) Try(ctx context.Context, e *ae.Error) bool {
 }
 
 // 快捷记录错误
-func (app *App) TryLog(ctx context.Context, err error) {
-	if err != nil {
-		app.Log.Error(ctx, ae.Caller(1)+" "+err.Error())
+func (app *App) TryLog(ctx context.Context, err error) bool {
+	if err == nil {
+		return true
 	}
+	app.Log.Error(ctx, ae.Caller(1)+" "+err.Error())
+	return false
 }
 
 // 快捷panic
