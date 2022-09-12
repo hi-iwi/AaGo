@@ -12,11 +12,10 @@ func DurationInChinese(d time.Duration) string {
 	return s
 }
 
-
 // 格式化 Duration
 // time.Duration.String()  返回如：895061h51m1.00001s
 // 这里对系统功能进行扩展，支持多种语言，但是只支持到整数秒。
-// layout -> d:h:m:s ，如  Days`Hours`Minutes`Seconds   Hours`Minutes`Seconds  天`小时`分`秒 小时`分`秒
+// layout -> d:h:m:s ，如  Days`Hours`Minutes`Duration   Hours`Minutes`Duration  天`小时`分`秒 小时`分`秒
 // singlelar -> Day.Hour.Minute.Second D.H.M.S
 
 func DurationString(d time.Duration, layout string, singlelar ...string) (string, error) {
@@ -66,7 +65,7 @@ func DurationString(d time.Duration, layout string, singlelar ...string) (string
 	} else {
 		pattern = la[len(la)-1] // second's pattern
 		w -= len(pattern)
-		copy(buf[w:], la[len(la)-1]) // end with second's pattern, e.g. "s", "Second", "Seconds", "秒"
+		copy(buf[w:], la[len(la)-1]) // end with second's pattern, e.g. "s", "Second", "Duration", "秒"
 	}
 
 	// u is now integer seconds
