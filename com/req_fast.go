@@ -3,7 +3,6 @@ package com
 import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/atype"
-	"reflect"
 	"strconv"
 	"strings"
 )
@@ -206,26 +205,7 @@ func reqStrings(method func(string, ...interface{}) (*ReqProp, *ae.Error), p str
 func (r *Req) BodyStrings(p string, required ...bool) ([]string, *ae.Error) {
 	return reqStrings(r.Body, p, "", required...)
 }
-func (r *Req) BodyJsonStrings(p string, required bool) ([]string, *ae.Error) {
-	q, e := r.Body(p, required)
-	if e != nil {
-		return nil, e
-	}
-	var v []string
-	d := q.Raw()
-	switch reflect.TypeOf(d).Kind() {
-	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
-		s := reflect.ValueOf(d)
-		v = make([]string, s.Len())
-		for i := 0; i < s.Len(); i++ {
-			v[i] = atype.String(s.Index(i).Interface())
-		}
-	}
-	if len(v) == 0 && required {
-		return nil, ae.BadParam(p)
-	}
-	return v, nil
-}
+
 func (r *Req) QueryStrings(p string, required ...bool) ([]string, *ae.Error) {
 	return reqStrings(r.Query, p, "", required...)
 }
