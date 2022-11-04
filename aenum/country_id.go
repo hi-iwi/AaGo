@@ -7,61 +7,58 @@ import (
 type CountryId uint16
 
 const (
-	Canada                       CountryId = 50001
-	America                      CountryId = 1
-	Kazakhstan                   CountryId = 50007
-	Russia                       CountryId = 7
-	Egypt                        CountryId = 20
-	SouthAfrica                  CountryId = 27
-	Greece                       CountryId = 30
-	Netherlands                  CountryId = 31
-	Belgium                      CountryId = 32
-	France                       CountryId = 33
-	Spain                        CountryId = 34
-	Hungary                      CountryId = 36
-	Italy                        CountryId = 39
-	Romania                      CountryId = 40
-	Switzerland                  CountryId = 41
-	Austria                      CountryId = 43
-	UnitedKingdom                CountryId = 44
-	Denmark                      CountryId = 45
-	Sweden                       CountryId = 46
-	Norway                       CountryId = 47
-	SvalbardAndJanMayen          CountryId = 50047
-	Poland                       CountryId = 48
-	Germany                      CountryId = 49
-	Peru                         CountryId = 51
-	Mexico                       CountryId = 52
-	Cuba                         CountryId = 53
-	Argentina                    CountryId = 54
-	Brazil                       CountryId = 55
-	Chile                        CountryId = 56
-	Colombia                     CountryId = 57
-	Venezuela                    CountryId = 58
-	Malaysia                     CountryId = 60
-	Australia                    CountryId = 61
-	ChristmasIsland              CountryId = 50061
-	CocosIslands                 CountryId = 61
-	Indonesia                    CountryId = 62
-	Philippines                  CountryId = 63
-	NewZealand                   CountryId = 64
-	Pitcairn                     CountryId = 50064
-	Singapore                    CountryId = 65
-	Thailand                     CountryId = 66
-	Japan                        CountryId = 81
-	SouthKorea                   CountryId = 82
-	Vietnam                      CountryId = 84
-	China                        CountryId = 86
-	Turkey                       CountryId = 90
-	India                        CountryId = 91
-	Pakistan                     CountryId = 92
-	Afghanistan                  CountryId = 93
-	SriLanka                     CountryId = 94
-	Myanmar                      CountryId = 95
-	Iran                         CountryId = 98
-	SouthSudan                   CountryId = 211
-	Morocco                      CountryId = 212
-	WesternSahara                CountryId = 50212
+	Canada        CountryId = 50001
+	America       CountryId = 1
+	Kazakhstan    CountryId = 997 // 2021年，哈萨克斯坦国际区号变更为 997
+	Russia        CountryId = 7
+	Egypt         CountryId = 20
+	SouthAfrica   CountryId = 27
+	Greece        CountryId = 30
+	Netherlands   CountryId = 31
+	Belgium       CountryId = 32
+	France        CountryId = 33
+	Spain         CountryId = 34
+	Hungary       CountryId = 36
+	Italy         CountryId = 39
+	Romania       CountryId = 40
+	Switzerland   CountryId = 41
+	Austria       CountryId = 43
+	UnitedKingdom CountryId = 44
+	Denmark       CountryId = 45
+	Sweden        CountryId = 46
+	Norway        CountryId = 47
+	Poland        CountryId = 48
+	Germany       CountryId = 49
+	Peru          CountryId = 51
+	Mexico        CountryId = 52
+	Cuba          CountryId = 53
+	Argentina     CountryId = 54
+	Brazil        CountryId = 55
+	Chile         CountryId = 56
+	Colombia      CountryId = 57
+	Venezuela     CountryId = 58
+	Malaysia      CountryId = 60
+	Australia     CountryId = 61
+	Indonesia     CountryId = 62
+	Philippines   CountryId = 63
+	NewZealand    CountryId = 64
+	//Pitcairn                     CountryId = 50064
+	Singapore   CountryId = 65
+	Thailand    CountryId = 66
+	Japan       CountryId = 81
+	SouthKorea  CountryId = 82
+	Vietnam     CountryId = 84
+	China       CountryId = 86
+	Turkey      CountryId = 90
+	India       CountryId = 91
+	Pakistan    CountryId = 92
+	Afghanistan CountryId = 93
+	SriLanka    CountryId = 94
+	Myanmar     CountryId = 95
+	Iran        CountryId = 98
+	SouthSudan  CountryId = 211
+	Morocco     CountryId = 212
+	//WesternSahara                CountryId = 50212
 	Algeria                      CountryId = 213
 	Tunisia                      CountryId = 216
 	Libya                        CountryId = 218
@@ -227,8 +224,8 @@ func NewCountryId(id uint16) (CountryId, bool) {
 	c := CountryId(id)
 	return c, c.Valid()
 }
-func (c CountryId) Valid() bool {return true}
-func (c CountryId) Uint16() uint16 {return uint16(c)}
+func (c CountryId) Valid() bool    { return true }
+func (c CountryId) Uint16() uint16 { return uint16(c) }
 func (c CountryId) String() string {
 	return strconv.Itoa(int(c))
 }
@@ -255,16 +252,6 @@ func ToCallingCode(cc CountryId) uint16 {
 	switch cc {
 	case Canada:
 		return 1
-	case Kazakhstan:
-		return 7
-	case SvalbardAndJanMayen:
-		return 47
-	case ChristmasIsland:
-		return 61
-	case Pitcairn:
-		return 64
-	case WesternSahara:
-		return 212
 	case NetherlandsAntilles:
 		return 599
 	}
