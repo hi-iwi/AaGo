@@ -43,22 +43,22 @@ const (
 	Philippines   CountryId = 63
 	NewZealand    CountryId = 64
 	//Pitcairn                     CountryId = 50064
-	Singapore   CountryId = 65
-	Thailand    CountryId = 66
-	Japan       CountryId = 81
-	SouthKorea  CountryId = 82
-	Vietnam     CountryId = 84
-	China       CountryId = 86
-	Turkey      CountryId = 90
-	India       CountryId = 91
-	Pakistan    CountryId = 92
-	Afghanistan CountryId = 93
-	SriLanka    CountryId = 94
-	Myanmar     CountryId = 95
-	Iran        CountryId = 98
-	SouthSudan  CountryId = 211
-	Morocco     CountryId = 212
-	//WesternSahara                CountryId = 50212
+	Singapore                    CountryId = 65
+	Thailand                     CountryId = 66
+	Japan                        CountryId = 81
+	SouthKorea                   CountryId = 82
+	Vietnam                      CountryId = 84
+	China                        CountryId = 86
+	Turkey                       CountryId = 90
+	India                        CountryId = 91
+	Pakistan                     CountryId = 92
+	Afghanistan                  CountryId = 93
+	SriLanka                     CountryId = 94
+	Myanmar                      CountryId = 95
+	Iran                         CountryId = 98
+	SouthSudan                   CountryId = 211
+	Morocco                      CountryId = 212
+	WesternSahara                CountryId = 50212
 	Algeria                      CountryId = 213
 	Tunisia                      CountryId = 216
 	Libya                        CountryId = 218
@@ -254,6 +254,8 @@ func ToCallingCode(cc CountryId) uint16 {
 		return 1
 	case NetherlandsAntilles:
 		return 599
+	case WesternSahara:
+		return 212
 	}
 	return uint16(cc)
 }
