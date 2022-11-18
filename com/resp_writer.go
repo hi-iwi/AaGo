@@ -3,10 +3,10 @@ package com
 import (
 	"errors"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
 	"github.com/hi-iwi/AaGo/dict"
 	"github.com/hi-iwi/AaGo/util"
+	"github.com/kataras/iris/v12/context"
 	"net/http"
 	"reflect"
 	"strings"
@@ -32,10 +32,10 @@ func (resp *RespStruct) writeNotModified() {
 	if resp.ictx != nil {
 		resp.ictx.StatusCode(403)
 	} else {
-		resp.DelHeader(aenum.ContentType)
-		resp.DelHeader("Content-Length")
-		if w.Header().Get("Etag") != "" {
-			resp.DelHeader("Last-Modified")
+		resp.DelHeader(ContentType)
+		resp.DelHeader(ContentLength)
+		if w.Header().Get(Etag) != "" {
+			resp.DelHeader(LastModified)
 		}
 		w.WriteHeader(resp.code)
 	}
@@ -54,7 +54,7 @@ func (resp *RespStruct) writeNotModified() {
 */
 
 func (resp *RespStruct) trySetContentType() {
-	if _, ok := resp.headers.Load(aenum.ContentType); ok {
+	if _, ok := resp.headers.Load(ContentType); ok {
 		return
 	}
 
@@ -64,7 +64,7 @@ func (resp *RespStruct) trySetContentType() {
 		accepts := strings.Split(accept, ",")
 		for _, ac := range accepts {
 			if _, ok := respContentTypes[ac]; ok {
-				resp.headers.Store(aenum.ContentType, ac)
+				resp.headers.Store(ContentType, ac)
 				return
 			}
 		}
@@ -72,11 +72,11 @@ func (resp *RespStruct) trySetContentType() {
 	// ⑤
 	cliType := resp.req.ContentType()
 	if _, ok := respContentTypes[cliType]; ok {
-		resp.headers.Store(aenum.ContentType, cliType)
+		resp.headers.Store(ContentType, cliType)
 		return
 	}
 	// ⑥
-	resp.headers.Store(aenum.ContentType, http.DetectContentType(resp.content)) // 这里需要解析 content，所以不要用 LoadOrStore()
+	resp.headers.Store(ContentType, http.DetectContentType(resp.content)) // 这里需要解析 content，所以不要用 LoadOrStore()
 
 }
 func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
@@ -102,7 +102,7 @@ func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 		return 0, nil
 	}
 	// @TODO 这里设置Content-Length之后，iris Gzip 就会异常
-	resp.DelHeader("Content-Length") // 因为内容变更了，必须要把content-length设为空，不然客户端会读取错误
+	resp.DelHeader(ContentLength) // 因为内容变更了，必须要把content-length设为空，不然客户端会读取错误
 	resp.trySetContentType()
 
 	resp.headers.Range(func(k, v interface{}) bool {
@@ -288,7 +288,7 @@ func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) err
 	c := []byte("<script>var " + varname + "=")
 	c = append(c, b...)
 	c = append(c, ";</script>"...)
-	resp.SetHeader(aenum.ContentType, "text/html; charset=utf-8")
+	resp.SetHeader(ContentType, CtJsonp.String())
 	resp.content = c
 	resp.WriteRaw()
 	return nil
@@ -305,21 +305,23 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 
 	HideServerErr(resp.ictx, &cs, resp.req)
 
-	ct, _ := resp.headers.Load(aenum.ContentType)
+	ct, _ := resp.headers.Load(ContentType)
 	var (
 		b   []byte
 		err error
 	)
-
-	switch ct {
-	case "text/html; charset=utf-8":
-		// jsonp
-		b, err = util.JsonString(cs)
-	default:
-		// json Marshal 不转译 HTML 字符
-		b, err = util.JsonString(cs)
+	if IsHtml(ct.(string)) {
+		// 返回状态码，交给route层处理
+		if context.StatusCodeNotSuccessful(cs.Code) {
+			resp.ictx.Values().Set(ErrCodeKey, cs.Code)
+			resp.ictx.Values().Set(ErrMsgKey, cs.Msg)
+			resp.ictx.StatusCode(cs.Code)
+			return nil
+		}
 	}
 
+	// json Marshal 不转译 HTML 字符
+	b, err = util.JsonString(cs)
 	if err != nil {
 		return err
 	}

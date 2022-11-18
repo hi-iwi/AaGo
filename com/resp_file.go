@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/aenum"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -70,7 +69,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 
 	//If Content-Type isn't set, use the file's extension to find it, but
 	//if the Content-Type is unset explicitly, do not sniff the type.
-	ctype := resp.Header(aenum.ContentType)
+	ctype := resp.Header(ContentType)
 	if ctype == "" {
 		ctype = mime.TypeByExtension(filepath.Ext(name))
 		if ctype == "" {
@@ -80,7 +79,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 			ctype = http.DetectContentType(buf[:n])
 			content.Seek(0, io.SeekStart) // rewind to output whole file
 		}
-		resp.SetHeader(aenum.ContentType, ctype)
+		resp.SetHeader(ContentType, ctype)
 	}
 
 	size, err := sizeFunc()
@@ -134,7 +133,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 			resp.code = 206
 			pr, pw := io.Pipe()
 			mw := multipart.NewWriter(pw)
-			resp.SetHeader(aenum.ContentType, "multipart/byteranges; boundary="+mw.Boundary())
+			resp.SetHeader(ContentType, "multipart/byteranges; boundary="+mw.Boundary())
 			sendContent = pr
 			defer pr.Close() // cause writing goroutine to fail and exit if CopyN doesn't finish.
 			go func() {
@@ -193,8 +192,8 @@ func (r httpRange) contentRange(size int64) string {
 
 func (r httpRange) mimeHeader(contentType string, size int64) textproto.MIMEHeader {
 	return textproto.MIMEHeader{
-		aenum.ContentRange: {r.contentRange(size)},
-		aenum.ContentType:  {contentType},
+		ContentRange: {r.contentRange(size)},
+		ContentType:  {contentType},
 	}
 }
 

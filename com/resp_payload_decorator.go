@@ -8,7 +8,7 @@ import (
 
 // ?_stringify=1  weak language, turn all fields into string
 func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
-	stringify, _ := resp.req.Query("_stringify", `^[01]$`, false)
+	stringify, _ := resp.req.Query(ParamStringify, false)
 	if stringify.DefaultBool(false) {
 		return StringifyPayloadFields(payload, tagname)
 	}

@@ -3,7 +3,6 @@ package com
 import (
 	"encoding/json"
 	"errors"
-	"github.com/hi-iwi/AaGo/aenum"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -106,9 +105,9 @@ func NewReq(ictx iris.Context) *Req {
 
 func (r *Req) ContentType() string {
 	if r.contentType == "" {
-		ct := r.r.Header.Get(aenum.ContentType)
+		ct := r.r.Header.Get(ContentType)
 		if ct == "" {
-			ct = "application/octet-stream"
+			ct = CtOctetStream.String()
 		}
 		r.contentType, _, _ = mime.ParseMediaType(ct)
 	}
@@ -236,7 +235,7 @@ func (r *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) 
 	if !r.parsed {
 		// 参考 http.parsePostForm()  request.go  ParseForm()
 		switch ct {
-		case "application/json", "application/octet-stream":
+		case CtJson.String(), CtJson.Utf8(), CtOctetStream.String(), CtOctetStream.Utf8():
 			var reader io.Reader = r.r.Body
 			maxFormSize := int64(1024)
 			if _, ok := reader.(*maxBytesReader); !ok {
@@ -255,12 +254,12 @@ func (r *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) 
 			json.Unmarshal(b, &r.data.body)
 			r.data.blck.Unlock()
 			r.parsed = true
-		case "application/x-www-form-urlencoded":
+		case CtForm.String(), CtForm.Utf8():
 			if r.r.PostForm == nil {
 				r.r.ParseMultipartForm(1 << 20) // 1M
 			}
 			r.loadFormBody(r.r.PostForm)
-		case "multipart/form-data":
+		case CtFormData.String(), CtFormData.Utf8():
 			if r.r.MultipartForm != nil {
 				r.loadFormBody(r.r.MultipartForm.Value)
 			} else {

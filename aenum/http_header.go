@@ -8,6 +8,5 @@ const (
 	LastModified  = "Last-Modified"
 
 	CtJSON = "application/json"
-
-	CtHtmlText = "text/html; charset=utf-8"
+	CtHtml = "text/html; charset=utf-8"
 )

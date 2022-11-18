@@ -297,9 +297,9 @@ func (r *Req) BodyId(p string, required ...bool) (uint64, *ae.Error) {
 }
 
 func (r *Req) QueryPaging(args ...int) atype.Paging {
-	page, _ := r.QueryInt("page", false)
-	offset, _ := r.QueryInt("offset", false)
-	limit, _ := r.QueryInt("limit", false)
+	page, _ := r.QueryInt(ParamPage, false)
+	offset, _ := r.QueryInt(ParamOffset, false)
+	limit, _ := r.QueryInt(ParamLimit, false)
 
 	if limit < 1 {
 		if len(args) > 0 {

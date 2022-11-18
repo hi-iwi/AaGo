@@ -10,7 +10,7 @@ import (
 // @TODO
 // ?_field=time,service,connections:[name,scheme],server_id,test:{a,b,c}
 func (resp *RespStruct) filterPayload(a interface{}, tagname string) (interface{}, *ae.Error) {
-	xm, _ := resp.req.Query("_field", false)
+	xm, _ := resp.req.Query(ParamField, false)
 	if xm.IsEmpty() {
 		return a, nil
 	}
@@ -62,7 +62,7 @@ func filterPayloadMap(u interface{}, tagname string, tags ...string) (map[string
 func filterPayloadArray(w interface{}, tagname string, tags ...string) (ret []map[string]interface{}, e *ae.Error) {
 	t := reflect.TypeOf(w).Kind()
 	if t != reflect.Slice && t != reflect.Array {
-		return nil, ae.NewError(401, "invalid `_field`, not an array")
+		return nil, ae.NewError(401, "invalid `"+ParamField+"`, not an array")
 	}
 	v := reflect.ValueOf(w)
 	ret = make([]map[string]interface{}, v.Len())

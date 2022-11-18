@@ -2,7 +2,6 @@ package com
 
 import (
 	"github.com/hi-iwi/AaGo/aa"
-	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/kataras/iris/v12"
 	"net/http"
 	"runtime"
@@ -81,7 +80,7 @@ func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 	for _, a := range as {
 		if accept, _ = a.(string); accept != "" {
 			// ①
-			resp.SetHeader(aenum.ContentType, accept)
+			resp.SetHeader(ContentType, accept)
 		} else if mw, ok := a.(func(*RespStruct)); ok {
 			resp.beforeFlush = append(resp.beforeFlush, mw)
 		} else if mw, ok := a.(func(*RespContentDTO)); ok {
@@ -92,8 +91,8 @@ func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 	}
 	if accept == "" {
 		// ②
-		if accept = ictx.Values().GetString(aenum.ContentType); accept != "" {
-			resp.SetHeader(aenum.ContentType, accept)
+		if accept = ictx.Values().GetString(ContentType); accept != "" {
+			resp.SetHeader(ContentType, accept)
 		}
 	}
 
