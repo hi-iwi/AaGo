@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hi-iwi/AaGo/ae"
+	"github.com/hi-iwi/AaGo/aenum"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -14,8 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-
 )
 
 func (resp *RespStruct) toHTTPError(err error) *ae.Error {
@@ -71,7 +70,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 
 	//If Content-Type isn't set, use the file's extension to find it, but
 	//if the Content-Type is unset explicitly, do not sniff the type.
-	ctype := resp.Header("Content-Type")
+	ctype := resp.Header(aenum.ContentType)
 	if ctype == "" {
 		ctype = mime.TypeByExtension(filepath.Ext(name))
 		if ctype == "" {
@@ -81,7 +80,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 			ctype = http.DetectContentType(buf[:n])
 			content.Seek(0, io.SeekStart) // rewind to output whole file
 		}
-		resp.SetHeader("Content-Type", ctype)
+		resp.SetHeader(aenum.ContentType, ctype)
 	}
 
 	size, err := sizeFunc()
@@ -135,7 +134,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 			resp.code = 206
 			pr, pw := io.Pipe()
 			mw := multipart.NewWriter(pw)
-			resp.SetHeader("Content-Type", "multipart/byteranges; boundary="+mw.Boundary())
+			resp.SetHeader(aenum.ContentType, "multipart/byteranges; boundary="+mw.Boundary())
 			sendContent = pr
 			defer pr.Close() // cause writing goroutine to fail and exit if CopyN doesn't finish.
 			go func() {
@@ -158,7 +157,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 				pw.Close()
 			}()
 		}
-		resp.SetHeader("Accept-Ranges", "bytes")
+		resp.SetHeader("--Ranges", "bytes")
 	}
 
 	buf := make([]byte, sendSize)
@@ -194,8 +193,8 @@ func (r httpRange) contentRange(size int64) string {
 
 func (r httpRange) mimeHeader(contentType string, size int64) textproto.MIMEHeader {
 	return textproto.MIMEHeader{
-		"Content-Range": {r.contentRange(size)},
-		"Content-Type":  {contentType},
+		aenum.ContentRange: {r.contentRange(size)},
+		aenum.ContentType:  {contentType},
 	}
 }
 

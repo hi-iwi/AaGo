@@ -1,12 +1,11 @@
 package aenum
 
 const (
+	ContentRange  = "Content-Range"
 	ContentType   = "Content-Type"
 	ContentLength = "Content-Length"
-	Etag = "Etag"
+	Etag          = "Etag"
 	LastModified  = "Last-Modified"
-
-
 
 	CtJSON = "application/json"
 

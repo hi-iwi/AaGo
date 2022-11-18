@@ -3,6 +3,7 @@ package com
 import (
 	"encoding/json"
 	"errors"
+	"github.com/hi-iwi/AaGo/aenum"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -85,33 +86,27 @@ func (l *maxBytesReader) Close() error {
 	return l.r.Close()
 }
 
-func NewReq(p interface{}) *Req {
+func NewReq(ictx iris.Context) *Req {
 	req := &Req{}
-	if r, ok := p.(*http.Request); ok {
-		req.r = r
-		req.Method = r.Method
-	} else if c, ok := p.(iris.Context); ok {
-		req.ID = c.Values().GetString("traceid")
-		req.r = c.Request()
-		req.Method = req.r.Method
-		if len(c.Params().Store) > 0 {
-			req.data.qlck.Lock()
-			req.data.query = make(map[string]interface{}, len(c.Params().Store))
-			req.data.qlck.Unlock()
-		}
-		for _, v := range c.Params().Store {
-			req.data.qlck.Lock()
-			req.data.query[v.Key] = v.ValueRaw
-			req.data.qlck.Unlock()
-		}
+	req.ID = ictx.Values().GetString("traceid")
+	req.r = ictx.Request()
+	req.Method = req.r.Method
+	if len(ictx.Params().Store) > 0 {
+		req.data.qlck.Lock()
+		req.data.query = make(map[string]interface{}, len(ictx.Params().Store))
+		req.data.qlck.Unlock()
 	}
-
+	for _, v := range ictx.Params().Store {
+		req.data.qlck.Lock()
+		req.data.query[v.Key] = v.ValueRaw
+		req.data.qlck.Unlock()
+	}
 	return req
 }
 
 func (r *Req) ContentType() string {
 	if r.contentType == "" {
-		ct := r.r.Header.Get("Content-Type")
+		ct := r.r.Header.Get(aenum.ContentType)
 		if ct == "" {
 			ct = "application/octet-stream"
 		}

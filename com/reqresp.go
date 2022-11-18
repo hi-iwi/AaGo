@@ -10,11 +10,74 @@ import (
 func ReqResp(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
 	r := NewReq(ictx)
 	resp := Resp(ictx, r, as...)
-	glbCt := ictx.Values().GetString("Content-Type")
-	if glbCt != "" {
-		// 一定要load or set，因为 as 可能重新设置 header，如jsonp
-		resp.LoadOrSetHeader("Content-Type", glbCt)
-	}
 	ctx := aa.Context(ictx)
 	return r, resp, ctx
+}
+
+// 强制返回 json
+func ReqRespJson(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "application/json")
+	return ReqResp(ictx, as...)
+}
+
+// 强制返回 html
+func ReqRespHtml(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "text/html")
+	return ReqResp(ictx, as...)
+}
+
+// 强制返回 xml
+func ReqRespXml(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "application/xml")
+	return ReqResp(ictx, as...)
+}
+
+// 强制返回 javascript/jsonp
+func ReqRespJs(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "text/javascript")
+	return ReqResp(ictx, as...)
+}
+
+func ReqRespJpeg(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "image/jpeg")
+	return ReqResp(ictx, as...)
+}
+
+func ReqRespWebp(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "image/webp")
+	return ReqResp(ictx, as...)
+}
+
+func ReqRespPng(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "image/png")
+	return ReqResp(ictx, as...)
+}
+
+func ReqRespGif(ictx iris.Context, as ...interface{}) (*Req, *RespStruct, context.Context) {
+	if as == nil {
+		as = make([]interface{}, 0)
+	}
+	as = append(as, "image/gif")
+	return ReqResp(ictx, as...)
 }

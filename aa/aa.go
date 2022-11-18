@@ -63,4 +63,3 @@ func (app *App) Cfg() *Configuration {
 	defer smtx.RUnlock()
 	return &app.configuration
 }
-

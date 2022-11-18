@@ -2,6 +2,7 @@ package com
 
 import (
 	"github.com/hi-iwi/AaGo/aa"
+	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/kataras/iris/v12"
 	"net/http"
 	"runtime"
@@ -27,10 +28,12 @@ type RespStruct struct {
 }
 
 var (
-	HideServerErr   = defaultHideServerErr
-	beforeSerialize []func(*RespContentDTO)
-	afterSerialize  []func([]byte) []byte
-	beforeFlush     []func(*RespStruct)
+	HideServerErr    = defaultHideServerErr
+	beforeSerialize  []func(*RespContentDTO)
+	afterSerialize   []func([]byte) []byte
+	beforeFlush      []func(*RespStruct)
+	respContentTypes = make(map[string]struct{}) // struct{} takes 0 bytes
+
 )
 
 func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
@@ -46,6 +49,27 @@ func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 	}
 }
 
+// 注册通用resp content types；
+
+func RegisterRespContentTypes(ctypes ...string) {
+	for _, ctype := range ctypes {
+		respContentTypes[ctype] = struct{}{}
+	}
+}
+
+/*
+  resp Content-Type 优先级：
+    --> 在 resp.Write 之前
+		① new Resp() 时，通过 as 参数指定header；
+		② ictx.Values() 设定的；
+		③ controller 里面 resp.SetHeader() 或 resp.LoadOrSetHeader() 设置
+    --> 在 resp.Write 阶段
+		④ 客户端 Accept 指定  -> 必须要通过 RegisterRespContentTypes()注册过的才可以
+		⑤ 根据客户 Content Type 相同  -> 必须要通过 RegisterRespContentTypes()注册过的才可以
+		⑥ 根据content内容自动判定
+*/
+// @param as:  string 表示 Content-Type
+
 func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 	resp := &RespStruct{
 		req:    req,
@@ -53,9 +77,11 @@ func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 		ictx:   ictx,
 		writer: ictx.ResponseWriter(),
 	}
+	var accept string
 	for _, a := range as {
-		if mw, _ := a.(string); mw != "" {
-			resp.SetHeader("Content-Type", mw)
+		if accept, _ = a.(string); accept != "" {
+			// ①
+			resp.SetHeader(aenum.ContentType, accept)
 		} else if mw, ok := a.(func(*RespStruct)); ok {
 			resp.beforeFlush = append(resp.beforeFlush, mw)
 		} else if mw, ok := a.(func(*RespContentDTO)); ok {
@@ -64,6 +90,13 @@ func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 			resp.afterSerialize = append(resp.afterSerialize, mw)
 		}
 	}
+	if accept == "" {
+		// ②
+		if accept = ictx.Values().GetString(aenum.ContentType); accept != "" {
+			resp.SetHeader(aenum.ContentType, accept)
+		}
+	}
+
 	return resp
 }
 

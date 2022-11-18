@@ -3,11 +3,13 @@ package com
 import (
 	"errors"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/dict"
+	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
+	"github.com/hi-iwi/AaGo/dict"
 	"github.com/hi-iwi/AaGo/util"
 	"net/http"
 	"reflect"
+	"strings"
 )
 
 func (resp *RespStruct) WriteHeader(code interface{}) {
@@ -30,7 +32,7 @@ func (resp *RespStruct) writeNotModified() {
 	if resp.ictx != nil {
 		resp.ictx.StatusCode(403)
 	} else {
-		resp.DelHeader("Content-Type")
+		resp.DelHeader(aenum.ContentType)
 		resp.DelHeader("Content-Length")
 		if w.Header().Get("Etag") != "" {
 			resp.DelHeader("Last-Modified")
@@ -39,6 +41,44 @@ func (resp *RespStruct) writeNotModified() {
 	}
 }
 
+/*
+  resp Content-Type 优先级：
+    --> 在 resp.Write 之前
+		① new Resp() 时，通过 as 参数指定header；
+		② ictx.Values() 设定的；
+		③ controller 里面 resp.SetHeader() 或 resp.LoadOrSetHeader() 设置
+    --> 在 resp.Write 阶段
+		④ 客户端 Accept 指定  -> 必须要通过 RegisterRespContentTypes()注册过的才可以
+		⑤ 根据客户 Content Type 相同  -> 必须要通过 RegisterRespContentTypes()注册过的才可以
+		⑥ 根据content内容自动判定
+*/
+
+func (resp *RespStruct) trySetContentType() {
+	if _, ok := resp.headers.Load(aenum.ContentType); ok {
+		return
+	}
+
+	// ④
+	accept := resp.req.FastXheader("Accept").String()
+	if accept != "" {
+		accepts := strings.Split(accept, ",")
+		for _, ac := range accepts {
+			if _, ok := respContentTypes[ac]; ok {
+				resp.headers.Store(aenum.ContentType, ac)
+				return
+			}
+		}
+	}
+	// ⑤
+	cliType := resp.req.ContentType()
+	if _, ok := respContentTypes[cliType]; ok {
+		resp.headers.Store(aenum.ContentType, cliType)
+		return
+	}
+	// ⑥
+	resp.headers.Store(aenum.ContentType, http.DetectContentType(resp.content)) // 这里需要解析 content，所以不要用 LoadOrStore()
+
+}
 func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 	w := resp.writer
 	for i := 0; i < len(ps); i++ {
@@ -63,7 +103,8 @@ func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 	}
 	// @TODO 这里设置Content-Length之后，iris Gzip 就会异常
 	resp.DelHeader("Content-Length") // 因为内容变更了，必须要把content-length设为空，不然客户端会读取错误
-	resp.headers.LoadOrStore("Content-Type", http.DetectContentType(resp.content))
+	resp.trySetContentType()
+
 	resp.headers.Range(func(k, v interface{}) bool {
 		s := v.(string)
 		if s != "" {
@@ -247,7 +288,7 @@ func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) err
 	c := []byte("<script>var " + varname + "=")
 	c = append(c, b...)
 	c = append(c, ";</script>"...)
-	resp.SetHeader("Content-Type", "text/html; charset=utf-8")
+	resp.SetHeader(aenum.ContentType, "text/html; charset=utf-8")
 	resp.content = c
 	resp.WriteRaw()
 	return nil
@@ -264,7 +305,7 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 
 	HideServerErr(resp.ictx, &cs, resp.req)
 
-	ct, _ := resp.headers.Load("Content-Type")
+	ct, _ := resp.headers.Load(aenum.ContentType)
 	var (
 		b   []byte
 		err error

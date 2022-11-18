@@ -443,14 +443,14 @@ func (c *Controller) PostFastBills(ictx iris.Context) {
 
 	_, certs, skuVipType, e := mall.New(c.app).SimpleSpuBySkuId(ctx, skuId) // 可以使用的VIP类型，并不代表用户真实具有，即使具有也可能过期了
 	if len(certs) != 0 {
-		if e = mservice.New(c.app).CheckMyLocalCerts(ctx, uid, certs); e != nil {
+		if e = c.s.CheckMyLocalCerts(ctx, uid, certs); e != nil {
 			resp.WriteE(e)
 			return
 		}
 	}
 
 	// vip type 都是业务层的，服务层不存在VIP概念（只存在VIP价格）。所以放到业务层判断
-	isVip := mservice.New(c.app).IsVip(ctx, uid, skuVipType)
+	isVip := c.s.IsVip(ctx, uid, skuVipType)
 	batch, e := mall.New(c.app).FastConfirmBill(ctx, conf.Biz, uid, isVip, cartItem, _missionId.DefaultUint16(0), fromUid, nil, 0, 0)
 	if e != nil {
 		resp.WriteE(e)
