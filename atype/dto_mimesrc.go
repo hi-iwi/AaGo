@@ -119,6 +119,9 @@ func NewVideoAsset(url string) *VideoSrc {
 func (s ImgSrc) Filename() string { return util.Filename(s.Path) }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
+	if s.Processor == 0 {
+		return s.Origin
+	}
 	if width >= s.Width && height >= s.Height && s.Origin != "" {
 		return s.Origin
 	}
@@ -173,6 +176,9 @@ func (s ImgSrc) FillTo(width, height uint16) string {
 }
 
 func (s ImgSrc) FitTo(maxWidth uint16) string {
+	if s.Processor == 0 {
+		return s.Origin
+	}
 	if maxWidth >= s.Width && s.Origin != "" {
 		return s.Origin
 	}
