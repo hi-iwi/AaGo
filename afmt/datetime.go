@@ -4,8 +4,106 @@ import (
 	"bytes"
 	"errors"
 	"math"
+	"strconv"
+	"strings"
 	"time"
 )
+
+func timeDiff(a, b time.Time) (year, month, day, hour, min, sec int) {
+	if a.Location() != b.Location() {
+		b = b.In(a.Location())
+	}
+	if a.After(b) {
+		a, b = b, a
+	}
+	y1, M1, d1 := a.Date()
+	y2, M2, d2 := b.Date()
+
+	h1, m1, s1 := a.Clock()
+	h2, m2, s2 := b.Clock()
+
+	year = int(y2 - y1)
+	month = int(M2 - M1)
+	day = int(d2 - d1)
+	hour = int(h2 - h1)
+	min = int(m2 - m1)
+	sec = int(s2 - s1)
+
+	// Normalize negative values
+	if sec < 0 {
+		sec += 60
+		min--
+	}
+	if min < 0 {
+		min += 60
+		hour--
+	}
+	if hour < 0 {
+		hour += 24
+		day--
+	}
+	if day < 0 {
+		// days in month:
+		t := time.Date(y1, M1, 32, 0, 0, 0, 0, time.UTC)
+		day += 32 - t.Day()
+		month--
+	}
+	if month < 0 {
+		month += 12
+		year--
+	}
+
+	return
+}
+
+// 计算两个日期之差
+// @param layout:  %Y %M %D %H %I %S， e.g. (%Y年%M个月) %Y Years and %M Months
+func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
+	if layout == "" {
+		return ""
+	}
+	y, m, d, h, mi, sec := timeDiff(d1, d2)
+	lays := strings.Split(layout, "%")
+	var out string
+	for i := 0; i < len(lays); i++ {
+		if lays[i] == "" {
+			continue
+		}
+		if i == 0 && layout[0] != '%' {
+			out += lays[i]
+			continue
+		}
+		switch lays[i][0] {
+		case 'Y':
+			if y > 0 {
+				out += strconv.Itoa(y) + lays[i][1:]
+			}
+		case 'M':
+			if m > 0 {
+				out += strconv.Itoa(m) + lays[i][1:]
+			}
+		case 'D':
+			if d > 0 {
+				out += strconv.Itoa(d) + lays[i][1:]
+			}
+		case 'H':
+			if h > 0 {
+				out += strconv.Itoa(h) + lays[i][1:]
+			}
+		case 'I':
+			if mi > 0 {
+				out += strconv.Itoa(mi) + lays[i][1:]
+			}
+		case 'S':
+			if sec > 0 {
+				out += strconv.Itoa(sec) + lays[i][1:]
+			}
+		default:
+			out += "%" + lays[i]
+		}
+	}
+	return out
+}
 
 func DurationInChinese(d time.Duration) string {
 	s, _ := DurationString(d, "天`小时`分`秒")
