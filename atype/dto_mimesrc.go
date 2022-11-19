@@ -3,6 +3,7 @@ package atype
 import (
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/util"
+	"path"
 	"strconv"
 	"strings"
 )
@@ -24,6 +25,7 @@ type ImgSrc struct {
 	Height   uint16          `json:"height"`
 	Allowed  [][2]uint16     `json:"allowed"` // 允许的width,height
 }
+
 type AudioSrc struct {
 	Processor int    `json:"processor"`
 	Fit       string `json:"fit"`    // e.g.  https://xxx/video.avi?quality=${QUALITY}
@@ -54,6 +56,63 @@ func (s AudioSrc) FitTo(quality string) string {
 }
 func (s VideoSrc) FitTo(quality string) string {
 	return strings.ReplaceAll(s.Fit, "${QUALITY}", quality)
+}
+
+// 绝对asset url，不需要进行任何图片处理
+func NewImgAsset(url string) *ImgSrc {
+	if url == "" {
+		return nil
+	}
+	ft, _ := aenum.NewImageType(path.Ext(url))
+	return &ImgSrc{
+		Processor: 0,
+		Fill:      url,
+		Fit:       url,
+		Origin:    url,
+		Path:      url,
+		Filetype:  ft,
+		Size:      0,
+		Width:     0,
+		Height:    0,
+		Allowed:   nil,
+	}
+}
+
+// 绝对asset url，不需要进行任何图片处理
+func NewAudioAsset(url string) *AudioSrc {
+	if url == "" {
+		return nil
+	}
+	ft, _ := aenum.NewAudioType(path.Ext(url))
+	return &AudioSrc{
+		Processor: 0,
+		Fit:       url,
+		Origin:    url,
+		Path:      url,
+		Filetype:  ft,
+		Size:      0,
+		Duration:  0,
+	}
+}
+
+// 绝对asset url，不需要进行任何图片处理
+func NewVideoAsset(url string) *VideoSrc {
+	if url == "" {
+		return nil
+	}
+	ft, _ := aenum.NewVideoType(path.Ext(url))
+	return &VideoSrc{
+		Processor: 0,
+		Fit:       url,
+		Origin:    url,
+		Path:      url,
+		Filetype:  ft,
+		Size:      0,
+		Width:     0,
+		Height:    0,
+		Duration:  0,
+		Allowed:   nil,
+	}
 }
 
 // similar to path.Base()
