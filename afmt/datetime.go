@@ -57,12 +57,16 @@ func timeDiff(a, b time.Time) (year, month, day, hour, min, sec int) {
 }
 
 // 计算两个日期之差
-// @param layout:  %Y %M %D %H %I %S， e.g. (%Y年%M个月) %Y Years and %M Months
+// @param layout:  %Y %M %D %H %I %S，%% 表示分隔符   e.g. `(%Y年%M个月%%)` %Y Years and %M Months
+
 func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
 	if layout == "" {
 		return ""
 	}
 	y, m, d, h, mi, sec := timeDiff(d1, d2)
+	if y == 0 && m == 0 && d == 0 && h == 0 && mi == 0 && sec == 0 {
+		return ""
+	}
 	lays := strings.Split(layout, "%")
 	var out string
 	for i := 0; i < len(lays); i++ {
@@ -99,7 +103,12 @@ func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
 				out += strconv.Itoa(sec) + lays[i][1:]
 			}
 		default:
-			out += "%" + lays[i]
+			if i > 0 && lays[i-1] == "" {
+				// %% 分隔符
+				out += lays[i]
+			} else {
+				out += "%" + lays[i]
+			}
 		}
 	}
 	return out
