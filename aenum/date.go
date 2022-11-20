@@ -15,6 +15,7 @@ const DatetimeMax = "9999-12-31 23:59:59"
 
 const GoDateLayout = "2006-01-02"
 const GoDatetimeLayout = "2006-01-02 15:04:05"
+const GoTimeLayout = "15:04:05"
 
 func IsMinDate(d string) bool {
 	return d == "" || d == "0000" || d == "0000-00" || d == DateMin || d == "1000" || d == "1000-01" || d == "1000-01-01"
