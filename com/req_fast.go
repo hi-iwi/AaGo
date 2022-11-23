@@ -2,9 +2,11 @@ package com
 
 import (
 	"github.com/hi-iwi/AaGo/ae"
+	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func (r *Req) Xhost() string {
@@ -137,6 +139,38 @@ func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
 	return _x.DefaultUint64(0), e
 }
 
+func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
+	_x, e := r.QueryDigit(p, false, required...)
+	return atype.Money(_x.DefaultInt64(0)), e
+}
+
+func (r *Req) QueryUMoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
+	_x, e := r.QueryDigit(p, false, required...)
+	return atype.Umoney(_x.DefaultUint64(0)), e
+}
+
+func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
+	rq := true
+	if len(required) == 1 {
+		rq = required[0]
+	}
+	_x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, rq)
+	if e != nil {
+		return "", ae.NewError(400, "invalid date ("+p+"): "+_x.String())
+	}
+	return atype.NewDate(_x.String(), loc), nil
+}
+func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
+	rq := true
+	if len(required) == 1 {
+		rq = required[0]
+	}
+	_x, e := r.Query(p, `^`+aenum.DatetimeRegExp+`$`, rq)
+	if e != nil {
+		return "", ae.NewError(400, "invalid datetime ("+p+"): "+_x.String())
+	}
+	return atype.NewDatetime(_x.String(), loc), nil
+}
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt8(0), e
@@ -144,6 +178,10 @@ func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 func (r *Req) BodyInt16(p string, required ...bool) (int16, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
 	return _x.DefaultInt16(0), e
+}
+func (r *Req) BodyInt24(p string, required ...bool) (atype.Int24, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	return atype.Int24(_x.DefaultInt32(0)), e
 }
 func (r *Req) BodyInt32(p string, required ...bool) (int32, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
@@ -165,6 +203,10 @@ func (r *Req) BodyUint16(p string, required ...bool) (uint16, *ae.Error) {
 	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint16(0), e
 }
+func (r *Req) BodyUint24(p string, required ...bool) (atype.Uint24, *ae.Error) {
+	_x, e := r.BodyDigit(p, true, required...)
+	return atype.Uint24(_x.DefaultUint32(0)), e
+}
 func (r *Req) BodyUint32(p string, required ...bool) (uint32, *ae.Error) {
 	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint32(0), e
@@ -176,6 +218,39 @@ func (r *Req) BodyUint(p string, required ...bool) (uint, *ae.Error) {
 func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
+}
+
+func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	return atype.Money(_x.DefaultInt64(0)), e
+}
+
+func (r *Req) BodyUMoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	return atype.Umoney(_x.DefaultUint64(0)), e
+}
+
+func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
+	rq := true
+	if len(required) == 1 {
+		rq = required[0]
+	}
+	_x, e := r.Body(p, `^`+aenum.DateRegExp+`$`, rq)
+	if e != nil {
+		return "", ae.NewError(400, "invalid date ("+p+"): "+_x.String())
+	}
+	return atype.NewDate(_x.String(), loc), nil
+}
+func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
+	rq := true
+	if len(required) == 1 {
+		rq = required[0]
+	}
+	_x, e := r.Body(p, `^`+aenum.DatetimeRegExp+`$`, rq)
+	if e != nil {
+		return "", ae.NewError(400, "invalid datetime ("+p+"): "+_x.String())
+	}
+	return atype.NewDatetime(_x.String(), loc), nil
 }
 func reqStrings(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, re string, required ...bool) ([]string, *ae.Error) {
 	rq := len(required) == 0 || required[0]
