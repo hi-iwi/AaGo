@@ -96,8 +96,12 @@ func (r *Req) QueryDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.
 func (r *Req) BodyDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	return reqDigit(r.Body, p, positive, xargs...)
 }
+func (r *Req) QueryString(p string, required ...interface{}) (string, *ae.Error) {
+	_x, e := r.Query(p, required...)
+	return _x.String(), e
+}
 
-// 允许0
+// 允许0  --> 直接用  _x.Int8() 就可以了
 func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
 	_x, e := r.QueryDigit(p, false, required...)
 	return _x.DefaultInt8(0), e
@@ -170,6 +174,10 @@ func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (aty
 		return "", ae.NewError(400, "invalid datetime ("+p+"): "+_x.String())
 	}
 	return atype.NewDatetime(_x.String(), loc), nil
+}
+func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) {
+	_x, e := r.Query(p, required...)
+	return _x.String(), e
 }
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
