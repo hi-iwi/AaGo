@@ -144,7 +144,7 @@ func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	return atype.Money(_x.DefaultInt64(0)), e
 }
 
-func (r *Req) QueryUMoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
+func (r *Req) QueryUmoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
 	_x, e := r.QueryDigit(p, false, required...)
 	return atype.Umoney(_x.DefaultUint64(0)), e
 }
@@ -225,7 +225,7 @@ func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	return atype.Money(_x.DefaultInt64(0)), e
 }
 
-func (r *Req) BodyUMoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
+func (r *Req) BodyUmoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
 	return atype.Umoney(_x.DefaultUint64(0)), e
 }
