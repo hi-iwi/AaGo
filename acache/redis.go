@@ -15,7 +15,7 @@ func Uint64s(vs []string, err error) ([]uint64, *ae.Error) {
 		return nil, ae.NewRedisError(err)
 	}
 	if len(vs) == 0 {
-		return nil, ae.NotFound
+		return nil, ae.UnprocessableEntity
 	}
 	ids := make([]uint64, len(vs))
 	for i, v := range vs {

@@ -44,7 +44,7 @@ func (e *Error) Text() string {
 	return e.Msg + " [" + strconv.Itoa(e.Code) + "]"
 }
 func (e *Error) NotFound() bool {
-	return e.Code == NotFound.Code && e.Msg == NotFound.Msg
+	return e.Code == NotFound.Code || e.Code == UnprocessableEntity.Code
 }
 func (e *Error) IsServerError() bool {
 	return e.Code > 499
