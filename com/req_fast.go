@@ -260,30 +260,6 @@ func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atyp
 	return atype.NewDatetime(_x.String(), loc), nil
 }
 
-// ID:uint64, required 情况ID必须>0；optional 情况，可以为0
-func (r *Req) QueryId(p string, required ...bool) (uint64, *ae.Error) {
-	id, e := r.QueryUint64(p, required...)
-	if len(required) == 1 && !required[0] {
-		return id, e // optional
-	}
-	if id == 0 {
-		return 0, ae.NewError(400, "bad "+p)
-	}
-	return id, nil
-}
-
-// ID:uint64, required 情况ID必须>0；optional 情况，可以为0
-func (r *Req) BodyId(p string, required ...bool) (uint64, *ae.Error) {
-	id, e := r.BodyUint64(p, required...)
-	if len(required) == 1 && !required[0] {
-		return id, e // optional
-	}
-	if id == 0 {
-		return 0, ae.NewError(400, "bad "+p)
-	}
-	return id, nil
-}
-
 func (r *Req) QueryPaging(args ...int) atype.Paging {
 	page, _ := r.QueryInt(ParamPage, false)
 	offset, _ := r.QueryInt(ParamOffset, false)
