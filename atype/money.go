@@ -65,7 +65,7 @@ func fmtPrecision(s string, n int, seperator string) string {
 	j := 0
 	for i := len(s) - 1; i > -1; i-- {
 		if j > 0 && j%n == 0 {
-			s2 += seperator
+			s2 = seperator + s2
 		}
 		s2 = string(s[i]) + s2
 		j++
