@@ -5,9 +5,7 @@ import (
 	"database/sql"
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"io"
-	"math"
 	"net"
 	"strconv"
 	"strings"
@@ -43,67 +41,6 @@ type Bitwiser struct {
 	BitPos   BitPosition // big endian 下，位所在位置
 	BitValue bool        // 该位的值
 	MaxBits  uint8
-}
-
-type Money int64   // 数据库有 money() 函数 money 支持正负；汇率一般保留4位小数，所以这里金额 * 10000
-type Umoney uint64 // 正金额
-func (a Umoney) Uint64() uint64 {
-	return uint64(a)
-}
-
-// 整数部分
-func (a Umoney) Precision() uint64 {
-	return uint64(a) / 10000
-}
-
-// 小数部分
-func (a Umoney) Scale() uint16 {
-	return uint16(a % 10000)
-}
-func (a Umoney) Fmt(dig uint16) string {
-	const d uint16 = 4 //  4位小数
-	y := a.Precision()
-	dec := a.Scale()
-	ys := strconv.FormatUint(y, 10)
-	if dig == 0 || dec == 0 {
-		return ys
-	}
-	if dig >= d {
-		return ys + "." + fmt.Sprintf("%04d", dec)
-	}
-
-	m := dec / uint16(math.Pow10(int(d-dig)))
-	// 四舍五入是违法的，只能舍弃
-	return ys + "." + fmt.Sprintf("%0*d", dig, m)
-}
-func (a Money) Int64() int64 {
-	return int64(a)
-}
-
-// 整数部分
-func (a Money) Precision() int64 {
-	return int64(a) / 10000
-}
-
-// 小数部分
-func (a Money) Scale() uint16 {
-	return uint16(int64(math.Abs(float64(a))) % 10000)
-}
-func (a Money) Fmt(dig uint16) string {
-	const d uint16 = 4 //  4位小数
-	y := a.Precision()
-	dec := a.Scale()
-	ys := strconv.FormatInt(y, 10)
-	if dig == 0 || dec == 0 {
-		return ys
-	}
-	if dig >= d {
-		return ys + "." + fmt.Sprintf("%04d", dec)
-	}
-
-	m := dec / uint16(math.Pow10(int(d-dig)))
-	// 四舍五入是违法的，只能舍弃
-	return ys + "." + fmt.Sprintf("%0*d", dig, m)
 }
 
 type Boolean uint8
