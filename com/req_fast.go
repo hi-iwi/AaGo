@@ -144,12 +144,21 @@ func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
 
 func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	_x, e := r.QueryDigit(p, false, required...)
-	return atype.Money(_x.DefaultInt64(0)), e
+	return atype.Money(_x.DefaultInt(0)), e
 }
 
 func (r *Req) QueryUmoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
 	_x, e := r.QueryDigit(p, false, required...)
-	return atype.Umoney(_x.DefaultUint64(0)), e
+	return atype.Umoney(_x.DefaultUint(0)), e
+}
+func (r *Req) QueryAmount(p string, required ...bool) (atype.Amount, *ae.Error) {
+	_x, e := r.QueryDigit(p, false, required...)
+	return atype.Amount(_x.DefaultInt64(0)), e
+}
+
+func (r *Req) QueryUamount(p string, required ...bool) (atype.Uamount, *ae.Error) {
+	_x, e := r.QueryDigit(p, false, required...)
+	return atype.Uamount(_x.DefaultUint64(0)), e
 }
 
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
@@ -229,14 +238,21 @@ func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 
 func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
-	return atype.Money(_x.DefaultInt64(0)), e
+	return atype.Money(_x.DefaultInt(0)), e
 }
 
 func (r *Req) BodyUmoney(p string, required ...bool) (atype.Umoney, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
-	return atype.Umoney(_x.DefaultUint64(0)), e
+	return atype.Umoney(_x.DefaultUint(0)), e
 }
-
+func (r *Req) BodyAmount(p string, required ...bool) (atype.Amount, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	return atype.Amount(_x.DefaultInt64(0)), e
+}
+func (r *Req) BodyUamount(p string, required ...bool) (atype.Uamount, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	return atype.Uamount(_x.DefaultUint64(0)), e
+}
 func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
 	rq := true
 	if len(required) == 1 {
