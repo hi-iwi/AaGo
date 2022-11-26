@@ -26,21 +26,35 @@ func (a Amount) Precision() int64 {
 func (a Amount) Scale() uint16 {
 	return uint16(int64(math.Abs(float64(a))) % 10000)
 }
-func (a Amount) Fmt(dig uint16) string {
+
+func fmtDecimal(ps string, dec, decimal uint16, trim bool) string {
 	const d uint16 = 4 //  4位小数
-	y := a.Precision()
-	dec := a.Scale()
-	ys := strconv.FormatInt(y, 10)
-	if dig == 0 || dec == 0 {
-		return ys
+	if decimal == 0 || dec == 0 {
+		return ps
 	}
-	if dig >= d {
-		return ys + "." + fmt.Sprintf("%04d", dec)
+	if decimal >= d {
+		return ps + "." + fmt.Sprintf("%04d", dec)
 	}
 
-	m := dec / uint16(math.Pow10(int(d-dig)))
+	m := dec / uint16(math.Pow10(int(d-decimal)))
 	// 四舍五入是违法的，只能舍弃
-	return ys + "." + fmt.Sprintf("%0*d", dig, m)
+	return ps + "." + fmt.Sprintf("%0*d", decimal, m)
+}
+func (a Amount) Fmt(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
+	}
+	ys := strconv.FormatInt(a.Precision(), 10)
+	return fmtDecimal(ys, a.Scale(), decimal, true)
+}
+func (a Amount) Format(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
+	}
+	ys := strconv.FormatInt(a.Precision(), 10)
+	return fmtDecimal(ys, a.Scale(), decimal, false)
 }
 
 func (a Uamount) Uint64() uint64 {
@@ -56,22 +70,24 @@ func (a Uamount) Precision() uint64 {
 func (a Uamount) Scale() uint16 {
 	return uint16(a % 10000)
 }
-func (a Uamount) Fmt(dig uint16) string {
-	const d uint16 = 4 //  4位小数
-	y := a.Precision()
-	dec := a.Scale()
-	ys := strconv.FormatUint(y, 10)
-	if dig == 0 || dec == 0 {
-		return ys
-	}
-	if dig >= d {
-		return ys + "." + fmt.Sprintf("%04d", dec)
-	}
 
-	m := dec / uint16(math.Pow10(int(d-dig)))
-	// 四舍五入是违法的，只能舍弃
-	return ys + "." + fmt.Sprintf("%0*d", dig, m)
+func (a Uamount) Fmt(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
+	}
+	ys := strconv.FormatUint(a.Precision(), 10)
+	return fmtDecimal(ys, a.Scale(), decimal, true)
 }
+func (a Uamount) Format(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
+	}
+	ys := strconv.FormatUint(a.Precision(), 10)
+	return fmtDecimal(ys, a.Scale(), decimal, false)
+}
+
 func (a Money) Int() int {
 	return int(a)
 }
@@ -85,21 +101,21 @@ func (a Money) Precision() int {
 func (a Money) Scale() uint16 {
 	return uint16(int64(math.Abs(float64(a))) % 10000)
 }
-func (a Money) Fmt(dig uint16) string {
-	const d uint16 = 4 //  4位小数
-	y := a.Precision()
-	dec := a.Scale()
-	ys := strconv.Itoa(y)
-	if dig == 0 || dec == 0 {
-		return ys
+func (a Money) Fmt(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
 	}
-	if dig >= d {
-		return ys + "." + fmt.Sprintf("%04d", dec)
+	ys := strconv.Itoa(a.Precision())
+	return fmtDecimal(ys, a.Scale(), decimal, true)
+}
+func (a Money) Format(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
 	}
-
-	m := dec / uint16(math.Pow10(int(d-dig)))
-	// 四舍五入是违法的，只能舍弃
-	return ys + "." + fmt.Sprintf("%0*d", dig, m)
+	ys := strconv.Itoa(a.Precision())
+	return fmtDecimal(ys, a.Scale(), decimal, false)
 }
 
 func (a Umoney) Uint() uint {
@@ -115,19 +131,20 @@ func (a Umoney) Precision() uint {
 func (a Umoney) Scale() uint16 {
 	return uint16(a % 10000)
 }
-func (a Umoney) Fmt(dig uint16) string {
-	const d uint16 = 4 //  4位小数
-	y := a.Precision()
-	dec := a.Scale()
-	ys := strconv.FormatUint(uint64(y), 10)
-	if dig == 0 || dec == 0 {
-		return ys
-	}
-	if dig >= d {
-		return ys + "." + fmt.Sprintf("%04d", dec)
-	}
 
-	m := dec / uint16(math.Pow10(int(d-dig)))
-	// 四舍五入是违法的，只能舍弃
-	return ys + "." + fmt.Sprintf("%0*d", dig, m)
+func (a Umoney) Fmt(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
+	}
+	ys := strconv.FormatUint(uint64(a.Precision()), 10)
+	return fmtDecimal(ys, a.Scale(), decimal, true)
+}
+func (a Umoney) Format(decimals ...uint16) string {
+	decimal := uint16(2) // 保留2位小数
+	if len(decimals) > 0 {
+		decimal = decimals[0]
+	}
+	ys := strconv.FormatUint(uint64(a.Precision()), 10)
+	return fmtDecimal(ys, a.Scale(), decimal, false)
 }
