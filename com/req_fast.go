@@ -314,9 +314,10 @@ func (r *Req) QueryPaging(limitMax uint, firstPages ...uint) atype.Paging {
 				page = firstPages[0]
 				limit = page * limitMax
 			}
+		} else {
+			// change ?limit=3&offset=10 to ?limit=0&offset=10
+			offset = (page - 1) * limit
 		}
-		// change ?limit=3&offset=10 to ?limit=0&offset=10
-		offset = (page - 1) * limit
 	}
 
 	return atype.Paging{

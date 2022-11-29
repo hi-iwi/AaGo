@@ -60,7 +60,7 @@ func (s Status) IsPendding() bool {
 }
 
 func (s Status) MeVisible() bool {
-	return s > _meVisibleLowerLimit
+	return s > _meVisibleLowerLimit && s != HideToMeOk
 }
 func StmtPendding(field string) string {
 	a := field + ">" + strconv.FormatInt(int64(AuditFailed), 10)
@@ -70,5 +70,7 @@ func StmtPendding(field string) string {
 
 // 自己可见的声明语句
 func StmtMeVisible(field string) string {
-	return field + ">" + strconv.FormatInt(int64(_meVisibleLowerLimit), 10)
+	a := field + ">" + strconv.FormatInt(int64(_meVisibleLowerLimit), 10)
+	b := field + "!=" + strconv.FormatInt(int64(HideToMeOk), 10)
+	return a + " && " + b
 }
