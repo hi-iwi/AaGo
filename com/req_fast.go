@@ -4,6 +4,7 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -274,6 +275,25 @@ func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atyp
 		return "", ae.NewError(400, "invalid datetime ("+p+"): "+_x.String())
 	}
 	return atype.NewDatetime(_x.String(), loc), nil
+}
+
+// {id:uint64}  or {sid:string}
+func (r *Req) QueryId(p string, params ...interface{}) (sid string, id uint64, e *ae.Error) {
+	var x *ReqProp
+	if x, e = r.Query(p, params...); e != nil {
+		return
+	}
+	sid = x.String()
+	if sid == "" || sid == "0" {
+		return
+	}
+	for _, s := range sid {
+		if s < '0' || s > '9' {
+			return
+		}
+	}
+	id, _ = strconv.ParseUint(sid, 10, 64)
+	return
 }
 
 func (r *Req) QueryPaging(limitMax uint, firstPages ...uint) atype.Paging {
