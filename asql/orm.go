@@ -6,8 +6,8 @@ import (
 )
 
 type Limit struct {
-	Offset int `name:"offset"`
-	Limit  int `name:"limit"`
+	Offset uint `name:"offset"`
+	Limit  uint `name:"limit"`
 }
 
 type CombineOperator string
