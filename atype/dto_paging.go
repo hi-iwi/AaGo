@@ -1,7 +1,7 @@
 package atype
 
 type Paging struct {
-	Page   int `json:"page"`
-	Offset int `json:"offset"`
-	Limit  int `json:"limit"`
+	Page   uint `json:"page"`
+	Offset uint `json:"offset"`
+	Limit  uint `json:"limit"`
 }

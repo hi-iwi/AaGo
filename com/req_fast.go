@@ -276,19 +276,13 @@ func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atyp
 	return atype.NewDatetime(_x.String(), loc), nil
 }
 
-func (r *Req) QueryPaging(args ...int) atype.Paging {
-	page, _ := r.QueryInt(ParamPage, false)
-	offset, _ := r.QueryInt(ParamOffset, false)
-	limit, _ := r.QueryInt(ParamLimit, false)
+func (r *Req) QueryPaging(limitMax uint, firstPages ...uint) atype.Paging {
+	page, _ := r.QueryUint(ParamPage, false)
+	offset, _ := r.QueryUint(ParamOffset, false)
+	limit, _ := r.QueryUint(ParamLimit, false)
 
-	if limit < 1 {
-		if len(args) > 0 {
-			limit = args[0]
-		} else {
-			limit = 20
-		}
-	} else if limit > 100 {
-		limit = 100
+	if limit < 1 || limit > limitMax {
+		limit = limitMax
 	}
 
 	if offset > 0 {
@@ -296,10 +290,14 @@ func (r *Req) QueryPaging(args ...int) atype.Paging {
 	} else {
 		if page < 1 {
 			page = 1
+			if len(firstPages) > 0 {
+				page = firstPages[0]
+				limit = page * limitMax
+			}
 		}
+		// change ?limit=3&offset=10 to ?limit=0&offset=10
+		offset = (page - 1) * limit
 	}
-	// change ?limit=3&offset=10 to ?limit=0&offset=10
-	offset = (page - 1) * limit
 
 	return atype.Paging{
 		Page:   page,
