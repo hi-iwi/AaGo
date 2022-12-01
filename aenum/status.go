@@ -8,7 +8,7 @@ type Status int8
 
 const (
 	SysRevoked Status = -128 // 已注销，系统删除（可能审核失败）
-	SysExpired Status = -121 // 已失效/已过期
+	Expired    Status = -121 // 已失效/已过期
 	Deleted    Status = -100 // 用户已删除，谁都不可见
 	Failed     Status = -20  // 审核失败，让用户可以修改，仅用户可见  --> 无论之前设置什么，这里统一一个失败状态，修改的时候再设置
 	Pending1   Status = -10  // 审核1通过 --> 进入阶段性审核流程，就会阻却用户修改权
@@ -28,13 +28,14 @@ const (
 )
 
 var (
+	PassedRange     = [2]Status{Passed, SysLocked}
 	PendingRange    = [2]Status{Pending1, Created} // 等待审核的区间
 	MeReadableRange = [2]Status{Failed, SysLocked} // 会显示在我列表的区间
 )
 var StatusNames = map[Language]map[Status]string{
 	ZhCN: {
 		SysRevoked: "已注销",
-		SysExpired: "已失效",
+		Expired:    "已失效",
 		Deleted:    "已删除",
 		Failed:     "未通过审核",
 		Pending1:   "一审",
@@ -53,7 +54,7 @@ var StatusNames = map[Language]map[Status]string{
 	},
 	EnUS: {
 		SysRevoked: "revoked",
-		SysExpired: "expired",
+		Expired:    "expired",
 		Deleted:    "deleted",
 		Failed:     "failed",
 		Pending1:   "passing 1",
@@ -74,7 +75,7 @@ var StatusNames = map[Language]map[Status]string{
 
 func NewStatus(sts int8) (Status, bool) {
 	s := Status(sts)
-	ok := s == SysRevoked || s == SysExpired || s == Deleted || s == Failed
+	ok := s == SysRevoked || s == Expired || s == Deleted || s == Failed
 	ok = ok || (s >= Pending1 && s <= Passed) || s == SysLocked
 	return s, ok
 }
@@ -99,7 +100,7 @@ func (s Status) IsPending() bool {
 
 // 是否审核通过
 func (s Status) IsPassed() bool {
-	return s >= Passed
+	return s >= PassedRange[0] && s <= PassedRange[1]
 }
 
 // 用户自己是否可见
