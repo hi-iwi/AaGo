@@ -1,8 +1,6 @@
 package aenum
 
-import (
-	"strconv"
-)
+import "strconv"
 
 type Status int8
 
@@ -32,46 +30,6 @@ var (
 	PendingRange    = [2]Status{Pending1, Created} // 等待审核的区间
 	MeReadableRange = [2]Status{Failed, SysLocked} // 会显示在我列表的区间
 )
-var StatusNames = map[Language]map[Status]string{
-	ZhCN: {
-		SysRevoked: "已注销",
-		Expired:    "已失效",
-		Deleted:    "已删除",
-		Failed:     "未通过审核",
-		Pending1:   "一审",
-		Pending2:   "二审",
-		Pending3:   "三审",
-		Pending4:   "四审",
-		Pending5:   "五审",
-		Pending6:   "六审",
-		Pending7:   "七审",
-		Pending8:   "八审",
-		Pending9:   "九审",
-		Pending:    "审核中",
-		Created:    "新创建",
-		Passed:     "审核通过",
-		SysLocked:  "已锁定",
-	},
-	EnUS: {
-		SysRevoked: "revoked",
-		Expired:    "expired",
-		Deleted:    "deleted",
-		Failed:     "failed",
-		Pending1:   "passing 1",
-		Pending2:   "passing 2",
-		Pending3:   "passing 3",
-		Pending4:   "passing 4",
-		Pending5:   "passing 5",
-		Pending6:   "passing 6",
-		Pending7:   "passing 7",
-		Pending8:   "passing 8",
-		Pending9:   "passing 9",
-		Pending:    "pending",
-		Created:    "created",
-		Passed:     "passed",
-		SysLocked:  "locked",
-	},
-}
 
 func NewStatus(sts int8) (Status, bool) {
 	s := Status(sts)
@@ -79,19 +37,16 @@ func NewStatus(sts int8) (Status, bool) {
 	ok = ok || (s >= Pending1 && s <= Passed) || s == SysLocked
 	return s, ok
 }
-func (s Status) Name(lang Language) string {
-	if names, ok := StatusNames[lang]; ok {
-		if name, ok := names[s]; ok {
-			return name
+func (s Status) Int8() int8     { return int8(s) }
+func (s Status) String() string { return strconv.Itoa(int(s)) }
+func (s Status) Is(x int8) bool { return s.Int8() == x }
+func (s Status) In(a ...Status) bool {
+	for _, sts := range a {
+		if sts == s {
+			return true
 		}
 	}
-	return strconv.FormatInt(int64(s), 10)
-}
-func (s Status) NameZh() string {
-	return s.Name(ZhCN)
-}
-func (s Status) NameEn() string {
-	return s.Name(EnUS)
+	return false
 }
 
 func (s Status) IsPending() bool {
@@ -110,5 +65,5 @@ func (s Status) MeReadable() bool {
 
 // 用户是否可以修改、删除
 func (s Status) Modifiable() bool {
-	return s == Failed || s == Pending || s == Created || s == Passed
+	return s.In(Failed, Pending, Created, Passed)
 }

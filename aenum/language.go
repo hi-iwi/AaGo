@@ -1,5 +1,7 @@
 package aenum
 
+import "strconv"
+
 type Language uint8
 
 const (
@@ -22,4 +24,19 @@ var LanguageNames = map[Language]map[Language]string{
 		EnUS: "English",
 		ZhCN: "Chinese",
 	},
+}
+
+func NewLanguage(lang uint8) (Language, bool) {
+	return Language(lang), true
+}
+func (c Language) Uint8() uint8    { return uint8(c) }
+func (c Language) String() string  { return strconv.FormatUint(uint64(c), 10) }
+func (c Language) Is(x uint8) bool { return c.Uint8() == x }
+func (c Language) In(args ...Language) bool {
+	for _, a := range args {
+		if a == c {
+			return true
+		}
+	}
+	return false
 }

@@ -31,9 +31,17 @@ func NewVideoType(mime string) (VideoType, bool) {
 	}
 	return UnknownVideoType, false
 }
-func (t VideoType) Valid() bool {return t > UnknownVideoType && t <= X3gp2}
-func (t VideoType) Uint16() uint16 {return uint16(t)}
-func (t VideoType) String() string {return strconv.FormatUint(uint64(t), 10)}
+func (t VideoType) Uint16() uint16    { return uint16(t) }
+func (t VideoType) String() string    { return strconv.FormatUint(uint64(t), 10) }
+func (t VideoType) Is(t2 uint16) bool { return t.Uint16() == t2 }
+func (t VideoType) In(ts ...VideoType) bool {
+	for _, ty := range ts {
+		if ty == t {
+			return true
+		}
+	}
+	return false
+}
 
 func (t VideoType) Name() string {
 	switch t {
@@ -52,13 +60,4 @@ func (t VideoType) Name() string {
 	}
 	return t.String()
 }
-func (t VideoType) Ext() string {return "." + t.Name()}
-func (t VideoType) Is(t2 VideoType) bool {return t == t2}
-func (t VideoType) In(ts []VideoType) bool {
-	for _, ty := range ts {
-		if ty == t {
-			return true
-		}
-	}
-	return false
-}
+func (t VideoType) Ext() string { return "." + t.Name() }

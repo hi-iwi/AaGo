@@ -1,31 +1,61 @@
 package aenum
 
+import "strconv"
+
 // 配置文件协议类型
 type ProtoType uint8
 
 const (
-	StringVtype ProtoType = 0
-	// 为了兼容日后的 protobuf
-	Int8Vtype    ProtoType = 1
-	Uint8Vtype   ProtoType = 2
-	Int16Vtype   ProtoType = 3
-	Uint16Vtype  ProtoType = 4
-	Int32Vtype   ProtoType = 5
-	Uint32Vtype  ProtoType = 6
-	Int64Vtype   ProtoType = 7
-	Uint64Vtype  ProtoType = 8
-	Float32Vtype ProtoType = 9
-	Float64Vtype ProtoType = 10
+	Nil     ProtoType = 0
+	Bool    ProtoType = 1
+	Booln   ProtoType = 2 // 1|0
+	String  ProtoType = 3
+	Float64 ProtoType = 4
+	Float32 ProtoType = 5
 
-	StringsVtype  ProtoType = 100 // 字符串数组
-	Int8sVtype    ProtoType = 101
-	Uint8sVtype   ProtoType = 102
-	Int16sVtype   ProtoType = 103
-	Uint16sVtype  ProtoType = 104
-	Int32sVtype   ProtoType = 105
-	Uint32sVtype  ProtoType = 106
-	Int64sVtype   ProtoType = 107
-	Uint64sVtype  ProtoType = 108
-	Float32sVtype ProtoType = 109
-	Float64sVtype ProtoType = 110
+	Uint64 ProtoType = 10
+	Uint32 ProtoType = 11
+	Uint24 ProtoType = 12
+	Uint16 ProtoType = 13
+	Uint8  ProtoType = 14
+
+	Int64 ProtoType = 15
+	Int32 ProtoType = 16
+	Int24 ProtoType = 17
+	Int16 ProtoType = 18
+	Int8  ProtoType = 19
+
+	Bools    ProtoType = 101 // bool array
+	Boolns   ProtoType = 102
+	Strings  ProtoType = 103
+	Float64s ProtoType = 104
+	Float32s ProtoType = 105
+
+	Uint64s ProtoType = 110
+	Uint32s ProtoType = 111
+	Uint24s ProtoType = 112
+	Uint16s ProtoType = 113
+	Uint8s  ProtoType = 114
+	Int64s  ProtoType = 115
+	Int32s  ProtoType = 116
+	Int24s  ProtoType = 117
+	Int16s  ProtoType = 118
+	Int8s   ProtoType = 119
+
+	Struct ProtoType = 255
 )
+
+func NewProtoType(t uint8) (ProtoType, bool) {
+	return ProtoType(t), true
+}
+func (x ProtoType) Uint8() uint8         { return uint8(x) }
+func (x ProtoType) String() string       { return strconv.FormatUint(uint64(x), 10) }
+func (x ProtoType) Is(x2 ProtoType) bool { return x == x2 }
+func (x ProtoType) In(args ...ProtoType) bool {
+	for _, a := range args {
+		if a == x {
+			return true
+		}
+	}
+	return false
+}

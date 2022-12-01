@@ -32,9 +32,17 @@ func NewImageType(mime string) (ImageType, bool) {
 	}
 	return UnknownImageType, false
 }
-func (t ImageType) Valid() bool    { return t > UnknownImageType && t <= MaxImageType }
-func (t ImageType) Uint16() uint16 { return uint16(t) }
-func (t ImageType) String() string { return strconv.FormatUint(uint64(t), 10) }
+func (t ImageType) Uint16() uint16    { return uint16(t) }
+func (t ImageType) String() string    { return strconv.FormatUint(uint64(t), 10) }
+func (t ImageType) Is(t2 uint16) bool { return t.Uint16() == t2 }
+func (t ImageType) In(ts ...ImageType) bool {
+	for _, ty := range ts {
+		if ty == t {
+			return true
+		}
+	}
+	return false
+}
 
 func (t ImageType) Name() string {
 	switch t {
@@ -68,13 +76,4 @@ func (t ImageType) ContentType() string {
 		return "image/heic"
 	}
 	return "image/jpeg" // 默认JPEG
-}
-func (t ImageType) Is(t2 ImageType) bool { return t == t2 }
-func (t ImageType) In(ts []ImageType) bool {
-	for _, ty := range ts {
-		if ty == t {
-			return true
-		}
-	}
-	return false
 }
