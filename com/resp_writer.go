@@ -310,13 +310,16 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 		b   []byte
 		err error
 	)
-	if IsHtml(ct.(string)) {
-		// 返回状态码，交给route层处理
-		if context.StatusCodeNotSuccessful(cs.Code) {
-			resp.ictx.Values().Set(ErrCodeKey, cs.Code)
-			resp.ictx.Values().Set(ErrMsgKey, cs.Msg)
-			resp.ictx.StatusCode(cs.Code)
-			return nil
+	switch ct.(type) {
+	case string:
+		if IsHtml(ct.(string)) {
+			// 返回状态码，交给route层处理
+			if context.StatusCodeNotSuccessful(cs.Code) {
+				resp.ictx.Values().Set(ErrCodeKey, cs.Code)
+				resp.ictx.Values().Set(ErrMsgKey, cs.Msg)
+				resp.ictx.StatusCode(cs.Code)
+				return nil
+			}
 		}
 	}
 

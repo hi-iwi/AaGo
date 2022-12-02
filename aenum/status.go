@@ -8,8 +8,8 @@ const (
 	SysRevoked Status = -128 // 已注销，系统删除（可能审核失败）
 	Expired    Status = -121 // 已失效/已过期
 	Deleted    Status = -100 // 用户已删除，谁都不可见
-	Failed     Status = -20  // 审核失败，让用户可以修改，仅用户可见  --> 无论之前设置什么，这里统一一个失败状态，修改的时候再设置
-	Pending1   Status = -10  // 审核1通过 --> 进入阶段性审核流程，就会阻却用户修改权
+	Failed     Status = -20  // censor failed 审核失败，让用户可以修改，仅用户可见  --> 无论之前设置什么，这里统一一个失败状态，修改的时候再设置
+	Pending1   Status = -10  // censor 1 审核1通过 --> 进入阶段性审核流程，就会阻却用户修改权
 	Pending2   Status = -9
 	Pending3   Status = -8
 	Pending4   Status = -7
