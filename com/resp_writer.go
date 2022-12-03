@@ -290,8 +290,8 @@ func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) err
 	c = append(c, ";</script>"...)
 	resp.SetHeader(ContentType, CtJsonp.String())
 	resp.content = c
-	resp.WriteRaw()
-	return nil
+	_, err = resp.WriteRaw()
+	return err
 }
 
 func (resp *RespStruct) write(cs RespContentDTO) error {
@@ -337,6 +337,6 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 	}
 
 	resp.content = b
-	resp.WriteRaw()
-	return nil
+	_, err = resp.WriteRaw()
+	return err
 }
