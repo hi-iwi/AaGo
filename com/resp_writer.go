@@ -3,14 +3,59 @@ package com
 import (
 	"errors"
 	"github.com/hi-iwi/AaGo/ae"
-	"github.com/hi-iwi/AaGo/atype"
 	"github.com/hi-iwi/AaGo/dict"
 	"github.com/hi-iwi/AaGo/util"
 	"github.com/kataras/iris/v12/context"
 	"net/http"
-	"reflect"
 	"strings"
 )
+
+func (resp *RespStruct) write(cs RespContentDTO) error {
+
+	for _, mw := range beforeSerialize {
+		mw(&cs)
+	}
+	for _, mw := range resp.beforeSerialize {
+		mw(&cs)
+	}
+
+	HideServerErr(resp.ictx, &cs, resp.req)
+
+	ct, _ := resp.headers.Load(ContentType)
+	var (
+		b   []byte
+		err error
+	)
+	switch ct.(type) {
+	case string:
+		if IsHtml(ct.(string)) {
+			// 返回状态码，交给route层处理
+			if context.StatusCodeNotSuccessful(cs.Code) {
+				resp.ictx.Values().Set(ErrCodeKey, cs.Code)
+				resp.ictx.Values().Set(ErrMsgKey, cs.Msg)
+				resp.ictx.StatusCode(cs.Code)
+				return nil
+			}
+		}
+	}
+
+	// json Marshal 不转译 HTML 字符
+	b, err = util.JsonString(cs)
+	if err != nil {
+		return err
+	}
+
+	for _, mw := range afterSerialize {
+		b = mw(b)
+	}
+	for _, mw := range resp.afterSerialize {
+		b = mw(b)
+	}
+
+	resp.content = b
+	_, err = resp.WriteRaw()
+	return err
+}
 
 func (resp *RespStruct) WriteHeader(code interface{}) {
 
@@ -167,7 +212,7 @@ func (resp *RespStruct) WriteE(e *ae.Error) error {
 	if e != nil {
 		return resp.WriteSafeE(*e)
 	}
-	return resp.Write(200)
+	return resp.WriteCode(200)
 }
 
 func (resp *RespStruct) WriteSafeE(e ae.Error) error {
@@ -208,49 +253,49 @@ func (resp *RespStruct) WriteErrMsg(msg string) error {
 	return resp.write(cs)
 }
 
-/*
-Write(404)
-Write(404, "Not Found")
-Write(ae.Error{})
-Write(ae.Error{}, data)
-Write(ae.Error{}, data)
-Write(data)
-*/
-func (resp *RespStruct) Write(a interface{}, d ...interface{}) error {
-	cs := RespContentDTO{}
-	v := reflect.ValueOf(a)
-	if a == nil || (v.Kind() == reflect.Ptr && v.IsNil()) {
-		cs.Code = 200
-		cs.Msg = dict.Code2Msg(200)
-	} else if e, ok := a.(*ae.Error); ok {
-		cs.Code = e.Code
-		cs.Msg = e.Msg
-		if len(d) > 0 {
-			cs.Payload = d[0]
-		}
-	} else if code, ok := a.(int); ok {
-		cs.Code = code
-		if len(d) == 0 {
-			cs.Msg = dict.Code2Msg(code)
-		} else {
-			cs.Msg = atype.New(d[0]).String()
-		}
-	} else if (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) && v.Len() == 0 {
-		cs.Code = 204
-		cs.Msg = dict.Code2Msg(cs.Code)
-		cs.Payload = a
-	} else {
-		if payload, e := resp.handlePayload(a, "json"); e != nil {
-			cs.Code = e.Code
-			cs.Msg = e.Msg
-		} else {
-			cs.Code = 200
-			cs.Msg = dict.Code2Msg(200)
-			cs.Payload = payload
-		}
+func (resp *RespStruct) Write(a interface{}, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
 	}
 
-	return resp.write(cs)
+	//
+	//v := reflect.ValueOf(a)
+	//if a == nil || (v.Kind() == reflect.Ptr && v.IsNil()) {
+	//	cs.Code = 200
+	//	cs.Msg = dict.Code2Msg(200)
+	//} else if e, ok := a.(*ae.Error); ok {
+	//	cs.Code = e.Code
+	//	cs.Msg = e.Msg
+	//	if len(d) > 0 {
+	//		cs.Payload = d[0]
+	//	}
+	//} else if code, ok := a.(int); ok {
+	//	cs.Code = code
+	//	if len(d) == 0 {
+	//		cs.Msg = dict.Code2Msg(code)
+	//	} else {
+	//		cs.Msg = atype.New(d[0]).String()
+	//	}
+	//} else if (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) && v.Len() == 0 {
+	//	cs.Code = 204
+	//	cs.Msg = dict.Code2Msg(cs.Code)
+	//	cs.Payload = a
+	//} else {
+
+	//}
+	payload, e := resp.handlePayload(a, "json")
+	if e != nil {
+		return resp.write(RespContentDTO{
+			Code:    e.Code,
+			Msg:     e.Msg,
+			Payload: nil,
+		})
+	}
+	return resp.write(RespContentDTO{
+		Code:    200,
+		Msg:     "OK",
+		Payload: payload,
+	})
 }
 func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) error {
 	cs := RespContentDTO{
@@ -290,53 +335,6 @@ func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) err
 	c = append(c, ";</script>"...)
 	resp.SetHeader(ContentType, CtJsonp.String())
 	resp.content = c
-	_, err = resp.WriteRaw()
-	return err
-}
-
-func (resp *RespStruct) write(cs RespContentDTO) error {
-
-	for _, mw := range beforeSerialize {
-		mw(&cs)
-	}
-	for _, mw := range resp.beforeSerialize {
-		mw(&cs)
-	}
-
-	HideServerErr(resp.ictx, &cs, resp.req)
-
-	ct, _ := resp.headers.Load(ContentType)
-	var (
-		b   []byte
-		err error
-	)
-	switch ct.(type) {
-	case string:
-		if IsHtml(ct.(string)) {
-			// 返回状态码，交给route层处理
-			if context.StatusCodeNotSuccessful(cs.Code) {
-				resp.ictx.Values().Set(ErrCodeKey, cs.Code)
-				resp.ictx.Values().Set(ErrMsgKey, cs.Msg)
-				resp.ictx.StatusCode(cs.Code)
-				return nil
-			}
-		}
-	}
-
-	// json Marshal 不转译 HTML 字符
-	b, err = util.JsonString(cs)
-	if err != nil {
-		return err
-	}
-
-	for _, mw := range afterSerialize {
-		b = mw(b)
-	}
-	for _, mw := range resp.afterSerialize {
-		b = mw(b)
-	}
-
-	resp.content = b
 	_, err = resp.WriteRaw()
 	return err
 }

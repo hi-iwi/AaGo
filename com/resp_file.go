@@ -43,13 +43,13 @@ func (resp *RespStruct) ServeFile(f string, hps ...map[string]string) error {
 	info, err := os.Stat(f)
 
 	if os.IsNotExist(err) {
-		resp.Write(resp.toHTTPError)
+		resp.WriteE(resp.toHTTPError(err))
 		return fmt.Errorf("Stat file %s fail %s", f, err.Error())
 	}
 	// http.ServeFile(w, resp.req.r, f)
 	fi, err := os.Open(f)
 	if err != nil {
-		resp.Write(resp.toHTTPError)
+		resp.WriteE(resp.toHTTPError(err))
 		return fmt.Errorf("Open file %s fail %s", f, err.Error())
 	}
 	defer fi.Close()
@@ -84,7 +84,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 
 	size, err := sizeFunc()
 	if err != nil {
-		resp.Write(500, err.Error)
+		resp.WriteError(err)
 		return err
 	}
 
@@ -97,7 +97,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 			if err == errNoOverlap {
 				resp.SetHeader("Content-Range", fmt.Sprintf("bytes */%d", size))
 			}
-			resp.Write(416, err.Error())
+			resp.WriteErr(416, err.Error())
 			return err
 		}
 		if sumRangesSize(ranges) > size {
@@ -122,7 +122,7 @@ func (resp *RespStruct) serveContent(name string, modtime time.Time, sizeFunc fu
 			// be sent using the multipart/byteranges media type."
 			ra := ranges[0]
 			if _, err := content.Seek(ra.start, io.SeekStart); err != nil {
-				resp.Write(416, err.Error())
+				resp.WriteErr(416, err.Error())
 				return err
 			}
 			sendSize = ra.length
