@@ -1,5 +1,8 @@
 package ae
 
+/*
+自定义的：444 NoRows
+*/
 var (
 	Unauthorized    = &Error{401, "unauthorized"}
 	PaymentRequired = &Error{402, "payment required"}
@@ -13,15 +16,15 @@ var (
 	//冲突通常发生于对 PUT 请求的处理中。例如，在采用版本检查的环境下，某次 PUT 提交的对特定资源的修改请求所附带的版本信息与之前的某个（第三方）请求向冲突，那么此时服务器就应该返回一个409错误，告知用户请求无法完成。此时，响应实体中很可能会包含两个冲突版本之间的差异比较，以便用户重新提交归并以后的新版本。
 	Timeout = &Error{408, "request timeout"} // 被限流也是返回这个
 
-	Conflict            = &Error{409, "conflict"}
-	Gone                = &Error{410, "gone"} // 以前存在过，以后都不会再存在了
-	Expired             = Gone
-	BadMediaType        = &Error{415, "unsupported media type"} // 上传的数据格式非法
-	UnprocessableEntity = &Error{422, "unprocessable entity"}   // 空数组返回这个错误
+	Conflict     = &Error{409, "conflict"}
+	Gone         = &Error{410, "gone"}                   // 以前存在过，以后都不会再存在了，表示数据已经删除、过期、失效
+	BadMediaType = &Error{415, "unsupported media type"} // 上传的数据格式非法
+	NoRows       = &Error{444, "no rows"}                // @warn 自定义。空数组返回这个错误
 
 	Locked           = &Error{423, "locked"}
-	FailedDependency = &Error{424, "failed dependency"}             // 之前发生错误
-	Illegal          = &Error{451, "unavailable for legal reasons"} // 该请求因法律原因不可用。
+	FailedDependency = &Error{424, "failed dependency"} // 之前发生错误
+
+	Illegal = &Error{451, "unavailable for legal reasons"} // 该请求因法律原因不可用。
 
 	InternalServerError = &Error{500, "internal server error"}
 	NotImplemented      = &Error{501, "not implemented"} // 服务器不支持当前请求所需要的某个功能。当服务器无法识别请求的方法，并且无法支持其对任何资源的请求。

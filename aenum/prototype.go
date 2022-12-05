@@ -42,6 +42,22 @@ const (
 	Int16s  ProtoType = 118
 	Int8s   ProtoType = 119
 
+	Date      ProtoType = 120
+	Time      ProtoType = 121
+	Datetime  ProtoType = 122
+	UnixTime  ProtoType = 123
+	Year      ProtoType = 124
+	YearMonth ProtoType = 125 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
+
+	Money   ProtoType = 130
+	Umoney  ProtoType = 131
+	Amount  ProtoType = 132
+	Uamount ProtoType = 133
+
+	Distri   ProtoType = 140 // 6 位地址简码
+	AddrId   ProtoType = 141 // 12 位地址码
+	CountryT ProtoType = 142
+
 	Struct ProtoType = 255
 )
 
