@@ -176,22 +176,40 @@ func (resp *RespStruct) WriteOK() error {
 
 // 返回插入数据的ID，ID 可能是联合主键，或者字段不为id，那么就会以对象形式返回
 // 如： {"id":12314}   {"id":"ADREDD"}   {"id":{"k":"i_am_prinary_key"}}  {"id": {"k":"", "uid":""}}
-func (resp *RespStruct) WriteId(id string) error {
+func (resp *RespStruct) WriteId(id string, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
+	}
 	return resp.Write(map[string]string{"id": id})
 }
-func (resp *RespStruct) WriteUint64Id(id uint64) error {
+func (resp *RespStruct) WriteUint64Id(id uint64, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
+	}
 	return resp.Write(map[string]uint64{"id": id})
 }
-func (resp *RespStruct) WriteUintId(id uint) error {
+func (resp *RespStruct) WriteUintId(id uint, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
+	}
 	return resp.Write(map[string]uint{"id": id})
 }
-func (resp *RespStruct) WriteAliasId(alias string, id string) error {
+func (resp *RespStruct) WriteAliasId(alias string, id string, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
+	}
 	return resp.Write(map[string]string{alias: id})
 }
-func (resp *RespStruct) WriteUint64AliasId(alias string, id uint64) error {
+func (resp *RespStruct) WriteUint64AliasId(alias string, id uint64, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
+	}
 	return resp.Write(map[string]uint64{alias: id})
 }
-func (resp *RespStruct) WriteUintAliasId(alias string, id uint) error {
+func (resp *RespStruct) WriteUintAliasId(alias string, id uint, ee ...*ae.Error) error {
+	if len(ee) > 0 && ee[0] != nil {
+		return resp.WriteE(ee[0])
+	}
 	return resp.Write(map[string]uint{alias: id})
 }
 
