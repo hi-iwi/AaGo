@@ -187,14 +187,25 @@ func (b Bitwise) unsetStmt(fieldName string) string {
 	return fieldName + "=" + fieldName + "&" + bs
 }
 
-func ToBoolean(b bool) Booln {
+func ToBooln(b bool) Booln {
 	if b {
 		return 1
 	}
 	return 0
 }
-func (b Booln) Uint8() uint8 { return uint8(b) }
-func (b Booln) Bool() bool   { return b > 0 }
+func NewBooln(b uint8) Booln {
+	if b > 0 {
+		return 1
+	}
+	return 0
+}
+func (b Booln) Uint8() uint8 {
+	if b.Bool() {
+		return 1
+	}
+	return 0
+}
+func (b Booln) Bool() bool { return b > 0 }
 func ToYearMonth(year int, month time.Month) YearMonth {
 	if year < 0 {
 		return 0
