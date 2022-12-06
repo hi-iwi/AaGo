@@ -43,7 +43,7 @@ type Bitwiser struct {
 	MaxBits  uint8
 }
 
-type Boolean uint8
+type Booln uint8
 type Int24 int32
 type Uint24 uint32
 type Year uint16      // uint16 date: yyyy
@@ -187,14 +187,14 @@ func (b Bitwise) unsetStmt(fieldName string) string {
 	return fieldName + "=" + fieldName + "&" + bs
 }
 
-func ToBoolean(b bool) Boolean {
+func ToBoolean(b bool) Booln {
 	if b {
 		return 1
 	}
 	return 0
 }
-func (b Boolean) Uint8() uint8 { return uint8(b) }
-func (b Boolean) Bool() bool   { return b > 0 }
+func (b Booln) Uint8() uint8 { return uint8(b) }
+func (b Booln) Bool() bool   { return b > 0 }
 func ToYearMonth(year int, month time.Month) YearMonth {
 	if year < 0 {
 		return 0
@@ -925,4 +925,13 @@ func (t SepUint64s) Uint64s(sep string) []uint64 {
 		v[i], _ = strconv.ParseUint(a, 10, 64)
 	}
 	return v
+}
+func (d Distri) Uint24() Uint24 {
+	return Uint24(d)
+}
+func (d Distri) Uint32() uint32 {
+	return uint32(d)
+}
+func (a AddrId) Uint64() uint64 {
+	return uint64(a)
 }

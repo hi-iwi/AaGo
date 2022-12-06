@@ -36,7 +36,7 @@ func String(d interface{}, errs ...error) string {
 			return strconv.FormatInt(v, 10)
 		case byte: // is a built-in alias of uint8, Name('A') returns "97"
 			return strconv.FormatUint(uint64(v), 10)
-		case Boolean:
+		case Booln:
 			return strconv.FormatUint(uint64(v), 10)
 		case uint16:
 			return strconv.FormatUint(uint64(v), 10)
@@ -131,7 +131,7 @@ func BaseInt64(d interface{}, bitSize int, errs ...error) (int64, error) {
 			return v, nil
 		case byte:
 			return int64(v), nil
-		case Boolean:
+		case Booln:
 			return int64(v), nil
 		case uint16:
 			return int64(v), nil
@@ -204,7 +204,7 @@ func BaseUint64(d interface{}, bitSize int, errs ...error) (uint64, error) {
 			return uint64(v), nil
 		case byte: // 等同uint8
 			return uint64(v), nil
-		case Boolean:
+		case Booln:
 			return uint64(v), nil
 		case uint16:
 			return uint64(v), nil
@@ -253,7 +253,7 @@ func Float32(d interface{}, errs ...error) (float32, error) {
 			return float32(v), nil
 		case byte:
 			return float32(v), nil
-		case Boolean:
+		case Booln:
 			return float32(v), nil
 		case uint16:
 			return float32(v), nil
@@ -302,7 +302,7 @@ func Float64(d interface{}, errs ...error) (float64, error) {
 			return float64(v), nil
 		case byte:
 			return float64(v), nil
-		case Boolean:
+		case Booln:
 			return float64(v), nil
 		case uint16:
 			return float64(v), nil
@@ -353,7 +353,7 @@ func NotEmpty(d interface{}, errs ...error) bool {
 			return v != 0
 		case byte:
 			return v > 0
-		case Boolean:
+		case Booln:
 			return v > 0
 		case uint16:
 			return v > 0
