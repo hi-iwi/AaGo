@@ -940,11 +940,20 @@ func (t SepUint64s) Uint64s(sep string) []uint64 {
 	}
 	return v
 }
+func NewDistri(d Uint24) Distri {
+	return Distri(d)
+}
+func ToDistri(d uint32) Distri {
+	return Distri(d)
+}
 func (d Distri) Uint24() Uint24 {
 	return Uint24(d)
 }
 func (d Distri) Uint32() uint32 {
 	return uint32(d)
+}
+func NewAddrId(a uint64) AddrId {
+	return AddrId(a)
 }
 func (a AddrId) Uint64() uint64 {
 	return uint64(a)
