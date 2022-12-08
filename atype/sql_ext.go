@@ -1,6 +1,9 @@
 package atype
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 type Image string // varchar(55)   45 + 5(.webp) + 5 扩展
 type Video string // varchar(55)
@@ -9,8 +12,24 @@ type Images struct{ NullStrings }
 type Videos struct{ NullStrings }
 type Audios struct{ NullStrings }
 
-func (im Image) Src(filler func(path string) ImgSrc) *ImgSrc {
-	return ToImgSrcPtr(string(im), filler)
+func NewImage(p string) Image { return Image(p) }
+
+// 仅保留文件名，去掉目录
+func ToImage(p string) Image {
+	if p == "" {
+		return ""
+	}
+	i := strings.LastIndexByte(p, '/')
+	if i == len(p) {
+		return ""
+	}
+	return Image(p[i+1:])
+}
+func (im Image) String() string {
+	return string(im)
+}
+func (im Image) Src(filler func(path string) *ImgSrc) *ImgSrc {
+	return filler(im.String())
 }
 
 func NewImages(s string) Images {
@@ -32,8 +51,15 @@ func ToImages(v []string) Images {
 	return NewImages(string(s))
 }
 
-func (im Images) Srcs(filler func(path string) ImgSrc) []ImgSrc {
-	return ToImgSrcs(im.Strings(), filler)
+func (im Images) Srcs(filler func(path string) *ImgSrc) []ImgSrc {
+	ims := im.Strings()
+	srcs := make([]ImgSrc, 0, len(ims))
+	for _, im := range ims {
+		if im != "" {
+			srcs = append(srcs, *filler(im))
+		}
+	}
+	return srcs
 }
 
 func NewVideos(s string) Videos {

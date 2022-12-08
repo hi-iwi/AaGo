@@ -220,22 +220,3 @@ func (s ImgSrc) FitTo(maxWidth uint16) string {
 	sw := strconv.FormatUint(uint64(maxWidth), 10)
 	return strings.ReplaceAll(s.Fit, "${MAXWIDTH}", sw)
 }
-
-func ToImgSrcPtr(path string, filler func(path string) ImgSrc) *ImgSrc {
-	if path == "" {
-		return nil
-	}
-	src := filler(path)
-	return &src
-}
-
-func ToImgSrcs(paths []string, filler func(path string) ImgSrc) []ImgSrc {
-	if len(paths) == 0 {
-		return nil
-	}
-	srcs := make([]ImgSrc, len(paths))
-	for i, p := range paths {
-		srcs[i] = filler(p)
-	}
-	return srcs
-}
