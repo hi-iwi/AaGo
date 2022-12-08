@@ -273,6 +273,7 @@ func NewDatetime(d string, loc *time.Location) Datetime {
 	return Datetime(d)
 }
 func ToDatetime(t time.Time) Datetime { return Datetime(t.Format("2006-01-02 15:04:05")) }
+
 func (d Datetime) Valid() bool {
 	s := d.String()
 	return s != "" && s != "0000-00-00 00:00:00" && s != "0000-00-00"
@@ -293,8 +294,10 @@ func (d Datetime) Unix(loc *time.Location) UnixTime {
 	return UnixTime(t.Unix())
 }
 
+func NewUnixTime(u int64) UnixTime {
+	return UnixTime(u)
+}
 func (u UnixTime) Int64() int64 { return int64(u) }
-
 func (u UnixTime) Date(loc *time.Location) Date {
 	return ToDate(time.Unix(u.Int64(), 0).In(loc))
 }
