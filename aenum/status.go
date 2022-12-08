@@ -49,6 +49,10 @@ func (s Status) In(a ...Status) bool {
 	return false
 }
 
+// 显示与不显示的零界点
+func (s Status) IsOk() bool {
+	return s >= Created
+}
 func (s Status) IsPending() bool {
 	return s >= PendingRange[0] && s <= PendingRange[1]
 }
