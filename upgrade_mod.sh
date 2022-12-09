@@ -35,11 +35,11 @@ pushAndUpgradeMod(){
     #env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/AaGo
   fi
   if [ $noUpdate -eq 0 ]; then
-      echo ">>> go get -u ./... && go mod tidy $comment"
+      echo ">>> go get -u ./..."
     go build
     go get -u ./...
-    go mod tidy -compat=1.17
   fi
+  go mod tidy -compat=1.17
   echo ">>> git commit -m  $comment"
   git add -A .
   git commit -m "$comment"
