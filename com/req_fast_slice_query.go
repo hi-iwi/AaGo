@@ -231,7 +231,7 @@ func (r *Req) QueryFloat64s(p string, required bool) ([]float64, *ae.Error) {
 	return v, nil
 }
 
-func (r *Req) QueryJsonFloat32s(p string, required bool) ([]float32, *ae.Error) {
+func (r *Req) QueryFloat32s(p string, required bool) ([]float32, *ae.Error) {
 	q, e := r.Query(p+"[]", required)
 	if e != nil {
 		return r.QuerySepFloat32s(p, ",", required)
