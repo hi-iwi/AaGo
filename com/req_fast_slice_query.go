@@ -6,10 +6,12 @@ import (
 	"reflect"
 )
 
-func (r *Req) BodyJsonStrings(p string, required bool) ([]string, *ae.Error) {
-	q, e := r.Body(p, required)
+// ① arr[0]=100&arr[1]=200
+// ② arr=100,200
+func (r *Req) QueryStrings(p string, required bool) ([]string, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepStrings(p, ",", required)
 	}
 	var v []string
 	d := q.Raw()
@@ -26,10 +28,10 @@ func (r *Req) BodyJsonStrings(p string, required bool) ([]string, *ae.Error) {
 	}
 	return v, nil
 }
-func (r *Req) BodyJsonUint64s(p string, required bool) ([]uint64, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryUint64s(p string, required bool) ([]uint64, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepUint64s(p, ",", required)
 	}
 	var v []uint64
 	d := q.Raw()
@@ -50,10 +52,10 @@ func (r *Req) BodyJsonUint64s(p string, required bool) ([]uint64, *ae.Error) {
 	}
 	return v, nil
 }
-func (r *Req) BodyJsonUints(p string, required bool) ([]uint, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryUints(p string, required bool) ([]uint, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepUints(p, ",", required)
 	}
 	var v []uint
 	d := q.Raw()
@@ -74,14 +76,16 @@ func (r *Req) BodyJsonUints(p string, required bool) ([]uint, *ae.Error) {
 	}
 	return v, nil
 }
-func (r *Req) BodyJsonUint32s(p string, required bool) ([]uint32, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryUint32s(p string, required bool) ([]uint32, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepUint32s(p, ",", required)
 	}
 	var v []uint32
 	d := q.Raw()
 	switch reflect.TypeOf(d).Kind() {
+	case reflect.String:
+		return r.QuerySepUint32s(p, ",", required)
 	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
 		s := reflect.ValueOf(d)
 		v = make([]uint32, s.Len())
@@ -98,14 +102,16 @@ func (r *Req) BodyJsonUint32s(p string, required bool) ([]uint32, *ae.Error) {
 	}
 	return v, nil
 }
-func (r *Req) BodyJsonUint24s(p string, required bool) ([]atype.Uint24, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryUint24s(p string, required bool) ([]atype.Uint24, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepUint24s(p, ",", required)
 	}
 	var v []atype.Uint24
 	d := q.Raw()
 	switch reflect.TypeOf(d).Kind() {
+	case reflect.String:
+		return r.QuerySepUint24s(p, ",", required)
 	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
 		s := reflect.ValueOf(d)
 		v = make([]atype.Uint24, s.Len())
@@ -122,14 +128,16 @@ func (r *Req) BodyJsonUint24s(p string, required bool) ([]atype.Uint24, *ae.Erro
 	}
 	return v, nil
 }
-func (r *Req) BodyJsonUint16s(p string, required bool) ([]uint16, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryUint16s(p string, required bool) ([]uint16, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepUint16s(p, ",", required)
 	}
 	var v []uint16
 	d := q.Raw()
 	switch reflect.TypeOf(d).Kind() {
+	case reflect.String:
+		return r.QuerySepUint16s(p, ",", required)
 	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
 		s := reflect.ValueOf(d)
 		v = make([]uint16, s.Len())
@@ -146,14 +154,16 @@ func (r *Req) BodyJsonUint16s(p string, required bool) ([]uint16, *ae.Error) {
 	}
 	return v, nil
 }
-func (r *Req) BodyJsonUint8s(p string, required bool) ([]uint8, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryUint8s(p string, required bool) ([]uint8, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepUint8s(p, ",", required)
 	}
 	var v []uint8
 	d := q.Raw()
 	switch reflect.TypeOf(d).Kind() {
+	case reflect.String:
+		return r.QuerySepUint8s(p, ",", required)
 	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
 		s := reflect.ValueOf(d)
 		v = make([]uint8, s.Len())
@@ -171,10 +181,10 @@ func (r *Req) BodyJsonUint8s(p string, required bool) ([]uint8, *ae.Error) {
 	return v, nil
 }
 
-func (r *Req) BodyJsonInt8s(p string, required bool) ([]int8, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryInt8s(p string, required bool) ([]int8, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepInt8s(p, ",", required)
 	}
 	var v []int8
 	d := q.Raw()
@@ -196,10 +206,10 @@ func (r *Req) BodyJsonInt8s(p string, required bool) ([]int8, *ae.Error) {
 	return v, nil
 }
 
-func (r *Req) BodyJsonFloat64s(p string, required bool) ([]float64, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryFloat64s(p string, required bool) ([]float64, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepFloat64s(p, ",", required)
 	}
 	var v []float64
 	d := q.Raw()
@@ -221,10 +231,10 @@ func (r *Req) BodyJsonFloat64s(p string, required bool) ([]float64, *ae.Error) {
 	return v, nil
 }
 
-func (r *Req) BodyJsonFloat32s(p string, required bool) ([]float32, *ae.Error) {
-	q, e := r.Body(p, required)
+func (r *Req) QueryJsonFloat32s(p string, required bool) ([]float32, *ae.Error) {
+	q, e := r.Query(p+"[]", required)
 	if e != nil {
-		return nil, e
+		return r.QuerySepFloat32s(p, ",", required)
 	}
 	var v []float32
 	d := q.Raw()

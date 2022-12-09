@@ -6,7 +6,7 @@ readonly root="../"
 comment="NO_COMMENT"
 upgrade=0
 incrTag=1
-
+noUpdate=0
 for arg in "$@"; do
   case "$arg" in
     -u)
@@ -14,6 +14,9 @@ for arg in "$@"; do
       ;;
     -t)
       incrTag=0
+      ;;
+    -i)
+      noUpdate=1
       ;;
     *)
       comment="$arg"
@@ -31,10 +34,12 @@ pushAndUpgradeMod(){
     # 私有库问题
     #env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/AaGo
   fi
-  echo ">>> go get -u ./... && go mod tidy $comment"
-  go build
-  go get -u ./...
-  go mod tidy -compat=1.17
+  if [ $noUpdate -eq 0 ]; then
+      echo ">>> go get -u ./... && go mod tidy $comment"
+    go build
+    go get -u ./...
+    go mod tidy -compat=1.17
+  fi
   echo ">>> git commit -m  $comment"
   git add -A .
   git commit -m "$comment"
