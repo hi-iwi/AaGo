@@ -35,9 +35,11 @@ pushAndUpgradeMod(){
     #env GIT_TERMINAL_PROMPT=1 go get -insecure github.com/hi-iwi/AaGo
   fi
   if [ $noUpdate -eq 0 ]; then
+      # 自动更新所有到最新，并修改go mod到最新（导致libheif等升级）
+      # 不执行这句，go mod就会固定依赖的版本，而不更新
       echo ">>> go get -u -v ./..."
-    go build
-    go get -u -v ./...
+      go build
+      go get -u -v ./...
   fi
   go mod tidy -compat=1.17
   echo ">>> git commit -m  $comment"
