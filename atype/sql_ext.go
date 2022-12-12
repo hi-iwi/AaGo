@@ -12,10 +12,8 @@ type Images struct{ NullStrings }
 type Videos struct{ NullStrings }
 type Audios struct{ NullStrings }
 
-func NewImage(p string) Image { return Image(p) }
-
 // 仅保留文件名，去掉目录
-func ToImage(p string) Image {
+func trimDir(p string) string {
 	if p == "" {
 		return ""
 	}
@@ -23,14 +21,22 @@ func ToImage(p string) Image {
 	if i == len(p) {
 		return ""
 	}
-	return Image(p[i+1:])
+	return p[i+1:]
 }
-func (im Image) String() string {
-	return string(im)
-}
-func (im Image) Src(filler func(path string) *ImgSrc) *ImgSrc {
-	return filler(im.String())
-}
+
+func NewImage(p string) Image { return Image(p) }
+func ToImage(p string) Image  { return NewImage(trimDir(p)) }
+func NewVideo(p string) Video { return Video(p) }
+func ToVideo(p string) Video  { return NewVideo(trimDir(p)) }
+func NewAudio(p string) Audio { return Audio(p) }
+func ToAudio(p string) Audio  { return NewAudio(trimDir(p)) }
+
+func (p Image) String() string                              { return string(p) }
+func (p Image) Src(filler func(string) *ImgSrc) *ImgSrc     { return filler(p.String()) }
+func (p Video) String() string                              { return string(p) }
+func (p Video) Src(filler func(string) *VideoSrc) *VideoSrc { return filler(p.String()) }
+func (p Audio) String() string                              { return string(p) }
+func (p Audio) Src(filler func(string) *AudioSrc) *AudioSrc { return filler(p.String()) }
 
 func NewImages(s string) Images {
 	var x Images

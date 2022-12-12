@@ -26,38 +26,6 @@ type ImgSrc struct {
 	Allowed  [][2]uint16     `json:"allowed"` // 允许的width,height
 }
 
-type AudioSrc struct {
-	Processor int    `json:"processor"`
-	Fit       string `json:"fit"`    // e.g.  https://xxx/video.avi?quality=${QUALITY}
-	Origin    string `json:"origin"` // 不一定是真实的
-	Path      string `json:"path"`
-	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
-	Filetype aenum.AudioType `json:"filetype"` // aenum.Filetype.Int8()
-	Size     Uint24          `json:"size"`     // atype.Uint24.Int8()
-	Duration uint16          `json:"duration"` // 时长，秒
-}
-
-type VideoSrc struct {
-	Processor int    `json:"processor"`
-	Fit       string `json:"fit"`    // e.g.  https://xxx/video.avi?quality=${QUALITY}
-	Origin    string `json:"origin"` // 不一定是真实的
-	Path      string `json:"path"`
-	//Filename  string `json:"filename"` // basename + extension   直接交path给服务端处理
-	Filetype aenum.VideoType `json:"filetype"` // aenum.Filetype.Int8()
-	Size     Uint24          `json:"size"`     // atype.Uint24.Int8()
-	Width    uint16          `json:"width"`
-	Height   uint16          `json:"height"`
-	Duration uint16          `json:"duration"` // 时长，秒
-	Allowed  [][2]uint16     `json:"allowed"`  // 限定允许的width,height
-}
-
-func (s AudioSrc) FitTo(quality string) string {
-	return strings.ReplaceAll(s.Fit, "${QUALITY}", quality)
-}
-func (s VideoSrc) FitTo(quality string) string {
-	return strings.ReplaceAll(s.Fit, "${QUALITY}", quality)
-}
-
 // 绝对asset url，不需要进行任何图片处理
 func NewImgAsset(url string) *ImgSrc {
 	if url == "" {
@@ -77,44 +45,7 @@ func NewImgAsset(url string) *ImgSrc {
 		Allowed:   nil,
 	}
 }
-
-// 绝对asset url，不需要进行任何图片处理
-func NewAudioAsset(url string) *AudioSrc {
-	if url == "" {
-		return nil
-	}
-	ft, _ := aenum.NewAudioType(path.Ext(url))
-	return &AudioSrc{
-		Processor: 0,
-		Fit:       url,
-		Origin:    url,
-		Path:      url,
-		Filetype:  ft,
-		Size:      0,
-		Duration:  0,
-	}
-}
-
-// 绝对asset url，不需要进行任何图片处理
-func NewVideoAsset(url string) *VideoSrc {
-	if url == "" {
-		return nil
-	}
-	ft, _ := aenum.NewVideoType(path.Ext(url))
-	return &VideoSrc{
-		Processor: 0,
-		Fit:       url,
-		Origin:    url,
-		Path:      url,
-		Filetype:  ft,
-		Size:      0,
-		Width:     0,
-		Height:    0,
-		Duration:  0,
-		Allowed:   nil,
-	}
-}
-
+ 
 // similar to path.Base()
 func (s ImgSrc) Filename() string { return util.Filename(s.Path) }
 

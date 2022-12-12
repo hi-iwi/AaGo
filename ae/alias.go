@@ -1,7 +1,7 @@
 package ae
 
 /*
-自定义的：444 NoRows
+自定义的：444 NoRows； 503
 */
 var (
 	Unauthorized    = &Error{401, "unauthorized"}
@@ -28,6 +28,8 @@ var (
 
 	InternalServerError = &Error{500, "internal server error"}
 	NotImplemented      = &Error{501, "not implemented"} // 服务器不支持当前请求所需要的某个功能。当服务器无法识别请求的方法，并且无法支持其对任何资源的请求。
+
+	ServerException = &Error{503, "server exception"} // 客户端自定义，表示未知服务端错误；最常见的就是，没有正确返回数据，或者返回 {code:0,msg:""} 等未协商的数据，导致客户端无法正常处理
 )
 
 // 服务端数据存储解析存在异常
