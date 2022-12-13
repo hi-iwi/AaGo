@@ -2,8 +2,6 @@ package atype
 
 import (
 	"github.com/hi-iwi/AaGo/aenum"
-	"github.com/hi-iwi/AaGo/util"
-	"path"
 	"strconv"
 	"strings"
 )
@@ -26,28 +24,7 @@ type ImgSrc struct {
 	Allowed  [][2]uint16     `json:"allowed"` // 允许的width,height
 }
 
-// 绝对asset url，不需要进行任何图片处理
-func NewImgAsset(url string) *ImgSrc {
-	if url == "" {
-		return nil
-	}
-	ft, _ := aenum.NewImageType(path.Ext(url))
-	return &ImgSrc{
-		Processor: 0,
-		Fill:      url,
-		Fit:       url,
-		Origin:    url,
-		Path:      url,
-		Filetype:  ft,
-		Size:      0,
-		Width:     0,
-		Height:    0,
-		Allowed:   nil,
-	}
-}
- 
-// similar to path.Base()
-func (s ImgSrc) Filename() string { return util.Filename(s.Path) }
+func (s ImgSrc) Filename() Image { return ToImage(s.Path) }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
 	if s.Processor == 0 {

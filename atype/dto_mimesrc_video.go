@@ -17,3 +17,5 @@ type VideoSrc struct {
 	Duration uint16          `json:"duration"` // 时长，秒
 	Allowed  [][2]uint16     `json:"allowed"`  // 限定允许的width,height
 }
+
+func (s VideoSrc) Filename() Video { return ToVideo(s.Path) }
