@@ -32,7 +32,7 @@ func NewSqlError(err error) *Error {
 	case sql.ErrTxDone:
 		return NewError(500, pos+" sql tx done: "+m)
 	case sql.ErrNoRows:
-		return NoRows
+		return NotFound // 通过在 asql层，对数组转换为 ae.NoRows
 	}
 
 	dupExp := regexp.MustCompile(`Error\s\d+:\s+Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)

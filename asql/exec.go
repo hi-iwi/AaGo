@@ -125,9 +125,10 @@ func (d *DB) QueryRow(ctx context.Context, query string, args ...interface{}) (*
 		return stmt, nil, e
 	}
 	row := stmt.QueryRowContext(ctx, args...)
-	if row.Err() != nil {
+	err := row.Err()
+	if err != nil {
 		stmt.Close()
-		return nil, nil, ae.NewSqlError(row.Err())
+		return nil, nil, ae.NewSqlError(err)
 	}
 	return stmt, row, nil
 }
@@ -178,6 +179,9 @@ func (d *DB) Query(ctx context.Context, query string, args ...interface{}) (*sql
 	rows, err := stmt.QueryContext(ctx, args...)
 	if err != nil {
 		stmt.Close()
+		if err == sql.ErrNoRows {
+			return nil, nil, ae.NoRows
+		}
 		return nil, nil, ae.NewSqlError(err)
 	}
 	return stmt, rows, nil

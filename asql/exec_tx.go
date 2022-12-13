@@ -164,6 +164,9 @@ func (t *Tx) QueryTx(ctx context.Context, query string, args ...interface{}) (*s
 	rows, err := stmt.QueryContext(ctx, args...)
 	if err != nil {
 		stmt.Close()
+		if err == sql.ErrNoRows {
+			return nil, nil, ae.NoRows
+		}
 		return nil, nil, ae.NewSqlError(err)
 	}
 	return stmt, rows, nil
