@@ -4,6 +4,7 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
+	"html/template"
 	"strconv"
 	"strings"
 	"time"
@@ -187,6 +188,14 @@ func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (aty
 func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) {
 	_x, e := r.Query(p, required...)
 	return _x.String(), e
+}
+func (r *Req) BodyText(p string, required ...interface{}) (atype.Text, *ae.Error) {
+	_x, e := r.Query(p, required...)
+	return atype.Text(_x.String()), e
+}
+func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Error) {
+	_x, e := r.Query(p, required...)
+	return template.HTML(_x.String()), e
 }
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
