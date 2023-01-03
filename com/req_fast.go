@@ -106,11 +106,7 @@ func (r *Req) QueryBool(p string, required ...interface{}) (bool, *ae.Error) {
 	if e != nil {
 		return false, e
 	}
-	b, err := _x.Bool()
-	if err != nil {
-		return false, ae.BadParam(p)
-	}
-	return b, e
+	return _x.DefaultBool(false), nil
 }
 func (r *Req) QueryBooln(p string, required ...interface{}) (atype.Booln, *ae.Error) {
 	b, e := r.QueryBool(p, required...)
@@ -220,11 +216,7 @@ func (r *Req) BodyBool(p string, required ...interface{}) (bool, *ae.Error) {
 	if e != nil {
 		return false, e
 	}
-	b, err := _x.Bool()
-	if err != nil {
-		return false, ae.BadParam(p)
-	}
-	return b, e
+	return _x.DefaultBool(false), e
 }
 func (r *Req) BodyBooln(p string, required ...interface{}) (atype.Booln, *ae.Error) {
 	b, e := r.BodyBool(p, required...)
