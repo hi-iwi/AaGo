@@ -101,6 +101,24 @@ func (r *Req) QueryString(p string, params ...interface{}) (string, *ae.Error) {
 	_x, e := r.Query(p, params...)
 	return _x.String(), e
 }
+func (r *Req) QueryBool(p string, required ...interface{}) (bool, *ae.Error) {
+	_x, e := r.Query(p, required...)
+	if e != nil {
+		return false, e
+	}
+	b, err := _x.Bool()
+	if err != nil {
+		return false, ae.BadParam(p)
+	}
+	return b, e
+}
+func (r *Req) QueryBooln(p string, required ...interface{}) (atype.Booln, *ae.Error) {
+	b, e := r.QueryBool(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return atype.ToBooln(b), nil
+}
 
 // 允许0  --> 直接用  _x.Int8() 就可以了
 func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
@@ -186,16 +204,34 @@ func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (aty
 	return atype.NewDatetime(_x.String(), loc), nil
 }
 func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) {
-	_x, e := r.Query(p, required...)
+	_x, e := r.Body(p, required...)
 	return _x.String(), e
 }
 func (r *Req) BodyText(p string, required ...interface{}) (atype.Text, *ae.Error) {
-	_x, e := r.Query(p, required...)
+	_x, e := r.Body(p, required...)
 	return atype.Text(_x.String()), e
 }
 func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Error) {
-	_x, e := r.Query(p, required...)
+	_x, e := r.Body(p, required...)
 	return template.HTML(_x.String()), e
+}
+func (r *Req) BodyBool(p string, required ...interface{}) (bool, *ae.Error) {
+	_x, e := r.Body(p, required...)
+	if e != nil {
+		return false, e
+	}
+	b, err := _x.Bool()
+	if err != nil {
+		return false, ae.BadParam(p)
+	}
+	return b, e
+}
+func (r *Req) BodyBooln(p string, required ...interface{}) (atype.Booln, *ae.Error) {
+	b, e := r.BodyBool(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return atype.ToBooln(b), nil
 }
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
