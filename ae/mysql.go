@@ -35,7 +35,7 @@ func NewSqlError(err error) *Error {
 		return NotFound // 通过在 asql层，对数组转换为 ae.NoRows
 	}
 
-	dupExp := regexp.MustCompile(`Error\s\d+:\s+Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)
+	dupExp := regexp.MustCompile(`Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)
 	dupMatches := dupExp.FindAllStringSubmatch(m, -1)
 	if dupMatches != nil && len(dupMatches) > 0 && len(dupMatches[0]) == 3 {
 		return NewError(409, "conflict "+dupMatches[0][1])
