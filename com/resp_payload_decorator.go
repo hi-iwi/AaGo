@@ -16,6 +16,9 @@ func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (in
 }
 
 func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *ae.Error) {
+	if payload == nil {
+		return nil, nil
+	}
 	var e *ae.Error
 	t := reflect.TypeOf(payload)
 	v := reflect.ValueOf(payload)
