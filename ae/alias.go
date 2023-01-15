@@ -19,7 +19,10 @@ var (
 	Conflict     = &Error{409, "conflict"}
 	Gone         = &Error{410, "gone"}                   // 以前存在过，以后都不会再存在了，表示数据已经删除、过期、失效
 	BadMediaType = &Error{415, "unsupported media type"} // 上传的数据格式非法
-	NoRows       = &Error{444, "no rows"}                // @warn 自定义。空数组返回这个错误
+
+	// @warn 自定义。空数组返回这个错误，表示不可以再进行下一页查询了
+	// 若是 code:200, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
+	NoRows = &Error{444, "no rows"}
 
 	Locked           = &Error{423, "locked"}
 	FailedDependency = &Error{424, "failed dependency"} // 之前发生错误

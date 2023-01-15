@@ -74,7 +74,12 @@ type SepUint64s string // 1,2,3,4
 //	4 bytes for integer type information (1 = Point)
 //	8 bytes for double-precision X coordinate (1)
 //	8 bytes for double-precision Y coordinate (−1)
-
+func ValidPos(p Position) bool {
+	return p != nil && p.Valid()
+}
+func ValidIp(ip Ip) bool {
+	return ip != nil && ip.Valid()
+}
 func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position {
 	buf := new(bytes.Buffer)
 	buf.Grow(25)
