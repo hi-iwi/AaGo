@@ -6,22 +6,25 @@ type Status int8
 
 const (
 	SysRevoked Status = -128 // 已注销，系统删除（可能审核失败）
-	Expired    Status = -121 // 已失效/已过期
+	Expired    Status = -121 // 已失效/已过期，后面系统会自动删除
 	Deleted    Status = -100 // 用户已删除，谁都不可见
-	Failed     Status = -20  // censor failed 审核失败，让用户可以修改，仅用户可见  --> 无论之前设置什么，这里统一一个失败状态，修改的时候再设置
-	Pending1   Status = -10  // censor 1 审核1通过 --> 进入阶段性审核流程，就会阻却用户修改权
-	Pending2   Status = -9
-	Pending3   Status = -8
-	Pending4   Status = -7
-	Pending5   Status = -6
-	Pending6   Status = -5
-	Pending7   Status = -4
-	Pending8   Status = -3
-	Pending9   Status = -2
-	Pending    Status = -1  // 审核中，不展示
-	Created    Status = 0   // 新创建，审核中，但是显示
-	Passed     Status = 1   // 审核通过
-	SysLocked  Status = 127 // 系统已锁定，用户不得再修改；PS：允许删除，可执行解绑软删除，或硬删除，具体情况具体对待
+
+	/********************* <=-100  属于需要删除的内容，方便分区删除整个分区 ************************/
+
+	Failed    Status = -20 // censor failed 审核失败，让用户可以修改，仅用户可见  --> 无论之前设置什么，这里统一一个失败状态，修改的时候再设置
+	Pending1  Status = -10 // censor 1 审核1通过 --> 进入阶段性审核流程，就会阻却用户修改权
+	Pending2  Status = -9
+	Pending3  Status = -8
+	Pending4  Status = -7
+	Pending5  Status = -6
+	Pending6  Status = -5
+	Pending7  Status = -4
+	Pending8  Status = -3
+	Pending9  Status = -2
+	Pending   Status = -1  // 审核中，不展示
+	Created   Status = 0   // 新创建，审核中，但是显示
+	Passed    Status = 1   // 审核通过
+	SysLocked Status = 127 // 系统已锁定，用户不得再修改；PS：允许删除，可执行解绑软删除，或硬删除，具体情况具体对待
 
 )
 
