@@ -24,9 +24,11 @@ type Point struct {
 	Y float64 `json:"y"`
 }
 
-// position 一般会建立 spatial 索引，而spatial 索引不支持 null，所以必须要有默认坐标点
-type Position []byte // postion, coordinate or point。默认 POINT(0,0) 几内亚湾的海里
-type Ip []byte       // IP Address，默认 `\0`
+/*
+ 一般point 需要建 spatial 索引，就需要单独到一个表里，不应该放在一起
+*/
+type Position struct{ sql.NullString } // []byte // postion, coordinate or point
+type Ip struct{ sql.NullString }       //  net.IP               // IP Address
 
 // https://en.wikipedia.org/wiki/Bit_numbering
 type BitPos uint8       // bit position (in big endian)
@@ -76,13 +78,9 @@ type SepUint64s string // 1,2,3,4
 //	4 bytes for integer type information (1 = Point)
 //	8 bytes for double-precision X coordinate (1)
 //	8 bytes for double-precision Y coordinate (−1)
-func ValidPos(p Position) bool {
-	return p != nil && p.Valid()
-}
-func ValidIp(ip Ip) bool {
-	return ip != nil && ip.Valid()
-}
+
 func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position {
+	var pos Position
 	buf := new(bytes.Buffer)
 	buf.Grow(25)
 	// uint32就是4个字节
@@ -91,73 +89,102 @@ func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position 
 	binary.Write(buf, binary.LittleEndian, typ)
 	binary.Write(buf, binary.LittleEndian, x)
 	binary.Write(buf, binary.LittleEndian, y)
-	return buf.Bytes()
+	pos.Scan(buf.Bytes())
+	return pos
 }
 func ToPosition(coord Coordinate) Position {
 	//  4326 是GPS   WGS84，表示按 lat-lng 保存
 	return ToPositionBase(4326, 1, 1, coord.Latitude, coord.Longitude)
 }
-
+func (p Position) Bytes() []byte {
+	if !p.Ok() {
+		return nil
+	}
+	return []byte(p.String)
+}
+func (p Position) Ok() bool {
+	return p.Valid && len(p.String) == 25
+}
 func binaryRead(r io.Reader, littleEndian bool, data interface{}) error {
 	if littleEndian {
 		return binary.Read(r, binary.LittleEndian, data)
 	}
 	return binary.Read(r, binary.BigEndian, data)
 }
-func (p Position) Valid() bool {
-	return len(p) == 25
-}
-func (p Position) Parse() (srid uint32, order byte, typ uint32, x float64, y float64) {
-	if p.Valid() {
-		buf := bytes.NewReader(p[4:5])
-		binary.Read(buf, binary.LittleEndian, &order) // 只有1字节，无论bigEndian，还是littleEndian，结果都一样
-		littleEndian := order == 1
-		buf = bytes.NewReader(p[0:4])
-		binaryRead(buf, littleEndian, &srid)
-		buf = bytes.NewReader(p[5:9])
-		binaryRead(buf, littleEndian, &typ)
-		buf = bytes.NewReader(p[9:17])
-		binaryRead(buf, littleEndian, &x)
-		buf = bytes.NewReader(p[17:25])
-		binaryRead(buf, littleEndian, &y)
+
+func (p Position) Parse() (srid uint32, order byte, typ uint32, x float64, y float64, ok bool) {
+	b := p.Bytes()
+	if b == nil {
+		return
 	}
+	buf := bytes.NewReader(b[4:5])
+	binary.Read(buf, binary.LittleEndian, &order) // 只有1字节，无论bigEndian，还是littleEndian，结果都一样
+	littleEndian := order == 1
+	buf = bytes.NewReader(b[0:4])
+	binaryRead(buf, littleEndian, &srid)
+	buf = bytes.NewReader(b[5:9])
+	binaryRead(buf, littleEndian, &typ)
+	buf = bytes.NewReader(b[9:17])
+	binaryRead(buf, littleEndian, &x)
+	buf = bytes.NewReader(b[17:25])
+	binaryRead(buf, littleEndian, &y)
 	return
 }
-func (p Position) Coordinate() Coordinate {
-	_, _, _, x, y := p.Parse()
-	return Coordinate{
+func (p Position) Coordinate() *Coordinate {
+	_, _, _, x, y, ok := p.Parse()
+	if !ok {
+		return nil
+	}
+	return &Coordinate{
 		Latitude:  x,
 		Longitude: y,
 	}
 }
-func (p Position) Point() Point {
-	_, _, _, x, y := p.Parse()
-	return Point{
+func (p Position) Point() *Point {
+	_, _, _, x, y, ok := p.Parse()
+	if !ok {
+		return nil
+	}
+	return &Point{
 		X: x,
 		Y: y,
 	}
 }
-func (ip Ip) Valid() bool {
-	return len(ip) == net.IPv4len || len(ip) == net.IPv6len
-}
-func (ip Ip) String() string {
-	var addr string
-	if len(ip) > 1 {
-		if nip := net.IP(ip).To16(); len(nip) > 0 {
-			addr = nip.String()
-		}
+func ToIp(addr string) Ip {
+	var ip Ip
+	if addr == "" {
+		return ip
 	}
-	return addr
+	nip := net.ParseIP(addr)
+	if nip != nil {
+		return ip
+	}
+
+	ip.Scan(nip.String())
+	return ip
+}
+func (ip Ip) Bytes() []byte {
+	if !ip.Ok() {
+		return nil
+	}
+	return []byte(ip.String)
 }
 
-func ToIp(addr string) Ip {
-	if addr != "" {
-		nip := net.ParseIP(addr)
-		if nip != nil {
-			return Ip(nip)
-		}
+func (ip Ip) Ok() bool {
+	return ip.Valid && len(ip.String) == net.IPv4len || len(ip.String) == net.IPv6len
+}
+
+func (ip Ip) To16() string {
+	b := ip.Bytes()
+	if b == nil {
+		return ""
 	}
-	return []byte{0} // varbinary(16) NULL DEFAULT 0x00 ;   ==> 等价于 DEFAULT '\0'
+	ip2 := net.IP(b)
+	// 包括ipv4 / ipv16
+	if nip := ip2.To16(); len(nip) > 0 {
+		return nip.String()
+	}
+	return ""
 }
 
 func (n Uint24) Uint32() uint32 { return uint32(n) }
