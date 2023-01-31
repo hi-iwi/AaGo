@@ -23,8 +23,10 @@ type Point struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
-type Position []byte // postion, coordinate or point
-type Ip []byte       // IP Address
+
+// position 一般会建立 spatial 索引，而spatial 索引不支持 null，所以必须要有默认坐标点
+type Position []byte // postion, coordinate or point。默认 POINT(0,0) 几内亚湾的海里
+type Ip []byte       // IP Address，默认 `\0`
 
 // https://en.wikipedia.org/wiki/Bit_numbering
 type BitPos uint8       // bit position (in big endian)
