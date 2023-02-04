@@ -92,7 +92,10 @@ func ToPositionBase(srid uint32, order byte, typ uint32, x, y float64) Position 
 	pos.Scan(buf.Bytes())
 	return pos
 }
-func ToPosition(coord Coordinate) Position {
+func ToPosition(coord *Coordinate) Position {
+	if coord == nil {
+		return Position{}
+	}
 	//  4326 是GPS   WGS84，表示按 lat-lng 保存
 	return ToPositionBase(4326, 1, 1, coord.Latitude, coord.Longitude)
 }
