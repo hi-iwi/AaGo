@@ -145,6 +145,10 @@ func (r *Req) QueryUint16(p string, required ...bool) (uint16, *ae.Error) {
 	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint16(0), e
 }
+func (r *Req) QueryUint24(p string, required ...bool) (atype.Uint24, *ae.Error) {
+	_x, e := r.QueryDigit(p, true, required...)
+	return _x.DefaultUint24(0), e
+}
 func (r *Req) QueryUint32(p string, required ...bool) (uint32, *ae.Error) {
 	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint32(0), e
