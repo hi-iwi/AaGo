@@ -176,41 +176,59 @@ func (resp *RespStruct) WriteOK() error {
 
 // 返回插入数据的ID，ID 可能是联合主键，或者字段不为id，那么就会以对象形式返回
 // 如： {"id":12314}   {"id":"ADREDD"}   {"id":{"k":"i_am_prinary_key"}}  {"id": {"k":"", "uid":""}}
-func (resp *RespStruct) WriteId(id string, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
-	}
+func (resp *RespStruct) WriteId(id string) error {
 	return resp.Write(map[string]string{"id": id})
 }
-func (resp *RespStruct) WriteUint64Id(id uint64, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
+func (resp *RespStruct) TryWriteId(id string, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
 	}
+	return resp.WriteId(id)
+}
+func (resp *RespStruct) WriteUint64Id(id uint64) error {
 	return resp.Write(map[string]uint64{"id": id})
 }
-func (resp *RespStruct) WriteUintId(id uint, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
+func (resp *RespStruct) TryWriteUint64Id(id uint64, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
 	}
+	return resp.WriteUint64Id(id)
+}
+func (resp *RespStruct) WriteUintId(id uint) error {
 	return resp.Write(map[string]uint{"id": id})
 }
-func (resp *RespStruct) WriteAliasId(alias string, id string, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
+func (resp *RespStruct) TryWriteUintId(id uint, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
 	}
+	return resp.WriteUintId(id)
+}
+func (resp *RespStruct) WriteAliasId(alias string, id string) error {
 	return resp.Write(map[string]string{alias: id})
 }
-func (resp *RespStruct) WriteUint64AliasId(alias string, id uint64, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
+func (resp *RespStruct) TryWriteAliasId(alias string, id string, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
 	}
+	return resp.WriteAliasId(alias, id)
+}
+func (resp *RespStruct) WriteUint64AliasId(alias string, id uint64) error {
 	return resp.Write(map[string]uint64{alias: id})
 }
-func (resp *RespStruct) WriteUintAliasId(alias string, id uint, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
+func (resp *RespStruct) TryWriteUint64AliasId(alias string, id uint64, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
 	}
+	return resp.WriteUint64AliasId(alias, id)
+}
+func (resp *RespStruct) WriteUintAliasId(alias string, id uint) error {
 	return resp.Write(map[string]uint{alias: id})
+}
+func (resp *RespStruct) TryWriteUintAliasId(alias string, id uint, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
+	}
+	return resp.WriteUintAliasId(alias, id)
 }
 
 // k1,v1, k2, v2, k3,v3
@@ -271,10 +289,7 @@ func (resp *RespStruct) WriteErrMsg(msg string) error {
 	return resp.write(cs)
 }
 
-func (resp *RespStruct) Write(a interface{}, ee ...*ae.Error) error {
-	if len(ee) > 0 && ee[0] != nil {
-		return resp.WriteE(ee[0])
-	}
+func (resp *RespStruct) Write(a interface{}) error {
 
 	//
 	//v := reflect.ValueOf(a)
@@ -315,6 +330,14 @@ func (resp *RespStruct) Write(a interface{}, ee ...*ae.Error) error {
 		Payload: payload,
 	})
 }
+
+func (resp *RespStruct) TryWrite(a interface{}, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
+	}
+	return resp.Write(a)
+}
+
 func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) error {
 	cs := RespContentDTO{
 		Code: 200,
