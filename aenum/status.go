@@ -59,6 +59,7 @@ func (s Status) IsPending() bool { return s >= PendingRange[0] && s <= PendingRa
 
 // 是否审核通过
 func (s Status) IsPassed() bool { return s >= PassedRange[0] && s <= PassedRange[1] }
+func (s Status) IsFailed() bool { return s < PassedRange[0] }
 
 // After/Before 不包括； From/Within 包括
 // FromPending 一般用户检测某个状态是否在审核中，或者已审核通过。
