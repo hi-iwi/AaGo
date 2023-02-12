@@ -10,8 +10,7 @@ type Tx struct {
 	Tx *sql.Tx
 }
 
-// 为了避免跟db同名导致失误，这里统一加后缀
-func (d *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, *ae.Error) {
+func (d *DB) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, *ae.Error) {
 	tx, err := d.DB.BeginTx(ctx, opts)
 	if err != nil {
 		return nil, ae.NewSqlError(err)
@@ -37,13 +36,13 @@ func (t *Tx) Recover() func() {
 	}
 }
 
-func (t *Tx) PrepareTx(ctx context.Context, query string) (*sql.Stmt, *ae.Error) {
+func (t *Tx) Prepare(ctx context.Context, query string) (*sql.Stmt, *ae.Error) {
 	stmt, err := t.Tx.PrepareContext(ctx, query)
 	return stmt, ae.NewSqlError(err)
 }
 
-func (t *Tx) ExecTx(ctx context.Context, query string, args ...interface{}) (*sql.Stmt, sql.Result, *ae.Error) {
-	stmt, e := t.PrepareTx(ctx, query)
+func (t *Tx) Exec(ctx context.Context, query string, args ...interface{}) (*sql.Stmt, sql.Result, *ae.Error) {
+	stmt, e := t.Prepare(ctx, query)
 	if e != nil {
 		return stmt, nil, e
 	}
@@ -55,16 +54,16 @@ func (t *Tx) ExecTx(ctx context.Context, query string, args ...interface{}) (*sq
 	return stmt, res, nil
 }
 
-func (t *Tx) ExecuteTx(ctx context.Context, query string, args ...interface{}) *ae.Error {
-	stmt, _, e := t.ExecTx(ctx, query, args...)
+func (t *Tx) Execute(ctx context.Context, query string, args ...interface{}) *ae.Error {
+	stmt, _, e := t.Exec(ctx, query, args...)
 	if e == nil {
 		stmt.Close()
 	}
 	return e
 }
 
-func (t *Tx) InsertTx(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
-	stmt, res, e := t.ExecTx(ctx, query, args...)
+func (t *Tx) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
+	stmt, res, e := t.Exec(ctx, query, args...)
 	if e != nil {
 		return 0, e
 	}
@@ -74,8 +73,8 @@ func (t *Tx) InsertTx(ctx context.Context, query string, args ...interface{}) (u
 	return uint(id), ae.NewSqlError(err)
 }
 
-func (t *Tx) UpdateTx(ctx context.Context, query string, args ...interface{}) (int64, *ae.Error) {
-	stmt, res, e := t.ExecTx(ctx, query, args...)
+func (t *Tx) Update(ctx context.Context, query string, args ...interface{}) (int64, *ae.Error) {
+	stmt, res, e := t.Exec(ctx, query, args...)
 	if e != nil {
 		return 0, e
 	}
@@ -90,11 +89,11 @@ func (t *Tx) UpdateTx(ctx context.Context, query string, args ...interface{}) (i
 	stmt,_ := db.Prepare("select count(*) from tb where id=?")
 	defer stmt.Close()
 	for i:=0;i<1000;i++{
-		stmt.QueryRowContext(ctx, i).&ScanTx()
+		stmt.QueryRowContext(ctx, i).&Scan()
 	}
 */
-func (t *Tx) BatchQueryRowTx(ctx context.Context, query string, margs ...[]interface{}) (*sql.Stmt, []*sql.Row, *ae.Error) {
-	stmt, e := t.PrepareTx(ctx, query)
+func (t *Tx) BatchQueryRow(ctx context.Context, query string, margs ...[]interface{}) (*sql.Stmt, []*sql.Row, *ae.Error) {
+	stmt, e := t.Prepare(ctx, query)
 	if e != nil {
 		return stmt, nil, e
 	}
@@ -105,8 +104,8 @@ func (t *Tx) BatchQueryRowTx(ctx context.Context, query string, margs ...[]inter
 	return stmt, rows, nil
 }
 
-func (t *Tx) QueryRowTx(ctx context.Context, query string, args ...interface{}) (*sql.Stmt, *sql.Row, *ae.Error) {
-	stmt, e := t.PrepareTx(ctx, query)
+func (t *Tx) QueryRow(ctx context.Context, query string, args ...interface{}) (*sql.Stmt, *sql.Row, *ae.Error) {
+	stmt, e := t.Prepare(ctx, query)
 	if e != nil {
 		return stmt, nil, e
 	}
@@ -118,8 +117,8 @@ func (t *Tx) QueryRowTx(ctx context.Context, query string, args ...interface{}) 
 	return stmt, row, nil
 }
 
-func (t *Tx) ScanArgsTx(ctx context.Context, query string, args []interface{}, dest ...interface{}) *ae.Error {
-	stmt, row, e := t.QueryRowTx(ctx, query, args...)
+func (t *Tx) ScanArgs(ctx context.Context, query string, args []interface{}, dest ...interface{}) *ae.Error {
+	stmt, row, e := t.QueryRow(ctx, query, args...)
 	if e != nil {
 		return e
 	}
@@ -127,8 +126,8 @@ func (t *Tx) ScanArgsTx(ctx context.Context, query string, args []interface{}, d
 	return ae.NewSqlError(row.Scan(dest...))
 }
 
-func (t *Tx) ScanRowTx(ctx context.Context, query string, dest ...interface{}) *ae.Error {
-	stmt, row, e := t.QueryRowTx(ctx, query)
+func (t *Tx) ScanRow(ctx context.Context, query string, dest ...interface{}) *ae.Error {
+	stmt, row, e := t.QueryRow(ctx, query)
 	if e != nil {
 		return e
 	}
@@ -136,8 +135,8 @@ func (t *Tx) ScanRowTx(ctx context.Context, query string, dest ...interface{}) *
 	return ae.NewSqlError(row.Scan(dest...))
 }
 
-func (t *Tx) ScanTx(ctx context.Context, query string, id uint64, dest ...interface{}) *ae.Error {
-	stmt, row, e := t.QueryRowTx(ctx, query, id)
+func (t *Tx) Scan(ctx context.Context, query string, id uint64, dest ...interface{}) *ae.Error {
+	stmt, row, e := t.QueryRow(ctx, query, id)
 	if e != nil {
 		return e
 	}
@@ -145,8 +144,8 @@ func (t *Tx) ScanTx(ctx context.Context, query string, id uint64, dest ...interf
 	return ae.NewSqlError(row.Scan(dest...))
 }
 
-func (t *Tx) ScanXTx(ctx context.Context, query string, id string, dest ...interface{}) *ae.Error {
-	stmt, row, e := t.QueryRowTx(ctx, query, id)
+func (t *Tx) ScanX(ctx context.Context, query string, id string, dest ...interface{}) *ae.Error {
+	stmt, row, e := t.QueryRow(ctx, query, id)
 	if e != nil {
 		return e
 	}
@@ -156,8 +155,8 @@ func (t *Tx) ScanXTx(ctx context.Context, query string, id string, dest ...inter
 
 // do not forget to close *sql.Rows
 // 不要忘了关闭 rows
-func (t *Tx) QueryTx(ctx context.Context, query string, args ...interface{}) (*sql.Stmt, *sql.Rows, *ae.Error) {
-	stmt, e := t.PrepareTx(ctx, query)
+func (t *Tx) Query(ctx context.Context, query string, args ...interface{}) (*sql.Stmt, *sql.Rows, *ae.Error) {
+	stmt, e := t.Prepare(ctx, query)
 	if e != nil {
 		return stmt, nil, e
 	}
