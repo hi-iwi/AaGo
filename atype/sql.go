@@ -71,6 +71,13 @@ type SepInts string    // 1,2,3,4
 type SepUints string   // 1,2,3,4
 type SepUint64s string // 1,2,3,4
 
+const (
+	MinDate     Date     = "0000-00-00"
+	MaxDate     Date     = "9999-12-31"
+	MinDatetime Datetime = "0000-00-00 00:00:00"
+	MaxDatetime Datetime = "9999-12-31 23:59:59"
+)
+
 // https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html
 //	The value length is 25 bytes, made up of these components (as can be seen from the hexadecimal value):
 //	4 bytes for integer SRID (0)       4326 是GPS   WGS84，表示按 lat-lng 保存
@@ -256,19 +263,20 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
-func MinDate() Date { return "0000-00-00" }
 func NewDate(d string, loc *time.Location) Date {
-	if d == "" || d == MinDate().String() {
-		return MinDate()
+	if d == "" || d == MinDate.String() {
+		return MinDate
 	}
 	_, err := time.ParseInLocation("2006-01-02", d, loc)
 	if err != nil {
-		return MinDate()
+		return MinDate
 	}
 	return Date(d)
 }
 func ToDate(t time.Time) Date { return Date(t.Format("2006-01-02")) }
-func (d Date) Valid() bool    { return d.String() != "" && d.String() != "0000-00-00" }
+func (d Date) Valid() bool {
+	return d != "" && d != MinDate && d != MaxDate && d != "1970-01-01"
+}
 func (d Date) String() string { return string(d) }
 func (d Date) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", string(d), loc)
@@ -286,14 +294,13 @@ func (d Date) Unix(loc *time.Location) UnixTime {
 }
 
 // time.Now().In()  loc 直接通过 in 传递
-func MinDatetime() Datetime { return "0000-00-00 00:00:00" }
 func NewDatetime(d string, loc *time.Location) Datetime {
-	if d == "" || d == MinDatetime().String() {
-		return MinDatetime()
+	if d == "" || d == MinDatetime.String() {
+		return MinDatetime
 	}
 	_, err := time.ParseInLocation("2006-01-02 15:04:05", d, loc)
 	if err != nil {
-		return MinDatetime()
+		return MinDatetime
 	}
 	return Datetime(d)
 }
@@ -301,7 +308,10 @@ func ToDatetime(t time.Time) Datetime { return Datetime(t.Format("2006-01-02 15:
 
 func (d Datetime) Valid() bool {
 	s := d.String()
-	return s != "" && s != "0000-00-00 00:00:00" && s != "0000-00-00"
+	ok := s != "" && d != MinDatetime && s != MinDate.String()
+	ok = ok && s != "1970-01-01 00:00:00" && s != "1970-01-01"
+	ok = ok && d != MaxDatetime && s != MaxDate.String()
+	return ok
 }
 func (d Datetime) String() string { return string(d) }
 func (d Datetime) Time(loc *time.Location) (time.Time, error) {
@@ -324,9 +334,15 @@ func NewUnixTime(u int64) UnixTime {
 }
 func (u UnixTime) Int64() int64 { return int64(u) }
 func (u UnixTime) Date(loc *time.Location) Date {
+	if u == 0 {
+		return MinDate
+	}
 	return ToDate(time.Unix(u.Int64(), 0).In(loc))
 }
 func (u UnixTime) Datetime(loc *time.Location) Datetime {
+	if u == 0 {
+		return MinDatetime
+	}
 	return ToDatetime(time.Unix(u.Int64(), 0).In(loc))
 }
 
