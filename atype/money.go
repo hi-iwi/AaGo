@@ -71,7 +71,14 @@ func fmtScale(scale, decimal uint16, trim bool) string {
 	if trim && (y == 0) {
 		return ""
 	}
-	return "." + fmt.Sprintf("%0*d", decimal, y)
+	return fmt.Sprintf("%0*d", decimal, y)
+}
+func formatScale(scale, decimal uint16, trim bool) string {
+	s := fmtScale(scale, decimal, trim)
+	if s == "" {
+		return s
+	}
+	return "." + s
 }
 
 func fmtPrecision(s string, n int, delimiter string) string {
@@ -97,18 +104,18 @@ func (a Amount) FmtPrecision(n int, delimeters ...string) string {
 	return fmtPrecision(s, n, sep)
 }
 func (a Amount) FmtScale(decimals ...uint16) string {
-	return fmtScale(a.Scale(), decimal(decimals...), true)
+	return formatScale(a.Scale(), decimal(decimals...), true)
 }
 func (a Amount) FormatScale(decimals ...uint16) string {
-	return fmtScale(a.Scale(), decimal(decimals...), false)
+	return formatScale(a.Scale(), decimal(decimals...), false)
 }
 func (a Amount) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
-	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimal(decimals...), true)
 }
 func (a Amount) Format(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
-	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimal(decimals...), false)
 }
 
 func (a Uamount) Uint64() uint64 {
@@ -135,13 +142,13 @@ func (a Uamount) FmtPrecision(n int, delimeters ...string) string {
 // 不保留小数尾部的0
 func (a Uamount) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatUint(a.Precision(), 10)
-	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimal(decimals...), true)
 }
 
 // 保留小数尾部0
 func (a Uamount) Format(decimals ...uint16) string {
 	ys := strconv.FormatUint(a.Precision(), 10)
-	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimal(decimals...), false)
 }
 
 func (a Money) Int() int {
@@ -177,13 +184,13 @@ func (a Money) FmtPrecision(n int, delimeters ...string) string {
 // 不保留小数尾部的0
 func (a Money) Fmt(decimals ...uint16) string {
 	ys := strconv.Itoa(a.Precision())
-	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimal(decimals...), true)
 }
 
 // 保留小数尾部的0
 func (a Money) Format(decimals ...uint16) string {
 	ys := strconv.Itoa(a.Precision())
-	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimal(decimals...), false)
 }
 
 func (a Umoney) Uint() uint {
@@ -210,11 +217,11 @@ func (a Umoney) FmtPrecision(n int, delimeter ...string) string {
 // 不保留小数尾部的0
 func (a Umoney) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatUint(uint64(a.Precision()), 10)
-	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimal(decimals...), true)
 }
 
 // 保留小数尾部的0
 func (a Umoney) Format(decimals ...uint16) string {
 	ys := strconv.FormatUint(uint64(a.Precision()), 10)
-	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimal(decimals...), false)
 }

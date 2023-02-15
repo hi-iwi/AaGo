@@ -81,10 +81,10 @@ func ToPercent(v float64) (Percent, bool) {
 	v *= PercentMultiplier
 	return NewPercent(int16(v))
 }
-func (p Percent) Int16() int16 { return int16(p) }
 
 // 真实的值
 func (p Percent) Value() float64           { return float64(p) / PercentMultiplier }
+func (p Percent) Int16() int16             { return int16(p) }
 func (p Percent) By(a float64) float64     { return p.Value() * a }
 func (p Percent) ByInt(a int) int          { return FloatToInt(p.By(float64(a))) }
 func (p Percent) ByInt64(a int64) int64    { return Float2Int64(float64(a) * p.Value()) }
@@ -104,7 +104,11 @@ func (p Percent) Fmt(decimals ...uint16) string {
 		s = "-"
 		n = -n
 	}
-	return s + fmtScale(uint16(n), decimal(decimals...), false)
+	c := fmtScale(uint16(n), decimal(decimals...), false)
+	if c == "" {
+		return "0"
+	}
+	return s + c
 }
 
 func (a Money) ByPercent(p Percent) Money     { return Money(p.ByInt(a.Int())) }
