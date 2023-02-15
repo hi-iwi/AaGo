@@ -57,7 +57,8 @@ func moneyDelimeter(delimeter ...string) string {
 	}
 	return sep
 }
-func fmtScale(scale, decimal uint16, trim bool) string {
+ 
+func formatScale(scale, decimal uint16, trim bool) string {
 	const d uint16 = 4 //  4位小数
 	if trim && (decimal == 0 || scale == 0) {
 		return ""
@@ -71,14 +72,7 @@ func fmtScale(scale, decimal uint16, trim bool) string {
 	if trim && (y == 0) {
 		return ""
 	}
-	return fmt.Sprintf("%0*d", decimal, y)
-}
-func formatScale(scale, decimal uint16, trim bool) string {
-	s := fmtScale(scale, decimal, trim)
-	if s == "" {
-		return s
-	}
-	return "." + s
+	return "." + fmt.Sprintf("%0*d", decimal, y)
 }
 
 func fmtPrecision(s string, n int, delimiter string) string {
