@@ -180,6 +180,14 @@ func (r *Req) QueryUamount(p string, required ...bool) (atype.Uamount, *ae.Error
 	_x, e := r.QueryDigit(p, false, required...)
 	return atype.Uamount(_x.DefaultUint64(0)), e
 }
+func (r *Req) QueryPercent(p string, required ...bool) (atype.Percent, *ae.Error) {
+	_x, e := r.QueryDigit(p, false, required...)
+	percent, ok := atype.NewPercent(_x.DefaultInt16(0))
+	if !ok {
+		return percent, ae.BadParam(p)
+	}
+	return percent, e
+}
 
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
 	rq := true
@@ -295,6 +303,15 @@ func (r *Req) BodyUamount(p string, required ...bool) (atype.Uamount, *ae.Error)
 	_x, e := r.BodyDigit(p, false, required...)
 	return atype.Uamount(_x.DefaultUint64(0)), e
 }
+func (r *Req) BodyPercent(p string, required ...bool) (atype.Percent, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	percent, ok := atype.NewPercent(_x.DefaultInt16(0))
+	if !ok {
+		return percent, ae.BadParam(p)
+	}
+	return percent, e
+}
+
 func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
 	rq := true
 	if len(required) == 1 {
