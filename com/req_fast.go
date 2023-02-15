@@ -161,6 +161,10 @@ func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
 	_x, e := r.QueryDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
 }
+func (r *Req) QueryDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
+	_x, e := r.QueryDigit(p, false, required...)
+	return atype.NewDistri(_x.DefaultUint24(0)), e
+}
 
 func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	_x, e := r.QueryDigit(p, false, required...)
@@ -285,7 +289,10 @@ func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 	_x, e := r.BodyDigit(p, true, required...)
 	return _x.DefaultUint64(0), e
 }
-
+func (r *Req) BodyDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
+	_x, e := r.BodyDigit(p, false, required...)
+	return atype.NewDistri(_x.DefaultUint24(0)), e
+}
 func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
 	return atype.Money(_x.DefaultInt(0)), e
