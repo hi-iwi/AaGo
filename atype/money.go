@@ -65,6 +65,9 @@ func fmtScale(scale, decimal uint16, trim bool) string {
 
 	x := math.Pow10(int(d - decimal))
 	y := int(math.Floor(float64(scale) / x)) // 四舍五入是违法的，只能舍弃
+	for y > 0 && y%10 == 0 {
+		y /= 10
+	}
 	if trim && (y == 0) {
 		return ""
 	}
@@ -128,21 +131,17 @@ func (a Uamount) FmtPrecision(n int, delimeters ...string) string {
 	sep := moneyDelimeter(delimeters...)
 	return fmtPrecision(s, n, sep)
 }
+
+// 不保留小数尾部的0
 func (a Uamount) Fmt(decimals ...uint16) string {
-	decimal := uint16(2) // 保留2位小数
-	if len(decimals) > 0 {
-		decimal = decimals[0]
-	}
 	ys := strconv.FormatUint(a.Precision(), 10)
-	return ys + fmtScale(a.Scale(), decimal, true)
+	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
 }
+
+// 保留小数尾部0
 func (a Uamount) Format(decimals ...uint16) string {
-	decimal := uint16(2) // 保留2位小数
-	if len(decimals) > 0 {
-		decimal = decimals[0]
-	}
 	ys := strconv.FormatUint(a.Precision(), 10)
-	return ys + fmtScale(a.Scale(), decimal, false)
+	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
 }
 
 func (a Money) Int() int {
@@ -174,21 +173,17 @@ func (a Money) FmtPrecision(n int, delimeters ...string) string {
 	sep := moneyDelimeter(delimeters...)
 	return fmtPrecision(s, n, sep)
 }
+
+// 不保留小数尾部的0
 func (a Money) Fmt(decimals ...uint16) string {
-	decimal := uint16(2) // 保留2位小数
-	if len(decimals) > 0 {
-		decimal = decimals[0]
-	}
 	ys := strconv.Itoa(a.Precision())
-	return ys + fmtScale(a.Scale(), decimal, true)
+	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
 }
+
+// 保留小数尾部的0
 func (a Money) Format(decimals ...uint16) string {
-	decimal := uint16(2) // 保留2位小数
-	if len(decimals) > 0 {
-		decimal = decimals[0]
-	}
 	ys := strconv.Itoa(a.Precision())
-	return ys + fmtScale(a.Scale(), decimal, false)
+	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
 }
 
 func (a Umoney) Uint() uint {
@@ -211,19 +206,15 @@ func (a Umoney) FmtPrecision(n int, delimeter ...string) string {
 	sep := moneyDelimeter(delimeter...)
 	return fmtPrecision(s, n, sep)
 }
+
+// 不保留小数尾部的0
 func (a Umoney) Fmt(decimals ...uint16) string {
-	decimal := uint16(2) // 保留2位小数
-	if len(decimals) > 0 {
-		decimal = decimals[0]
-	}
 	ys := strconv.FormatUint(uint64(a.Precision()), 10)
-	return ys + fmtScale(a.Scale(), decimal, true)
+	return ys + fmtScale(a.Scale(), decimal(decimals...), true)
 }
+
+// 保留小数尾部的0
 func (a Umoney) Format(decimals ...uint16) string {
-	decimal := uint16(2) // 保留2位小数
-	if len(decimals) > 0 {
-		decimal = decimals[0]
-	}
 	ys := strconv.FormatUint(uint64(a.Precision()), 10)
-	return ys + fmtScale(a.Scale(), decimal, false)
+	return ys + fmtScale(a.Scale(), decimal(decimals...), false)
 }

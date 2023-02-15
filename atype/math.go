@@ -1,6 +1,8 @@
 package atype
 
-import "math"
+import (
+	"math"
+)
 
 type Percent int16 // 范围：-10000~10000 => -100.00%~100.00%
 const MaxInt24 = 1<<23 - 1
@@ -79,9 +81,7 @@ func ToPercent(v float64) (Percent, bool) {
 	v *= PercentMultiplier
 	return NewPercent(int16(v))
 }
-func (p Percent) Int16() int16 {
-	return int16(p)
-}
+func (p Percent) Int16() int16 { return int16(p) }
 
 // 真实的值
 func (p Percent) Value() float64           { return float64(p) / PercentMultiplier }
@@ -90,6 +90,22 @@ func (p Percent) ByInt(a int) int          { return FloatToInt(p.By(float64(a)))
 func (p Percent) ByInt64(a int64) int64    { return Float2Int64(float64(a) * p.Value()) }
 func (p Percent) ByUint(a uint) uint       { return Float2Uint(p.By(float64(a))) }
 func (p Percent) ByUint64(a uint64) uint64 { return Float2Uint64(p.By(float64(a))) }
+
+// 输出百分比数字部分（不带%符号）
+func (p Percent) Fmt(decimals ...uint16) string {
+	if float64(p) == PercentMultiplier {
+		return "100" // 100%
+	} else if float64(p) == -PercentMultiplier {
+		return "-100" // -100%
+	}
+	n := p.Int16()
+	var s string
+	if n < 0 {
+		s = "-"
+		n = -n
+	}
+	return s + fmtScale(uint16(n), decimal(decimals...), false)
+}
 
 func (a Money) ByPercent(p Percent) Money     { return Money(p.ByInt(a.Int())) }
 func (a Umoney) ByPercent(p Percent) Umoney   { return Umoney(p.ByUint(a.Uint())) }
