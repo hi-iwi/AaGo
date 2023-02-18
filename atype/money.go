@@ -63,10 +63,10 @@ func decimalN(decimals ...uint16) uint16 {
 	}
 	return decimal
 }
-func moneyDelimeter(delimeter ...string) string {
+func moneydelimiter(delimiter ...string) string {
 	sep := ","
-	if len(delimeter) > 0 {
-		sep = delimeter[0]
+	if len(delimiter) > 0 {
+		sep = delimiter[0]
 	}
 	return sep
 }
@@ -106,9 +106,9 @@ func fmtPrecision(s string, n int, delimiter string) string {
 }
 
 // 类型：  1,000,000 这种
-func (a Amount) FmtPrecision(n int, delimeters ...string) string {
+func (a Amount) FmtPrecision(n int, delimiters ...string) string {
 	s := strconv.FormatInt(int64(a), 10)
-	sep := moneyDelimeter(delimeters...)
+	sep := moneydelimiter(delimiters...)
 	return fmtPrecision(s, n, sep)
 }
 func (a Amount) FmtScale(decimals ...uint16) string {
@@ -145,9 +145,9 @@ func (a Uamount) Scale() uint16 {
 }
 
 // 类型：  1,000,000 这种
-func (a Uamount) FmtPrecision(n int, delimeters ...string) string {
+func (a Uamount) FmtPrecision(n int, delimiters ...string) string {
 	s := strconv.FormatUint(uint64(a), 10)
-	sep := moneyDelimeter(delimeters...)
+	sep := moneydelimiter(delimiters...)
 	return fmtPrecision(s, n, sep)
 }
 
@@ -182,9 +182,9 @@ func (a Money) Scale() uint16 {
 }
 
 // 类型：  1,000,000 这种
-func (a Money) FmtPrecision(n int, delimeters ...string) string {
+func (a Money) FmtPrecision(n int, delimiters ...string) string {
 	s := strconv.FormatInt(int64(a), 10)
-	sep := moneyDelimeter(delimeters...)
+	sep := moneydelimiter(delimiters...)
 	return fmtPrecision(s, n, sep)
 }
 
@@ -219,9 +219,9 @@ func (a Umoney) Scale() uint16 {
 }
 
 // 类型：  1,000,000 这种
-func (a Umoney) FmtPrecision(n int, delimeter ...string) string {
+func (a Umoney) FmtPrecision(n int, delimiter ...string) string {
 	s := strconv.FormatUint(uint64(a), 10)
-	sep := moneyDelimeter(delimeter...)
+	sep := moneydelimiter(delimiter...)
 	return fmtPrecision(s, n, sep)
 }
 

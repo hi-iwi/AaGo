@@ -166,7 +166,7 @@ func JoinNamesByElements(u interface{}, ty JoinType, sep string, eles ...string)
 
 func JoinUint64(ids []uint64, sep byte) string {
 	var s strings.Builder
-	s.Grow(21 * len(ids)) // maxlen of uint64  is 20, extra 1 for sep
+	s.Grow(21 * len(ids)) // maxlen of uint64  is 20, extra 1 for delimiter
 	for i, id := range ids {
 		if i > 0 {
 			s.WriteByte(sep)
@@ -177,7 +177,7 @@ func JoinUint64(ids []uint64, sep byte) string {
 }
 func JoinUint(ids []uint, sep byte) string {
 	var s strings.Builder
-	s.Grow(11 * len(ids)) // maxlen of uint  is 10, extra 1 for sep
+	s.Grow(11 * len(ids)) // maxlen of uint  is 10, extra 1 for delimiter
 	for i, id := range ids {
 		if i > 0 {
 			s.WriteByte(sep)
