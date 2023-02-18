@@ -1,8 +1,29 @@
 package aenum
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type Status int8
+
+const (
+	// 无用户操作的状态，仅后台管理
+	InvalidPartA = "invalid" // < Pending
+	PendingPartA = "pending" // < 0
+	ValidPartA   = "valid"   // < MAXVALUE
+
+	PublicPartAs = ValidPartA
+
+	// 含用户操作的状态
+	DeletedPartB   = "deleted"   // < -99 后期需要清理的数据
+	NonPublicPartB = "nonpublic" // < Pending 仅用户自己可见
+	PendingPartB   = "pending"   // < 0
+	CreatedPartB   = "created"   // = 0 审核中，显示在公开列表（适用于白名单用户）
+	PassedPartB    = "passed"    // >=1 公开列表显示
+
+	PublicPartBs  = CreatedPartB + "," + PassedPartB                         // 公开列表
+	VisiblePartBs = NonPublicPartB + "," + PendingPartB + "," + PublicPartBs // 仅用户可见 + 公开列表
+)
 
 const (
 	SysRevoked Status = -128 // 已注销，系统删除（可能审核失败）
@@ -71,3 +92,24 @@ func (s Status) MeReadable() bool { return s >= MeReadableRange[0] && s <= MeRea
 
 // 用户是否可以修改、删除
 func (s Status) Modifiable() bool { return s.In(Failed, Pending, Created, Passed) }
+
+func (s Status) PartA() string {
+	if s < Pending {
+		return InvalidPartA
+	} else if s < 0 {
+		return PendingPartA
+	}
+	return ValidPartA
+}
+func (s Status) PartB() string {
+	if s < -99 {
+		return DeletedPartB
+	} else if s < Pending {
+		return NonPublicPartB
+	} else if s < 0 {
+		return PendingPartB
+	} else if s == 0 {
+		return CreatedPartB
+	}
+	return PassedPartB
+}
