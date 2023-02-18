@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 // 汇率一般保留4位小数，所以这里金额 * 10000
@@ -57,22 +58,23 @@ func moneyDelimeter(delimeter ...string) string {
 	}
 	return sep
 }
- 
+
 func formatScale(scale, decimal uint16, trim bool) string {
-	const d uint16 = 4 //  4位小数
+	const n uint16 = 4 //  4位小数
 	if trim && (decimal == 0 || scale == 0) {
 		return ""
 	}
 
-	x := math.Pow10(int(d - decimal))
+	x := math.Pow10(int(n - decimal))
 	y := int(math.Floor(float64(scale) / x)) // 四舍五入是违法的，只能舍弃
-	for y > 0 && y%10 == 0 {
-		y /= 10
+	d := fmt.Sprintf("%0*d", decimal, y)
+	if trim {
+		d = strings.TrimRight(d, "0")
+		if d == "" {
+			return ""
+		}
 	}
-	if trim && (y == 0) {
-		return ""
-	}
-	return "." + fmt.Sprintf("%0*d", decimal, y)
+	return "." + d
 }
 
 func fmtPrecision(s string, n int, delimiter string) string {
