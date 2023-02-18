@@ -1,15 +1,16 @@
 package atype
 
 import (
+	"github.com/shopspring/decimal"
 	"math"
-	"strconv"
 )
 
 type Percent int16 // 范围：-10000~10000 => -100.00%~100.00%
 const MaxInt24 = 1<<23 - 1
 const MinInt24 = -1 << 23
 const MaxUint24 = 1<<24 - 1
-const PercentMultiplier = Percent(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
+
+var PercentMultiplier = decimal.NewFromInt32(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 
 func FloatToInt8(n float64) int8 {
 	if n < float64(math.MinInt8) || n > float64(math.MaxInt8) {
@@ -74,24 +75,24 @@ func Float2Uint64(n float64) uint64 {
 }
 
 // @param n 本身就是转换后的值，如10000，即表示为 100*PercentMultiplier，即 100%
-func NewPercent(n int16) (Percent, bool) {
-	if n < -100*PercentMultiplier.Int16() || n > 100*PercentMultiplier.Int16() {
-		return 0, false
-	}
-	return Percent(n), true
+func NewPercent(n int16) Percent { return Percent(n) }
+
+// 80.0 表示 80%
+func ToPercent(n float64) Percent {
+	return NewPercent(int16(PercentMultiplier.Mul(decimal.NewFromFloat(n)).IntPart()))
 }
-
-func (p Percent) Percent() float64         { return float64(p) / float64(PercentMultiplier) }
-func (p Percent) Value() float64           { return p.Percent() / 100.0 }
-func (p Percent) Int16() int16             { return int16(p) }
-func (p Percent) By(a float64) float64     { return p.Value() * a }
-func (p Percent) ByInt(a int) int          { return FloatToInt(p.By(float64(a))) }
-func (p Percent) ByInt64(a int64) int64    { return Float2Int64(p.By(float64(a))) }
-func (p Percent) ByUint(a uint) uint       { return Float2Uint(p.By(float64(a))) }
-func (p Percent) ByUint64(a uint64) uint64 { return Float2Uint64(p.By(float64(a))) }
-func (p Percent) Fmt() string              { return strconv.FormatFloat(p.Percent(), 'f', -1, 64) }
-
-func (a Money) ByPercent(p Percent) Money     { return Money(p.ByInt(a.Int())) }
-func (a Umoney) ByPercent(p Percent) Umoney   { return Umoney(p.ByUint(a.Uint())) }
-func (a Amount) ByPercent(p Percent) Amount   { return Amount(p.ByInt64(a.Int64())) }
-func (a Uamount) ByPercent(p Percent) Uamount { return Uamount(p.ByUint64(a.Uint64())) }
+func (p Percent) Int16() int16 { return int16(p) }
+func (p Percent) Int32() int32 { return int32(p) }
+func (p Percent) Percent() decimal.Decimal {
+	q := decimal.NewFromInt32(p.Int32())
+	return q.Div(PercentMultiplier)
+}
+func (p Percent) Value() decimal.Decimal { return p.Percent().Div(decimal.NewFromInt32(100)) }
+func (p Percent) Mul(d decimal.Decimal) decimal.Decimal {
+	return p.Value().Mul(d)
+}
+func (p Percent) Fmt() string                { return p.Percent().String() }
+func (a Money) Dec() decimal.Decimal         { return decimal.NewFromInt(int64(a)) }
+func (a Money) MulPercent(p Percent) Money   { return Money(p.Mul(a.Dec()).IntPart()) }
+func (a Umoney) Dec() decimal.Decimal        { return decimal.NewFromInt(int64(a)) }
+func (a Umoney) MulPercent(p Percent) Umoney { return Umoney(p.Mul(a.Dec()).IntPart()) }

@@ -1,5 +1,6 @@
 package atype
 
+import "C"
 import (
 	"fmt"
 	"math"
@@ -9,10 +10,10 @@ import (
 
 // 汇率一般保留4位小数，所以这里金额 * 10000
 // 数据库有 money() 函数 money 支持正负；
-type Money int    // 范围：±21万元
-type Umoney uint  // 范围：42万元左右； price 用 UMoney
-type Amount int64 // 范围：±900万亿元。
-type Uamount uint64
+type Money int      // 范围：±21万元
+type Umoney uint    // 范围：42万元左右； price 用 UMoney
+type Amount int64   // 范围：±900万亿元。      不用于计算
+type Uamount uint64 //     不用于计算
 
 const (
 	Cent         Money = 100         // 分
@@ -27,6 +28,17 @@ const (
 
 )
 
+func ToYuan(y float64) Money {
+	return Money(y * float64(Yuan))
+}
+func NewYuan(y float64) Umoney {
+	return Umoney(y * float64(Yuan))
+}
+
+func NewAmount(m int64) Amount {
+	return Amount(m)
+}
+
 func (a Amount) Int64() int64 {
 	return int64(a)
 }
@@ -40,7 +52,7 @@ func (a Amount) Precision() int64 {
 func (a Amount) Scale() uint16 {
 	return uint16(int64(math.Abs(float64(a))) % Yuan.Int64())
 }
-func decimal(decimals ...uint16) uint16 {
+func decimalN(decimals ...uint16) uint16 {
 	const d uint16 = 4   //  4位小数
 	decimal := uint16(2) // 保留2位小数
 	if len(decimals) > 0 {
@@ -100,18 +112,22 @@ func (a Amount) FmtPrecision(n int, delimeters ...string) string {
 	return fmtPrecision(s, n, sep)
 }
 func (a Amount) FmtScale(decimals ...uint16) string {
-	return formatScale(a.Scale(), decimal(decimals...), true)
+	return formatScale(a.Scale(), decimalN(decimals...), true)
 }
 func (a Amount) FormatScale(decimals ...uint16) string {
-	return formatScale(a.Scale(), decimal(decimals...), false)
+	return formatScale(a.Scale(), decimalN(decimals...), false)
 }
 func (a Amount) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
-	return ys + formatScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), true)
 }
 func (a Amount) Format(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
-	return ys + formatScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
+}
+
+func NewUamount(m int64) Uamount {
+	return Uamount(m)
 }
 
 func (a Uamount) Uint64() uint64 {
@@ -138,13 +154,17 @@ func (a Uamount) FmtPrecision(n int, delimeters ...string) string {
 // 不保留小数尾部的0
 func (a Uamount) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatUint(a.Precision(), 10)
-	return ys + formatScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), true)
 }
 
 // 保留小数尾部0
 func (a Uamount) Format(decimals ...uint16) string {
 	ys := strconv.FormatUint(a.Precision(), 10)
-	return ys + formatScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
+}
+
+func NewMoney(m int64) Money {
+	return Money(m)
 }
 
 func (a Money) Int() int {
@@ -180,13 +200,17 @@ func (a Money) FmtPrecision(n int, delimeters ...string) string {
 // 不保留小数尾部的0
 func (a Money) Fmt(decimals ...uint16) string {
 	ys := strconv.Itoa(a.Precision())
-	return ys + formatScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), true)
 }
 
 // 保留小数尾部的0
 func (a Money) Format(decimals ...uint16) string {
 	ys := strconv.Itoa(a.Precision())
-	return ys + formatScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
+}
+
+func NewUmoney(m int64) Umoney {
+	return Umoney(m)
 }
 
 func (a Umoney) Uint() uint {
@@ -213,11 +237,11 @@ func (a Umoney) FmtPrecision(n int, delimeter ...string) string {
 // 不保留小数尾部的0
 func (a Umoney) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatUint(uint64(a.Precision()), 10)
-	return ys + formatScale(a.Scale(), decimal(decimals...), true)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), true)
 }
 
 // 保留小数尾部的0
 func (a Umoney) Format(decimals ...uint16) string {
 	ys := strconv.FormatUint(uint64(a.Precision()), 10)
-	return ys + formatScale(a.Scale(), decimal(decimals...), false)
+	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
