@@ -9,7 +9,7 @@ type Percent int16 // 范围：-10000~10000 => -100.00%~100.00%
 const MaxInt24 = 1<<23 - 1
 const MinInt24 = -1 << 23
 const MaxUint24 = 1<<24 - 1
-const PercentMultiplier = float64(10000.0) // 扩大一万倍
+const PercentMultiplier = float64(100.0) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 
 func FloatToInt8(n float64) int8 {
 	if n < float64(math.MinInt8) || n > float64(math.MaxInt8) {
@@ -72,24 +72,27 @@ func Float2Uint64(n float64) uint64 {
 	}
 	return uint64(n) // 上面进行范围判断了，所以之类可以强转
 }
+
+// @param n 本身就是转换后的值，如10000，即表示为 100*PercentMultiplier，即 100%
 func NewPercent(n int16) (Percent, bool) {
 	if n < -int16(PercentMultiplier) || n > int16(PercentMultiplier) {
 		return 0, false
 	}
 	return Percent(n), true
 }
+
+// @param v 百分比值，如 100.0 即表示 100%
 func ToPercent(v float64) (Percent, bool) {
 	v *= PercentMultiplier
 	return NewPercent(int16(v))
 }
 
-// 真实的值
-func (p Percent) Value() float64           { return float64(p) / PercentMultiplier }
-func (p Percent) Percent() float64         { return float64(p) / 100.0 }
+func (p Percent) Percent() float64         { return float64(p) / PercentMultiplier }
+func (p Percent) Value() float64           { return p.Percent() / 100.0 }
 func (p Percent) Int16() int16             { return int16(p) }
 func (p Percent) By(a float64) float64     { return p.Value() * a }
 func (p Percent) ByInt(a int) int          { return FloatToInt(p.By(float64(a))) }
-func (p Percent) ByInt64(a int64) int64    { return Float2Int64(float64(a) * p.Value()) }
+func (p Percent) ByInt64(a int64) int64    { return Float2Int64(p.By(float64(a))) }
 func (p Percent) ByUint(a uint) uint       { return Float2Uint(p.By(float64(a))) }
 func (p Percent) ByUint64(a uint64) uint64 { return Float2Uint64(p.By(float64(a))) }
 func (p Percent) Fmt() string              { return strconv.FormatFloat(p.Percent(), 'f', -1, 64) }
