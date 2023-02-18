@@ -8,8 +8,8 @@ type Status int8
 
 const (
 	// 最简易的 开关
-	OffPart = "off" // 关
-	OkPart  = "ok"  // 开
+	InvalidPart = "invalid" // 关   off 是关键字。
+	OkPart      = "ok"      // 开
 
 	// 无用户操作的状态，仅后台管理
 	InvalidPartA = "invalid" // < Pending
@@ -102,7 +102,7 @@ func (s Status) Part() string {
 	if s.IsOk() {
 		return OkPart
 	}
-	return OffPart
+	return InvalidPart
 }
 func (s Status) PartA() string {
 	if s < Pending {
