@@ -7,6 +7,10 @@ import (
 type Status int8
 
 const (
+	// 最简易的 开关
+	OffPart = "off" // 关
+	OkPart  = "ok"  // 开
+
 	// 无用户操作的状态，仅后台管理
 	InvalidPartA = "invalid" // < Pending
 	PendingPartA = "pending" // < 0
@@ -23,6 +27,7 @@ const (
 
 	PublicPartBs  = CreatedPartB + "," + PassedPartB                         // 公开列表
 	VisiblePartBs = NonPublicPartB + "," + PendingPartB + "," + PublicPartBs // 仅用户可见 + 公开列表
+
 )
 
 const (
@@ -93,6 +98,12 @@ func (s Status) MeReadable() bool { return s >= MeReadableRange[0] && s <= MeRea
 // 用户是否可以修改、删除
 func (s Status) Modifiable() bool { return s.In(Failed, Pending, Created, Passed) }
 
+func (s Status) Part() string {
+	if s.IsOk() {
+		return OkPart
+	}
+	return OffPart
+}
 func (s Status) PartA() string {
 	if s < Pending {
 		return InvalidPartA
