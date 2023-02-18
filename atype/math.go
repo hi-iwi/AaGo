@@ -6,9 +6,6 @@ import (
 )
 
 type Percent int16 // 范围：-10000~10000 => -100.00%~100.00%
-const MaxInt24 = 1<<23 - 1
-const MinInt24 = -1 << 23
-const MaxUint24 = 1<<24 - 1
 
 var PercentMultiplier = decimal.NewFromInt32(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 

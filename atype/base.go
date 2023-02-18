@@ -1,5 +1,9 @@
 package atype
 
+const MaxInt24 = 1<<23 - 1
+const MinInt24 = -1 << 23
+const MaxUint24 = 1<<24 - 1
+
 const MaxInt8Len = 4    // -128 ~ 127
 const MaxUint8Len = 3   // 0 ~ 256
 const MaxInt16Len = 6   // -32768 ~ 32767
@@ -10,3 +14,5 @@ const MaxIntLen = 11    // -2147483648 ~ 2147483647
 const MaxUintLen = 10   // 0 ~ 4294967295
 const MaxInt64Len = 20  // -9223372036854775808 ~ 9223372036854775807
 const MaxUint64Len = 20 // 0 ~ 18446744073709551615
+
+const MaxDistriLen = MaxUint24Len
