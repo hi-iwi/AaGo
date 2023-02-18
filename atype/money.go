@@ -45,12 +45,12 @@ func (a Amount) Int64() int64 {
 
 // 整数部分
 func (a Amount) Precision() int64 {
-	return int64(a) / Yuan.Int64()
+	return int64(a) / int64(Yuan)
 }
 
 // 小数部分
 func (a Amount) Scale() uint16 {
-	return uint16(int64(math.Abs(float64(a))) % Yuan.Int64())
+	return uint16(int64(math.Abs(float64(a))) % int64(Yuan))
 }
 func decimalN(decimals ...uint16) uint16 {
 	const d uint16 = 4   //  4位小数
@@ -126,7 +126,7 @@ func (a Amount) Format(decimals ...uint16) string {
 	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
 
-func NewUamount(m int64) Uamount {
+func NewUamount(m uint64) Uamount {
 	return Uamount(m)
 }
 
@@ -136,12 +136,12 @@ func (a Uamount) Uint64() uint64 {
 
 // 整数部分
 func (a Uamount) Precision() uint64 {
-	return a.Uint64() / Yuan.Uint64()
+	return a.Uint64() / uint64(Yuan)
 }
 
 // 小数部分
 func (a Uamount) Scale() uint16 {
-	return uint16(a.Uint64() % Yuan.Uint64())
+	return uint16(a.Uint64() % uint64(Yuan))
 }
 
 // 类型：  1,000,000 这种
@@ -163,31 +163,22 @@ func (a Uamount) Format(decimals ...uint16) string {
 	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
 
-func NewMoney(m int64) Money {
+func NewMoney(m int) Money {
 	return Money(m)
 }
 
 func (a Money) Int() int {
 	return int(a)
 }
-func (a Money) Uint() uint {
-	return uint(a)
-}
-func (a Money) Int64() int64 {
-	return int64(a)
-}
-func (a Money) Uint64() uint64 {
-	return uint64(a)
-}
 
 // 整数部分
 func (a Money) Precision() int {
-	return int(a) / Yuan.Int()
+	return int(a) / int(Yuan)
 }
 
 // 小数部分
 func (a Money) Scale() uint16 {
-	return uint16(int64(math.Abs(float64(a))) % Yuan.Int64())
+	return uint16(int64(math.Abs(float64(a))) % int64(Yuan))
 }
 
 // 类型：  1,000,000 这种
@@ -209,7 +200,7 @@ func (a Money) Format(decimals ...uint16) string {
 	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
 
-func NewUmoney(m int64) Umoney {
+func NewUmoney(m uint) Umoney {
 	return Umoney(m)
 }
 
@@ -219,12 +210,12 @@ func (a Umoney) Uint() uint {
 
 // 整数部分
 func (a Umoney) Precision() uint {
-	return a.Uint() / Yuan.Uint()
+	return a.Uint() / uint(Yuan)
 }
 
 // 小数部分
 func (a Umoney) Scale() uint16 {
-	return uint16(a.Uint() % Yuan.Uint())
+	return uint16(a.Uint() % uint(Yuan))
 }
 
 // 类型：  1,000,000 这种
