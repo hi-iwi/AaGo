@@ -42,6 +42,9 @@ func (lvl ErrorLevel) Name() string {
 }
 
 type Log interface {
+	// 添加前缀、后缀到输出
+	New(prefix string, f func(context.Context, string, ...interface{}), suffix ...string) func(context.Context, string, ...interface{})
+
 	// AuthDebug 包含详细的开发情报的信息，通常只在调试一个程序时使用
 	Debug(ctx context.Context, msg string, args ...interface{})
 

@@ -51,7 +51,18 @@ func xprintf(ctx context.Context, skip int, level ErrorLevel, msg string, args .
 		log.Printf(msg+"\n", args...)
 	}
 }
-
+func (l *xlog) New(prefix string, f func(context.Context, string, ...interface{}), suffix ...string) func(context.Context, string, ...interface{}) {
+	var s string
+	if len(suffix) > 0 {
+		s = " " + suffix[0]
+	}
+	if prefix != "" {
+		prefix += " "
+	}
+	return func(ctx context.Context, msg string, args ...interface{}) {
+		f(ctx, prefix+msg+s, args...)
+	}
+}
 func (l *xlog) Debug(ctx context.Context, msg string, args ...interface{}) {
 	xprintf(ctx, 1, Debug, msg, args...)
 }
