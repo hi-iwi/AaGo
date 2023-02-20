@@ -329,6 +329,8 @@ func (d Datetime) String() string { return string(d) }
 func (d Datetime) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
 }
+func (d Datetime) Date() Date { return Date(d[0:len(MinDate)]) }
+
 func (d Datetime) Int64(loc *time.Location) int64 {
 	tm, err := time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
 	if err != nil {
