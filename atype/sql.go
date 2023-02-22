@@ -383,10 +383,10 @@ func ToSepUint8s(elems []uint8, delimiters ...string) SepUint8s {
 
 	var b strings.Builder
 	b.Grow(n)
-	b.WriteByte(elems[0])
+	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
 	for _, s := range elems[1:] {
 		b.WriteString(deli)
-		b.WriteByte(s)
+		b.WriteString(strconv.FormatUint(uint64(s), 10))
 	}
 
 	return SepUint8s(b.String())
@@ -416,10 +416,10 @@ func ToSepUint16s(elems []uint16, delimiters ...string) SepUint16s {
 	n := len(deli)*(len(elems)-1) + (len(elems) * MaxUint16Len)
 	var b strings.Builder
 	b.Grow(n)
-	b.WriteRune(rune(elems[0]))
+	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
 	for _, s := range elems[1:] {
 		b.WriteString(deli)
-		b.WriteRune(rune(s))
+		b.WriteString(strconv.FormatUint(uint64(s), 10))
 	}
 
 	return SepUint16s(b.String())
@@ -467,40 +467,6 @@ func (t SepUint24s) Uint32s(delimiters ...string) []Uint24 {
 	for i, a := range arr {
 		b, _ := strconv.ParseUint(a, 10, 24)
 		v[i] = Uint24(b)
-	}
-	return v
-}
-
-func ToSepUint32s(elems []uint32, delimiters ...string) SepUint32s {
-	// strings.Join 类同
-	switch len(elems) {
-	case 0:
-		return ""
-	case 1:
-		return SepUint32s(strconv.FormatUint(uint64(elems[0]), 10))
-	}
-	deli := delimiter(delimiters...)
-	n := len(deli)*(len(elems)-1) + (len(elems) * MaxUintLen)
-	var b strings.Builder
-	b.Grow(n)
-	b.WriteString(strconv.FormatUint(uint64(elems[0]), 10))
-	for _, s := range elems[1:] {
-		b.WriteString(deli)
-		b.WriteString(strconv.FormatUint(uint64(s), 10))
-	}
-
-	return SepUint32s(b.String())
-}
-
-func (t SepUint32s) Uint32s(delimiters ...string) []uint32 {
-	if t == "" {
-		return nil
-	}
-	arr := strings.Split(string(t), delimiter(delimiters...))
-	v := make([]uint32, len(arr))
-	for i, a := range arr {
-		b, _ := strconv.ParseUint(a, 10, 32)
-		v[i] = uint32(b)
 	}
 	return v
 }
@@ -604,7 +570,6 @@ func (t SepUint64s) Uint64s(delimiters ...string) []uint64 {
 }
 
 func ToSepPercents(elems []Percent, delimiters ...string) SepPercents {
-
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
