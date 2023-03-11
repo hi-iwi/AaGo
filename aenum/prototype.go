@@ -50,7 +50,6 @@ const (
 	YearMonth ProtoType = 125 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
 
 	Money ProtoType = 130
-	Price ProtoType = 131
 
 	Distri   ProtoType = 140 // 6 位地址简码
 	AddrId   ProtoType = 141 // 12 位地址码

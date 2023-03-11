@@ -13,7 +13,7 @@ import (
 // 数据库有 money() 函数 money 支持正负；
 type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
 
-type Price Money // uint 范围：42万元左右； price 用 UMoney
+//type SmallMoney Money // uint 范围：42万元左右； price 用 UMoney
 
 type Percent int16                                // 范围：-10000~10000 => -100.00%~100.00%
 var PercentMultiplier = decimal.NewFromInt32(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
@@ -58,8 +58,6 @@ func (a Money) MulPercent(p Percent) Money { return Money(p.Mul(a.Dec()).IntPart
 func NewMoney(m int64) Money  { return Money(m) }
 func ToMoney(y float64) Money { return Money(y * float64(Yuan)) }
 func (a Money) Int64() int64  { return int64(a) }
-func (a Money) Price() Price  { return Price(a) }
-func (p Price) Money() Money  { return Money(p) }
 
 // 整数部分
 func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
@@ -201,4 +199,20 @@ func (a Money) MinusN(b Money) Money {
 		return 0
 	}
 	return a.Minus(b)
+}
+func (a Money) Multiply(n int64) Money {
+	b := NewMoney(a.Int64() * n)
+	if b < MinMoney || b > MaxMoney {
+		panic(fmt.Sprintf("overflow money %d.Multiply(%d)", a, n))
+		return 0
+	}
+	return b
+}
+func (a Money) Divided(n int64) Money {
+	b := NewMoney(a.Int64() / n)
+	if b < MinMoney || b > MaxMoney {
+		panic(fmt.Sprintf("overflow money %d.Divided(%d)", a, n))
+		return 0
+	}
+	return b
 }
