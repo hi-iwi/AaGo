@@ -11,26 +11,26 @@ import (
 
 // 汇率一般保留4位小数，所以这里金额 * 10000
 // 数据库有 money() 函数 money 支持正负；
-type Amount int64 // 有效范围：正负100亿元；  ±100 0000亿
+type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
 
-type Price Amount // uint 范围：42万元左右； price 用 UMoney
+type Price Money // uint 范围：42万元左右； price 用 UMoney
 
 type Percent int16                                // 范围：-10000~10000 => -100.00%~100.00%
 var PercentMultiplier = decimal.NewFromInt32(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 
 const (
-	Cent        Amount = 100           // 分
-	Dime        Amount = 10 * Cent     // 角
-	Yuan        Amount = 10 * Dime     // 元
-	KiloYuan    Amount = 1000 * Yuan   // 千元
-	WanYuan     Amount = 10000 * Yuan  // 万元
-	MillionYuan Amount = 100 * WanYuan // 百万元    中文的话，就不要用百万、千万
+	Cent        Money = 100           // 分
+	Dime              = 10 * Cent     // 角
+	Yuan              = 10 * Dime     // 元
+	KiloYuan          = 1000 * Yuan   // 千元
+	WanYuan           = 10000 * Yuan  // 万元
+	MillionYuan       = 100 * WanYuan // 百万元    中文的话，就不要用百万、千万
 	//QianWanYuan  Money = 100000000000   // 千万元
-	YiYuan      Amount = 100 * MillionYuan // 亿元
-	BillionYuan Amount = 10 * YiYuan       // 十亿元
+	YiYuan      = 100 * MillionYuan // 亿元
+	BillionYuan = 10 * YiYuan       // 十亿元
 
-	MinAmount Amount = -100 * YiYuan // -100亿
-	MaxAmount Amount = 100 * YiYuan  // 100亿
+	MinMoney = -100 * YiYuan // -100亿
+	MaxMoney = 100 * YiYuan  // 100亿
 
 )
 
@@ -51,21 +51,21 @@ func (p Percent) Value() decimal.Decimal { return p.Percent().Div(decimal.NewFro
 func (p Percent) Mul(d decimal.Decimal) decimal.Decimal {
 	return p.Value().Mul(d)
 }
-func (p Percent) Fmt() string                { return p.Percent().String() }
-func (a Amount) Dec() decimal.Decimal        { return decimal.NewFromInt(int64(a)) }
-func (a Amount) MulPercent(p Percent) Amount { return Amount(p.Mul(a.Dec()).IntPart()) }
+func (p Percent) Fmt() string              { return p.Percent().String() }
+func (a Money) Dec() decimal.Decimal       { return decimal.NewFromInt(int64(a)) }
+func (a Money) MulPercent(p Percent) Money { return Money(p.Mul(a.Dec()).IntPart()) }
 
-func NewAmount(m int64) Amount  { return Amount(m) }
-func ToAmount(y float64) Amount { return Amount(y * float64(Yuan)) }
-func (a Amount) Int64() int64   { return int64(a) }
-func (a Amount) Price() Price   { return Price(a) }
-func (p Price) Amount() Amount  { return Amount(p) }
+func NewMoney(m int64) Money  { return Money(m) }
+func ToMoney(y float64) Money { return Money(y * float64(Yuan)) }
+func (a Money) Int64() int64  { return int64(a) }
+func (a Money) Price() Price  { return Price(a) }
+func (p Price) Money() Money  { return Money(p) }
 
 // 整数部分
-func (a Amount) Precision() int64 { return int64(a) / int64(Yuan) }
+func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
 
 // 小数部分
-func (a Amount) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
+func (a Money) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
 func decimalN(decimals ...uint16) uint16 {
 	const d uint16 = 4   //  4位小数
 	decimal := uint16(2) // 保留2位小数
@@ -120,50 +120,50 @@ func fmtPrecision(s string, n int, delimiter string) string {
 }
 
 // 类型：  1,000,000 这种
-func (a Amount) FmtPrecision(n int, delimiters ...string) string {
+func (a Money) FmtPrecision(n int, delimiters ...string) string {
 	s := strconv.FormatInt(int64(a), 10)
 	sep := moneydelimiter(delimiters...)
 	return fmtPrecision(s, n, sep)
 }
-func (a Amount) FmtScale(decimals ...uint16) string {
+func (a Money) FmtScale(decimals ...uint16) string {
 	return formatScale(a.Scale(), decimalN(decimals...), true)
 }
-func (a Amount) FormatScale(decimals ...uint16) string {
+func (a Money) FormatScale(decimals ...uint16) string {
 	return formatScale(a.Scale(), decimalN(decimals...), false)
 }
-func (a Amount) Fmt(decimals ...uint16) string {
+func (a Money) Fmt(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
 	return ys + formatScale(a.Scale(), decimalN(decimals...), true)
 }
-func (a Amount) Format(decimals ...uint16) string {
+func (a Money) Format(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
 	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
 
-func (a Amount) add(b Amount) Amount {
+func (a Money) add(b Money) Money {
 	// b 必须≥0， a可大于、等于、小于0
-	if a < 0 || b < 0 || a > MaxAmount-b {
-		panic(fmt.Sprintf("overflow amount %d.add(%d)", a, b))
+	if a < 0 || b < 0 || a > MaxMoney-b {
+		panic(fmt.Sprintf("overflow money %d.add(%d)", a, b))
 		return 0
 	}
 	return a + b
 }
 
-func (a Amount) minus(b Amount) Amount {
+func (a Money) minus(b Money) Money {
 	// b 必须≥0， a可大于、等于、小于0
 	if a < 0 || b < 0 {
-		panic(fmt.Sprintf("overflow amount %d.minus(%d)", a, b))
+		panic(fmt.Sprintf("overflow money %d.minus(%d)", a, b))
 		return 0
 	}
 	c := a - b
-	if c < MinAmount || c > MaxAmount {
-		panic(fmt.Sprintf("overflow amount %d.minus(%d)", a, b))
+	if c < MinMoney || c > MaxMoney {
+		panic(fmt.Sprintf("overflow money %d.minus(%d)", a, b))
 		return 0
 	}
 	return c
 }
 
-func (a Amount) Add(b Amount) Amount {
+func (a Money) Add(b Money) Money {
 	if b < 0 {
 		if a < 0 {
 			return -(-a).add(-b) // a<0&&b<0 ==> -((-a)+(-b))
@@ -175,7 +175,7 @@ func (a Amount) Add(b Amount) Amount {
 	return a.add(b) // a>=0 && b >=0
 
 }
-func (a Amount) Minus(b Amount) Amount {
+func (a Money) Minus(b Money) Money {
 	if b < 0 {
 		if a < 0 {
 			return (-b).minus(-a) // a<0&&b<0 ==> (-b)-(-a)
@@ -188,16 +188,16 @@ func (a Amount) Minus(b Amount) Amount {
 }
 
 // 必须大于0
-func (a Amount) AddN(b Amount) Amount {
+func (a Money) AddN(b Money) Money {
 	if a < -b {
-		panic(fmt.Sprintf("overflow amount %d.AddN(%d)", a, b))
+		panic(fmt.Sprintf("overflow money %d.AddN(%d)", a, b))
 		return 0
 	}
 	return a.Add(b)
 }
-func (a Amount) MinusN(b Amount) Amount {
+func (a Money) MinusN(b Money) Money {
 	if a < b {
-		panic(fmt.Sprintf("overflow amount %d.MinusN(%d)", a, b))
+		panic(fmt.Sprintf("overflow money %d.MinusN(%d)", a, b))
 		return 0
 	}
 	return a.Minus(b)

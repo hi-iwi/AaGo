@@ -6,7 +6,7 @@ import (
 )
 
 type SepPercents string
-type SepAmounts string
+type SepMoneys string
 
 func ToSepPercents(elems []Percent) SepPercents {
 	// strings.Join 类同
@@ -44,13 +44,13 @@ func (t SepPercents) Percents() []Percent {
 	return v
 }
 
-func ToSepAmounts(elems []Amount) SepAmounts {
+func ToSepMoneys(elems []Money) SepMoneys {
 	// strings.Join 类同
 	switch len(elems) {
 	case 0:
 		return ""
 	case 1:
-		return SepAmounts(strconv.FormatInt(int64(elems[0]), 10))
+		return SepMoneys(strconv.FormatInt(int64(elems[0]), 10))
 	}
 	deli := ","
 	n := (len(elems) - 1) + (len(elems) * MaxInt64Len)
@@ -62,18 +62,18 @@ func ToSepAmounts(elems []Amount) SepAmounts {
 		b.WriteString(strconv.FormatInt(int64(s), 10))
 	}
 
-	return SepAmounts(b.String())
+	return SepMoneys(b.String())
 }
-func (t SepAmounts) Amounts() []Amount {
+func (t SepMoneys) Moneys() []Money {
 	if t == "" {
 		return nil
 	}
 	arr := strings.Split(string(t), ",")
-	v := make([]Amount, len(arr))
+	v := make([]Money, len(arr))
 	for i, a := range arr {
 		p, err := strconv.ParseInt(a, 10, 64)
 		if err == nil {
-			v[i] = NewAmount(p)
+			v[i] = NewMoney(p)
 		}
 	}
 	return v
