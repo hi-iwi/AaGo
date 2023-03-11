@@ -28,21 +28,10 @@ func S2Percent(s string, base int) Percent {
 	n, _ := strconv.ParseUint(s, base, 16)
 	return Percent(n)
 }
-func S2Money(s string, base int) Money {
-	n, _ := strconv.ParseInt(s, base, 32)
-	return Money(n)
-}
+ 
 func S2Amount(s string, base int) Amount {
 	n, _ := strconv.ParseInt(s, base, 64)
 	return Amount(n)
-}
-func S2Umoney(s string, base int) Umoney {
-	n, _ := strconv.ParseUint(s, base, 32)
-	return Umoney(n)
-}
-func S2Uamount(s string, base int) Uamount {
-	n, _ := strconv.ParseUint(s, base, 64)
-	return Uamount(n)
 }
 func S2Booln(s string, base int) Booln {
 	n, _ := strconv.ParseUint(s, base, 8)

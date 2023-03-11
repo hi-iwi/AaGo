@@ -1,13 +1,8 @@
 package atype
 
 import (
-	"github.com/shopspring/decimal"
 	"math"
 )
-
-type Percent int16 // 范围：-10000~10000 => -100.00%~100.00%
-
-var PercentMultiplier = decimal.NewFromInt32(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 
 func FloatToInt8(n float64) int8 {
 	if n < float64(math.MinInt8) || n > float64(math.MaxInt8) {
@@ -70,26 +65,3 @@ func Float2Uint64(n float64) uint64 {
 	}
 	return uint64(n) // 上面进行范围判断了，所以之类可以强转
 }
-
-// @param n 本身就是转换后的值，如10000，即表示为 100*PercentMultiplier，即 100%
-func NewPercent(n int16) Percent { return Percent(n) }
-
-// 80.0 表示 80%
-func ToPercent(n float64) Percent {
-	return NewPercent(int16(PercentMultiplier.Mul(decimal.NewFromFloat(n)).IntPart()))
-}
-func (p Percent) Int16() int16 { return int16(p) }
-func (p Percent) Int32() int32 { return int32(p) }
-func (p Percent) Percent() decimal.Decimal {
-	q := decimal.NewFromInt32(p.Int32())
-	return q.Div(PercentMultiplier)
-}
-func (p Percent) Value() decimal.Decimal { return p.Percent().Div(decimal.NewFromInt32(100)) }
-func (p Percent) Mul(d decimal.Decimal) decimal.Decimal {
-	return p.Value().Mul(d)
-}
-func (p Percent) Fmt() string                { return p.Percent().String() }
-func (a Money) Dec() decimal.Decimal         { return decimal.NewFromInt(int64(a)) }
-func (a Money) MulPercent(p Percent) Money   { return Money(p.Mul(a.Dec()).IntPart()) }
-func (a Umoney) Dec() decimal.Decimal        { return decimal.NewFromInt(int64(a)) }
-func (a Umoney) MulPercent(p Percent) Umoney { return Umoney(p.Mul(a.Dec()).IntPart()) }
