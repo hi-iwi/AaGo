@@ -58,11 +58,16 @@ func ToImages(v []string) Images {
 }
 
 func (im Images) Srcs(filler func(path string) *ImgSrc) []ImgSrc {
+	if !im.Valid || im.String == "" {
+		return nil
+	}
 	ims := im.Strings()
 	srcs := make([]ImgSrc, 0, len(ims))
 	for _, im := range ims {
 		if im != "" {
-			srcs = append(srcs, *filler(im))
+			if fi := filler(im); fi != nil {
+				srcs = append(srcs, *filler(im))
+			}
 		}
 	}
 	return srcs
