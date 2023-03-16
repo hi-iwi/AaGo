@@ -8,8 +8,12 @@ type Status int8
 
 const (
 	// 最简易的 开关
-	InvalidPart = "invalid" // 关   off 是关键字。
-	OkPart      = "ok"      // 开
+	InvalidPart = "invalid" // <0 关   off 是关键字。
+	OkPart      = "ok"      // < MAXVALUE 开
+
+	// 通过与否
+	NotPassPart = "notpass" // < 1
+	PassedPart  = "passed"  // <MAXVALUE
 
 	// 无用户操作的状态，仅后台管理
 	InvalidPartA = "invalid" // < Pending
@@ -97,11 +101,17 @@ func (s Status) MeReadable() bool { return s >= MeReadableRange[0] && s <= MeRea
 // 用户是否可以修改、删除
 func (s Status) Modifiable() bool { return s.In(Failed, Pending, Created, Passed) }
 
-func (s Status) Part() string {
+func (s Status) EasyPart() string {
 	if s.IsOk() {
 		return OkPart
 	}
 	return InvalidPart
+}
+func (s Status) Part() string {
+	if s.IsPassed() {
+		return PassedPart
+	}
+	return NotPassPart
 }
 func (s Status) PartA() string {
 	if s < Pending {
