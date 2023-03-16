@@ -2,6 +2,7 @@ package atype
 
 import (
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -33,9 +34,8 @@ func S2Money(s string, base int) Money {
 	n, _ := strconv.ParseInt(s, base, 64)
 	return Money(n)
 }
-func S2Booln(s string, base int) Booln {
-	n, _ := strconv.ParseUint(s, base, 8)
-	return Booln(n)
+func S2Booln(s string) Booln {
+	return ToBooln(s == "1" || strings.ToUpper(s) == "TRUE")
 }
 func S2Uint8(s string, base int) uint8 {
 	n, _ := strconv.ParseUint(s, base, 8)
