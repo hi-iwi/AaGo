@@ -14,11 +14,12 @@ type NullInts struct{ sql.NullString }          // int json array
 type NullUints struct{ sql.NullString }         // uint json array
 type NullUint64s struct{ sql.NullString }       // uint64 json array
 type NullStrings struct{ sql.NullString }       // string json array
-type NullStringMap struct{ sql.NullString }     // map[string]string
-type Null2dStringMap struct{ sql.NullString }   // map[string]map[string]string
-type NullStringMaps struct{ sql.NullString }    // []map[string]string
-type NullStringMapsMap struct{ sql.NullString } // map[string][]map[string]string
-type NullStringsMap struct{ sql.NullString }    // map[string][]string
+type StringMap struct{ sql.NullString }         // map[string]string
+type ComplexStringMap struct{ sql.NullString }  // map[string]map[string]string
+type StringMaps struct{ sql.NullString }        // []map[string]string
+type StringMapsMap struct{ sql.NullString }     // map[string][]map[string]string
+type StringsMap struct{ sql.NullString }        // map[string][]string
+type ComplexStringsMap struct{ sql.NullString } // map[string][][]string
 
 func NewNullUint8s(s string) NullUint8s {
 	var x NullUint8s
@@ -281,26 +282,26 @@ func (t NullStrings) Strings() []string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func NewNullStringMap(s string) NullStringMap {
-	var x NullStringMap
+func NewStringMap(s string) StringMap {
+	var x StringMap
 	if s != "" {
 		x.Scan(s)
 	}
 	return x
 }
-func ToNullStringMap(v map[string]string) NullStringMap {
+func ToStringMap(v map[string]string) StringMap {
 	if len(v) == 0 {
-		return NullStringMap{}
+		return StringMap{}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
-		return NullStringMap{}
+		return StringMap{}
 	}
 
-	return NewNullStringMap(string(s))
+	return NewStringMap(string(s))
 }
 
-func (t NullStringMap) StringMap() map[string]string {
+func (t StringMap) StringMap() map[string]string {
 	if t.String == "" {
 		return nil
 	}
@@ -308,25 +309,25 @@ func (t NullStringMap) StringMap() map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func NewNull2dStringMap(s string) Null2dStringMap {
-	var x Null2dStringMap
+func NewComplexStringMap(s string) ComplexStringMap {
+	var x ComplexStringMap
 	if s != "" {
 		x.Scan(s)
 	}
 	return x
 }
-func ToNull2dStringMap(v map[string]map[string]string) Null2dStringMap {
+func ToComplexStringMap(v map[string]map[string]string) ComplexStringMap {
 	if len(v) == 0 {
-		return Null2dStringMap{}
+		return ComplexStringMap{}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
-		return Null2dStringMap{}
+		return ComplexStringMap{}
 	}
 
-	return NewNull2dStringMap(string(s))
+	return NewComplexStringMap(string(s))
 }
-func (t Null2dStringMap) TStringMap() map[string]map[string]string {
+func (t ComplexStringMap) TStringMap() map[string]map[string]string {
 	if t.String == "" {
 		return nil
 	}
@@ -334,26 +335,26 @@ func (t Null2dStringMap) TStringMap() map[string]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func NewNullStringMaps(s string) NullStringMaps {
-	var x NullStringMaps
+func NewStringMaps(s string) StringMaps {
+	var x StringMaps
 	if s != "" {
 		x.Scan(s)
 	}
 	return x
 }
-func ToNullStringMaps(v []map[string]string) NullStringMaps {
+func ToStringMaps(v []map[string]string) StringMaps {
 	if len(v) == 0 {
-		return NullStringMaps{}
+		return StringMaps{}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
-		return NullStringMaps{}
+		return StringMaps{}
 	}
 
-	return NewNullStringMaps(string(s))
+	return NewStringMaps(string(s))
 }
 
-func (t NullStringMaps) StringMaps() []map[string]string {
+func (t StringMaps) StringMaps() []map[string]string {
 	if t.String == "" {
 		return nil
 	}
@@ -361,25 +362,25 @@ func (t NullStringMaps) StringMaps() []map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func NewNullStringMapsMap(s string) NullStringMapsMap {
-	var x NullStringMapsMap
+func NewStringMapsMap(s string) StringMapsMap {
+	var x StringMapsMap
 	if s != "" {
 		x.Scan(s)
 	}
 	return x
 }
-func ToNullStringMapsMap(v map[string][]map[string]string) NullStringMapsMap {
+func ToStringMapsMap(v map[string][]map[string]string) StringMapsMap {
 	if len(v) == 0 {
-		return NullStringMapsMap{}
+		return StringMapsMap{}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
-		return NullStringMapsMap{}
+		return StringMapsMap{}
 	}
 
-	return NewNullStringMapsMap(string(s))
+	return NewStringMapsMap(string(s))
 }
-func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
+func (t StringMapsMap) StringMapsMap() map[string][]map[string]string {
 	if t.String == "" {
 		return nil
 	}
@@ -387,30 +388,57 @@ func (t NullStringMapsMap) StringMapsMap() map[string][]map[string]string {
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
-func NewNullStringsMap(s string) NullStringsMap {
-	var x NullStringsMap
+func NewStringsMap(s string) StringsMap {
+	var x StringsMap
 	if s != "" {
 		x.Scan(s)
 	}
 	return x
 }
-func ToNullStringsMap(v map[string][]string) NullStringsMap {
+func ToStringsMap(v map[string][]string) StringsMap {
 	if len(v) == 0 {
-		return NullStringsMap{}
+		return StringsMap{}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
-		return NullStringsMap{}
+		return StringsMap{}
 	}
 
-	return NewNullStringsMap(string(s))
+	return NewStringsMap(string(s))
 }
 
-func (t NullStringsMap) StringsMap() map[string][]string {
+func (t StringsMap) StringsMap() map[string][]string {
 	if t.String == "" {
 		return nil
 	}
 	var v map[string][]string
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+func NewComplexStringsMap(s string) ComplexStringsMap {
+	var x ComplexStringsMap
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
+func ToComplexStringsMap(v map[string][][]string) ComplexStringsMap {
+	if len(v) == 0 {
+		return ComplexStringsMap{}
+	}
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return ComplexStringsMap{}
+	}
+
+	return NewComplexStringsMap(string(s))
+}
+
+func (t ComplexStringsMap) StringsMap() map[string][][]string {
+	if t.String == "" {
+		return nil
+	}
+	var v map[string][][]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
