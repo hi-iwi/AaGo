@@ -19,15 +19,15 @@ var PercentAug float64 = 100      // 扩大100 * 100倍 --> 这里按百分比�
 var DecimalAug = PercentAug * 100 // 小数转百分比扩大100倍
 
 const (
-	Cent        Money = 100           // 分
-	Dime              = 10 * Cent     // 角
-	Yuan              = 10 * Dime     // 元
-	KiloYuan          = 1000 * Yuan   // 千元
-	WanYuan           = 10000 * Yuan  // 万元
-	MillionYuan       = 100 * WanYuan // 百万元    中文的话，就不要用百万、千万
+	Cent    Money = 100           // 分
+	Dime          = 10 * Cent     // 角
+	Yuan          = 10 * Dime     // 元
+	KilYuan       = 1000 * Yuan   // 千元
+	WanYuan       = 10000 * Yuan  // 万元
+	MilYuan       = 100 * WanYuan // 百万元    中文的话，就不要用百万、千万
 	//QianWanYuan  Money = 100000000000   // 千万元
-	YiYuan      = 100 * MillionYuan // 亿元
-	BillionYuan = 10 * YiYuan       // 十亿元
+	YiYuan  = 100 * MilYuan // 亿元
+	BilYuan = 10 * YiYuan   // 十亿元
 
 	MinMoney = -100 * YiYuan // -100亿
 	MaxMoney = 100 * YiYuan  // 100亿
