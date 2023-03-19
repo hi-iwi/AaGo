@@ -41,7 +41,7 @@ func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 		ctx := aa.Context(ictx)
 		_, file, line, _ := runtime.Caller(2)
 		a := strings.Split(file, "/")
-		Log.Error(ctx, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, msg)
+		Log.Error(ctx, 1, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, msg)
 
 		// hide errmsg
 		cs.Msg = dict.Code2Msg(cs.Code)
