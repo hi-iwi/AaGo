@@ -96,7 +96,7 @@ func (app *App) Try(ctx context.Context, skip int, e *ae.Error) bool {
 }
 
 // 快捷记录错误
-func (app *App) TryLog(ctx context.Context, skip int, err error) bool {
+func (app *App) Test(ctx context.Context, skip int, err error) bool {
 	if err == nil {
 		return true
 	}
@@ -105,7 +105,7 @@ func (app *App) TryLog(ctx context.Context, skip int, err error) bool {
 }
 
 // 快捷panic
-func (app *App) TryPanic(ctx context.Context, skip int, e *ae.Error) {
+func (app *App) TryOrPanic(ctx context.Context, skip int, e *ae.Error) {
 	if e != nil && e.IsServerError() {
 		app.Log.Error(ctx, skip, e.Text())
 		panic(e.Text())
