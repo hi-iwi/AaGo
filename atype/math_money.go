@@ -50,8 +50,12 @@ func (p Percent) Mul(d int64) int64 { return d * int64(p) }
 func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Decimal(), 'f', -1, 32) }
 
 // 采用四舍五入
-func (a Money) MulPercent(p Percent) Money { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
-func (a Money) MulPct(p float64) Money     { return a.MulPercent(ToPercent(p)) }
+func (a Money) MulPercent(p Percent) Money      { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
+func (a Money) MulPercentCeil(p Percent) Money  { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
+func (a Money) MulPercentFloor(p Percent) Money { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
+func (a Money) MulPct(p float64) Money          { return a.MulPercent(ToPercent(p)) }
+func (a Money) MulPctCeil(p float64) Money      { return a.MulPercentCeil(ToPercent(p)) }
+func (a Money) MulPctFloor(p float64) Money     { return a.MulPercentFloor(ToPercent(p)) }
 
 func NewMoney(m int64) Money  { return Money(m) }
 func ToMoney(y float64) Money { return Money(y * float64(Yuan)) }
