@@ -36,9 +36,9 @@ func (t SepPercents) Percents() []Percent {
 	arr := strings.Split(string(t), ",")
 	v := make([]Percent, len(arr))
 	for i, a := range arr {
-		p, err := strconv.ParseInt(a, 10, 64)
+		p, err := strconv.ParseInt(a, 10, 32)
 		if err == nil {
-			v[i] = NewPercent(p)
+			v[i] = NewPercent(int(p))
 		}
 	}
 	return v
