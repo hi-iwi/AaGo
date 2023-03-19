@@ -7,15 +7,14 @@ import (
 )
 
 func TestPercent(t *testing.T) {
-	p := atype.ToPercent(0.7)
-	if p.Value().String() != "0.007" {
-		t.Errorf("atype.NewPercent(0.7%%) : %s != 0.007", p.Value().String())
+	m := atype.ToMoney(1000.0)
+	if m.MulPct(0.6) != atype.ToMoney(6) {
+		t.Errorf("atype.ToMoney(1000).MulPct(0.6) != atype.ToMoney(6)")
 	}
-	if p.Percent().String() != "0.7" {
-		t.Errorf("atype.NewPercent(0.7%%) : %s != 0.7", p.Percent().String())
+	if m.MulPct(30) != atype.ToMoney(300) {
+		t.Errorf("atype.ToMoney(1000).MulPct(30) != atype.ToMoney(300)")
 	}
 }
-
 func TestMoney(t *testing.T) {
 	m := atype.ToMoney(188.8)
 	if m.Fmt() != "188.8" {
@@ -79,13 +78,13 @@ func TestMoneyCalc(t *testing.T) {
 	if (a.Add(b)) != atype.ToMoney(800) {
 		t.Errorf("money 500+300 !=800")
 	}
-	if (a.Minus(b)) != atype.ToMoney(200) {
+	if (a.Sub(b)) != atype.ToMoney(200) {
 		t.Errorf("money 500-300 !=200")
 	}
 	if (a.Add(-b)) != atype.ToMoney(200) {
 		t.Errorf("money 500-300 !=200")
 	}
-	if (a.Minus(-b)) != atype.ToMoney(800) {
+	if (a.Sub(-b)) != atype.ToMoney(800) {
 		t.Errorf("money 500-300 !=200")
 	}
 }
@@ -100,6 +99,6 @@ func TestMoneyPanic(t *testing.T) {
 		}
 	}()
 	m := atype.ToMoney(188.8)
-	m.Minus(atype.MinMoney) // overflow
+	m.Sub(atype.MinMoney) // overflow
 
 }

@@ -7,7 +7,6 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
 	github.com/kataras/iris/v12 v12.2.0
-	github.com/shopspring/decimal v1.3.1
 	gopkg.in/ini.v1 v1.67.0
 )
 

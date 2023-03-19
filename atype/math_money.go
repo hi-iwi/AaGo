@@ -3,7 +3,6 @@ package atype
 import "C"
 import (
 	"fmt"
-	"github.com/shopspring/decimal"
 	"math"
 	"strconv"
 	"strings"
@@ -15,8 +14,9 @@ type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
 
 //type SmallMoney Money // uint 范围：42万元左右； price 用 UMoney
 
-type Percent int16                                // 范围：-10000~10000 => -100.00%~100.00%
-var PercentMultiplier = decimal.NewFromInt32(100) // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
+type Percent int64                // 范围：±100 0000亿 %
+var PercentAug int64 = 100        // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
+var DecimalAug = PercentAug * 100 // 小数转百分比扩大100倍
 
 const (
 	Cent        Money = 100           // 分
@@ -34,28 +34,24 @@ const (
 
 )
 
-// @param n 本身就是转换后的值，如10000，即表示为 100*PercentMultiplier，即 100%
-func NewPercent(n int16) Percent { return Percent(n) }
+// @param n 本身就是转换后的值，如10000，即表示为 100*PercentAug，即 100%
+func NewPercent(n int64) Percent { return Percent(n) }
 
 // 80.0 表示 80%
-func ToPercent(n float64) Percent {
-	return NewPercent(int16(PercentMultiplier.Mul(decimal.NewFromFloat(n)).IntPart()))
-}
-func (p Percent) Int16() int16 { return int16(p) }
-func (p Percent) Int32() int32 { return int32(p) }
-func (p Percent) Percent() decimal.Decimal {
-	q := decimal.NewFromInt32(p.Int32())
-	return q.Div(PercentMultiplier)
-}
-func (p Percent) Value() decimal.Decimal { return p.Percent().Div(decimal.NewFromInt32(100)) }
-func (p Percent) Mul(d decimal.Decimal) decimal.Decimal {
-	return p.Value().Mul(d)
-}
-func (p Percent) Fmt() string              { return p.Percent().String() }
-func (a Money) Dec() decimal.Decimal       { return decimal.NewFromInt(int64(a)) }
-func (a Money) MulPercent(p Percent) Money { return Money(p.Mul(a.Dec()).IntPart()) }
+func ToPercent(n float64) Percent   { return NewPercent(int64(n * float64(PercentAug))) }
+func (p Percent) Int64() int64      { return int64(p) }
+func (p Percent) Percent() float64  { return float64(p.Int64()) / float64(PercentAug) }
+func (p Percent) Decimal() float64  { return float64(p.Int64()) / float64(DecimalAug) }
+func (p Percent) Mul(d int64) int64 { return p.Int64() * d }
+func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Decimal(), 'f', -1, 64) }
 
-func NewMoney(m int64) Money  { return Money(m) }
+// 采用四舍五入
+func (a Money) MulPercent(p Percent) Money { return a.Mul(p.Int64()).Div(DecimalAug) }
+func (a Money) MulPct(p float64) Money     { return a.Mul(ToPercent(p).Int64()).Div(DecimalAug) }
+
+func NewMoney(m int64) Money { return Money(m) }
+
+//
 func ToMoney(y float64) Money { return Money(y * float64(Yuan)) }
 func (a Money) Int64() int64  { return int64(a) }
 
@@ -65,15 +61,15 @@ func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
 // 小数部分
 func (a Money) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
 func decimalN(decimals ...uint16) uint16 {
-	const d uint16 = 4   //  4位小数
-	decimal := uint16(2) // 保留2位小数
+	const d uint16 = 4 //  4位小数
+	dec := uint16(2)   // 保留2位小数
 	if len(decimals) > 0 {
-		decimal = decimals[0]
+		dec = decimals[0]
 	}
-	if decimal > d {
+	if dec > d {
 		return d
 	}
-	return decimal
+	return dec
 }
 func moneydelimiter(delimiter ...string) string {
 	sep := ","
@@ -147,15 +143,15 @@ func (a Money) add(b Money) Money {
 	return a + b
 }
 
-func (a Money) minus(b Money) Money {
+func (a Money) sub(b Money) Money {
 	// b 必须≥0， a可大于、等于、小于0
 	if a < 0 || b < 0 {
-		panic(fmt.Sprintf("overflow money %d.minus(%d)", a, b))
+		panic(fmt.Sprintf("overflow money %d.sub(%d)", a, b))
 		return 0
 	}
 	c := a - b
 	if c < MinMoney || c > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.minus(%d)", a, b))
+		panic(fmt.Sprintf("overflow money %d.sub(%d)", a, b))
 		return 0
 	}
 	return c
@@ -166,23 +162,23 @@ func (a Money) Add(b Money) Money {
 		if a < 0 {
 			return -(-a).add(-b) // a<0&&b<0 ==> -((-a)+(-b))
 		}
-		return a.minus(-b) // a>=0 && b<0  ==>  a-(-b)
+		return a.sub(-b) // a>=0 && b<0  ==>  a-(-b)
 	} else if a < 0 {
-		return b.minus(-a) // a<0 && b>=0 ==>  b-(-a)
+		return b.sub(-a) // a<0 && b>=0 ==>  b-(-a)
 	}
 	return a.add(b) // a>=0 && b >=0
 
 }
-func (a Money) Minus(b Money) Money {
+func (a Money) Sub(b Money) Money {
 	if b < 0 {
 		if a < 0 {
-			return (-b).minus(-a) // a<0&&b<0 ==> (-b)-(-a)
+			return (-b).sub(-a) // a<0&&b<0 ==> (-b)-(-a)
 		}
 		return a.add(-b) // a>=0&&b<0  ==> a+(-b)
 	} else if a < 0 {
 		return b.add(-a) // a<0 && b>=0 ==> -((-a)+b)
 	}
-	return a.minus(b)
+	return a.sub(b)
 }
 
 // 必须大于0
@@ -193,25 +189,55 @@ func (a Money) AddN(b Money) Money {
 	}
 	return a.Add(b)
 }
-func (a Money) MinusN(b Money) Money {
+func (a Money) SubN(b Money) Money {
 	if a < b {
-		panic(fmt.Sprintf("overflow money %d.MinusN(%d)", a, b))
+		panic(fmt.Sprintf("overflow money %d.SubN(%d)", a, b))
 		return 0
 	}
-	return a.Minus(b)
+	return a.Sub(b)
 }
-func (a Money) Multiply(n int64) Money {
+func (a Money) Mul(n int64) Money {
 	b := NewMoney(a.Int64() * n)
 	if b < MinMoney || b > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.Multiply(%d)", a, n))
+		panic(fmt.Sprintf("overflow money %d.Mul(%d)", a, n))
 		return 0
 	}
 	return b
 }
-func (a Money) Divided(n int64) Money {
+
+// 四舍五入
+func (a Money) Div(n int64) Money {
+	x := a.Int64()
+	i := x / n
+	m := a.Int64() % n
+	if m > 0 && math.Round(float64(m)/float64(n)) == 1 {
+		i++
+	}
+	b := NewMoney(i)
+	if b < MinMoney || b > MaxMoney {
+		panic(fmt.Sprintf("overflow money %d.Div(%d)", a, n))
+		return 0
+	}
+	return b
+}
+func (a Money) DivFloor(n int64) Money {
 	b := NewMoney(a.Int64() / n)
 	if b < MinMoney || b > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.Divided(%d)", a, n))
+		panic(fmt.Sprintf("overflow money %d.DivFloor(%d)", a, n))
+		return 0
+	}
+	return b
+}
+func (a Money) DivCeil(n int64) Money {
+	x := a.Int64()
+	i := x / n
+	m := a.Int64() % n
+	if m > 0 {
+		i++
+	}
+	b := NewMoney(i)
+	if b < MinMoney || b > MaxMoney {
+		panic(fmt.Sprintf("overflow money %d.DivCeil(%d)", a, n))
 		return 0
 	}
 	return b
