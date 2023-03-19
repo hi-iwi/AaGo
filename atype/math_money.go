@@ -244,3 +244,14 @@ func (a Money) DivCeil(n int64) Money {
 	}
 	return b
 }
+
+// 四舍五入
+func (a Money) Of(b Money) Percent {
+	return NewPercent(int(a.Mul(int64(DecimalAug)).Div(b.Int64())))
+}
+func (a Money) OfFloor(b Money) Percent {
+	return NewPercent(int(a.Mul(int64(DecimalAug)).DivFloor(b.Int64())))
+}
+func (a Money) OfCeil(b Money) Percent {
+	return NewPercent(int(a.Mul(int64(DecimalAug)).DivCeil(b.Int64())))
+}
