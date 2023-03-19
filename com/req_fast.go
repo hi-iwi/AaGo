@@ -173,7 +173,7 @@ func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 
 func (r *Req) QueryPercent(p string, required ...bool) (atype.Percent, *ae.Error) {
 	_x, e := r.QueryDigit(p, false, required...)
-	return atype.NewPercent(_x.DefaultInt16(0)), e
+	return atype.NewPercent(_x.DefaultInt64(0)), e
 }
 
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
@@ -283,7 +283,7 @@ func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 }
 func (r *Req) BodyPercent(p string, required ...bool) (atype.Percent, *ae.Error) {
 	_x, e := r.BodyDigit(p, false, required...)
-	return atype.NewPercent(_x.DefaultInt16(0)), e
+	return atype.NewPercent(_x.DefaultInt64(0)), e
 }
 
 func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
