@@ -14,8 +14,8 @@ type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
 
 //type SmallMoney Money // uint 范围：42万元左右； price 用 UMoney
 
-type Percent int64                // 范围：±100 0000亿 %
-var PercentAug int64 = 100        // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
+type Percent int                  // 范围： -21474836.48% - 214748.36.47%  即 -214748.3648 - 214748.3647
+var PercentAug float64 = 100      // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 var DecimalAug = PercentAug * 100 // 小数转百分比扩大100倍
 
 const (
@@ -35,23 +35,25 @@ const (
 )
 
 // @param n 本身就是转换后的值，如10000，即表示为 100*PercentAug，即 100%
-func NewPercent(n int64) Percent { return Percent(n) }
+func NewPercent(n int) Percent { return Percent(n) }
 
-// 80.0 表示 80%
-func ToPercent(n float64) Percent   { return NewPercent(int64(n * float64(PercentAug))) }
-func (p Percent) Int64() int64      { return int64(p) }
-func (p Percent) Percent() float64  { return float64(p.Int64()) / float64(PercentAug) }
-func (p Percent) Decimal() float64  { return float64(p.Int64()) / float64(DecimalAug) }
-func (p Percent) Mul(d int64) int64 { return p.Int64() * d }
-func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Decimal(), 'f', -1, 64) }
+// ToPercent(80.01) 表示 80.01%
+func ToPercent(n float64) Percent { return NewPercent(int(n * PercentAug)) }
+
+// 范围： -327.68% ~ 32767%  即 -3.2768 ~ +3.2767
+func (p Percent) Int16() int16 { return int16(p) }
+func (p Percent) Int() int     { return int(p) }
+
+func (p Percent) Percent() float64  { return float64(p.Int()) / PercentAug }
+func (p Percent) Decimal() float64  { return float64(p.Int()) / DecimalAug }
+func (p Percent) Mul(d int64) int64 { return d * int64(p) }
+func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Decimal(), 'f', -1, 32) }
 
 // 采用四舍五入
-func (a Money) MulPercent(p Percent) Money { return a.Mul(p.Int64()).Div(DecimalAug) }
-func (a Money) MulPct(p float64) Money     { return a.Mul(ToPercent(p).Int64()).Div(DecimalAug) }
+func (a Money) MulPercent(p Percent) Money { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
+func (a Money) MulPct(p float64) Money     { return a.MulPercent(ToPercent(p)) }
 
-func NewMoney(m int64) Money { return Money(m) }
-
-//
+func NewMoney(m int64) Money  { return Money(m) }
 func ToMoney(y float64) Money { return Money(y * float64(Yuan)) }
 func (a Money) Int64() int64  { return int64(a) }
 
