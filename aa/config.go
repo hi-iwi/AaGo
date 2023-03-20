@@ -10,7 +10,7 @@ import (
 type Config interface {
 	Reload(after func(Config) Configuration) (Configuration, error)
 
-	AddConfigs(cfgs map[string]string) // 这里有锁
+	AddConfigs(map[string]string) // 这里有锁
 
 	//getOtherConfig(key string) string    // 不要获取太细分，否则容易导致错误不容易被排查
 	AddRsaConfigs(rsaConfigs map[string][]byte)

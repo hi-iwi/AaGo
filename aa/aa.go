@@ -23,7 +23,7 @@ type Aa struct {
 }
 
 func NewApp(ini string) (*App, error) {
-	cfg, conf, err := LoadIni(ini, AfterConfigLoaded)
+	cfg, conf, err := MakeIni(ini, AfterConfigLoaded)
 	if err != nil {
 		return nil, err
 	}

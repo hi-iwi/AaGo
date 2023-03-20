@@ -19,7 +19,7 @@ var (
 	cfgMtx sync.RWMutex
 )
 
-func LoadIni(path string, after func(Config) Configuration) (Config, Configuration, error) {
+func MakeIni(path string, after func(Config) Configuration) (Config, Configuration, error) {
 	rsa := make(map[string][]byte)
 	ocfg := make(map[string]string)
 	cfg := &Ini{path: path, rsa: rsa, otherConfig: ocfg}
