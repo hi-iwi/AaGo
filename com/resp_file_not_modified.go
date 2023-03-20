@@ -25,11 +25,11 @@ e.g.
 
 
 
-First Time:
+First FmtTime:
 	Client   ---GET/HEAD /static/iwi.md  -->                                       [Server]
 		<-- resp header Etag=2e681a-6-5d044840 ---
 
-Next Time:
+Next FmtTime:
 	[Client]   --- GET/HEAD /static/iwi.md,  header If-None-Match=2e681a-6-5d044840 -->     [Server]
 			<-- if sever Etag == client If-None-Match, set If-None-Match=false, response 304
 				else  set If-None-Match=true, response 200,
@@ -128,7 +128,7 @@ func (resp *RespStruct) checkIfUnmodifiedSince(modtime time.Time) condResult {
 	}
 	ius := iusp.String()
 	if t, err := http.ParseTime(ius); err == nil {
-		// The Date-Modified header truncates sub-second precision, so
+		// The FmtDate-Modified header truncates sub-second precision, so
 		// use mtime < t+1s instead of mtime <= t to check for unmodified.
 		if modtime.Before(t.Add(1 * time.Second)) {
 			return condTrue
@@ -183,7 +183,7 @@ func (resp *RespStruct) checkIfModifiedSince(modtime time.Time) condResult {
 	if err != nil {
 		return condNone
 	}
-	// The Date-Modified header truncates sub-second precision, so
+	// The FmtDate-Modified header truncates sub-second precision, so
 	// use mtime < t+1s instead of mtime <= t to check for unmodified.
 	if modtime.Before(t.Add(1 * time.Second)) {
 		return condFalse

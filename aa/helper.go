@@ -3,6 +3,7 @@ package aa
 import (
 	"context"
 	"fmt"
+	"github.com/hi-iwi/AaGo/atype"
 	"log"
 	"time"
 )
@@ -14,20 +15,20 @@ func Hint(msg string) {
 }
 func (app *Aa) Hint(ctx context.Context, msg string) {
 	app.Log.Warn(ctx, 1, msg)
-	fmt.Println(app.Datetime() + " " + msg)
+	fmt.Println(app.FmtNow() + " " + msg)
 }
 
 func (app *Aa) Now() time.Time {
 	return time.Now().In(app.Cfg().TimeLocation)
 }
 
-func (app *Aa) Datetime() string {
+func (app *Aa) FmtNow() string {
 	return app.Now().Format("2006-01-02 15:04:05")
 }
-func (app *Aa) Date() string {
+func (app *Aa) FmtDate() string {
 	return app.Now().Format("2006-01-02")
 }
-func (app *Aa) Time() string {
+func (app *Aa) FmtTime() string {
 	return app.Now().Format("15:04:05")
 }
 
@@ -36,4 +37,10 @@ func (app *Aa) ParseDatetime(s string) (time.Time, error) {
 }
 func (app *Aa) ParseDate(s string) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", s, app.Cfg().TimeLocation)
+}
+func (app *Aa) Datetime() atype.Datetime {
+	return atype.ToDatetime(app.Now())
+}
+func (app *Aa) Date() atype.Date {
+	return atype.ToDate(app.Now())
 }
