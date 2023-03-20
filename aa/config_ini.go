@@ -1,7 +1,6 @@
 package aa
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/hi-iwi/AaGo/atype"
 	"gopkg.in/ini.v1"
@@ -41,23 +40,9 @@ func (c *Ini) Reload(after func(Config) Configuration) (Configuration, error) {
 	}
 	return after(c), nil
 }
-func (c *Ini) LoadAIni(cfgs map[string]json.RawMessage) error {
-	g := make(map[string]string)
-	for k, v := range cfgs {
-		var c map[string]interface{}
-		if err := json.Unmarshal(v, &c); err != nil {
-			return err
-		}
-		for jk, jv := range c {
-			g[k+"."+jk] = atype.String(jv)
-		}
-	}
-	c.AddOtherConfigs(g)
-	return nil
-}
 
 // 这里有锁，所以要批量设置
-func (c *Ini) AddOtherConfigs(otherConfigs map[string]string) {
+func (c *Ini) AddConfigs(otherConfigs map[string]string) {
 	cfgMtx.Lock()
 	defer cfgMtx.Unlock()
 	for k, v := range otherConfigs {

@@ -1,7 +1,6 @@
 package aa
 
 import (
-	"encoding/json"
 	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
 	"strings"
@@ -10,8 +9,9 @@ import (
 
 type Config interface {
 	Reload(after func(Config) Configuration) (Configuration, error)
-	LoadAIni(cfgs map[string]json.RawMessage) error // 加载 a ini 一维json配置
-	AddOtherConfigs(otherConfigs map[string]string) // 这里有锁，所以要批量设置
+
+	AddConfigs(cfgs map[string]string) // 这里有锁
+
 	//getOtherConfig(key string) string    // 不要获取太细分，否则容易导致错误不容易被排查
 	AddRsaConfigs(rsaConfigs map[string][]byte)
 	//GetRsa(name string) ([]byte, bool) // 不要获取太细分，否则容易导致错误不容易被排查
