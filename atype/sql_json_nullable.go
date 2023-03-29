@@ -20,6 +20,7 @@ type StringMaps struct{ sql.NullString }        // []map[string]string
 type StringMapsMap struct{ sql.NullString }     // map[string][]map[string]string
 type StringsMap struct{ sql.NullString }        // map[string][]string
 type ComplexStringsMap struct{ sql.NullString } // map[string][][]string
+type ComplexStringMaps struct{ sql.NullString } // []map[string][]map[string]string
 
 func NewNullUint8s(s string) NullUint8s {
 	var x NullUint8s
@@ -439,6 +440,34 @@ func (t ComplexStringsMap) StringsMap() map[string][][]string {
 		return nil
 	}
 	var v map[string][][]string
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+
+func NewComplexStringMaps(s string) ComplexStringMaps {
+	var x ComplexStringMaps
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
+func ToComplexStringMaps(v map[string][][]string) ComplexStringMaps {
+	if len(v) == 0 {
+		return ComplexStringMaps{}
+	}
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return ComplexStringMaps{}
+	}
+
+	return NewComplexStringMaps(string(s))
+}
+
+func (t ComplexStringMaps) StringMaps() []map[string][]map[string]string {
+	if t.String == "" {
+		return nil
+	}
+	var v []map[string][]map[string]string
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
