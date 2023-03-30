@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-type NullJson struct{ sql.NullString }
+type NullJson struct{ sql.NullString }          // interface{}
 type NullUint8s struct{ sql.NullString }        // uint8 json array
 type NullUint16s struct{ sql.NullString }       // uint16 json array
 type NullUint24s struct{ sql.NullString }       // Uint24 json array
@@ -21,6 +21,33 @@ type StringMapsMap struct{ sql.NullString }     // map[string][]map[string]strin
 type StringsMap struct{ sql.NullString }        // map[string][]string
 type ComplexStringsMap struct{ sql.NullString } // map[string][][]string
 type ComplexStringMaps struct{ sql.NullString } // []map[string][]map[string]string
+
+type ComplexMaps struct{ sql.NullString } // []map[string]interface{}
+
+func NewNullJson(s []byte) NullJson {
+	var x NullJson
+	if len(s) > 0 {
+		x.Scan(string(s))
+	}
+	return x
+}
+
+func ToNullJson(v interface{}) NullJson {
+	if v == nil {
+		return NullJson{}
+	}
+	s, _ := json.Marshal(v)
+	return NewNullJson(s)
+}
+
+func (t ComplexMaps) Interface() interface{} {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	var v interface{}
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
 
 func NewNullUint8s(s string) NullUint8s {
 	var x NullUint8s
@@ -42,7 +69,7 @@ func ToNullUint8s(v []uint8) NullUint8s {
 }
 
 func (t NullUint8s) Uint8s() []uint8 {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -76,7 +103,7 @@ func ToNullUint16s(v []uint16) NullUint16s {
 }
 
 func (t NullUint16s) Uint16s() []uint16 {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -109,7 +136,7 @@ func ToNullUint24s(v []uint32) NullUint24s {
 }
 
 func (t NullUint24s) Uint24s() []Uint24 {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -142,7 +169,7 @@ func ToNullUint32s(v []uint32) NullUint32s {
 }
 
 func (t NullUint32s) Uint32s() []uint32 {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -175,7 +202,7 @@ func ToNullInts(v []int) NullInts {
 }
 
 func (t NullInts) Ints() []int {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -208,7 +235,7 @@ func ToNullUints(v []uint) NullUints {
 	return NewNullUints(string(s))
 }
 func (t NullUints) Uints() []uint {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -243,7 +270,7 @@ func ToNullUint64s(v []uint64) NullUint64s {
 }
 
 func (t NullUint64s) Uint64s() []uint64 {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []interface{}
@@ -276,7 +303,7 @@ func ToNullStrings(v []string) NullStrings {
 	return NewNullStrings(string(s))
 }
 func (t NullStrings) Strings() []string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []string
@@ -303,7 +330,7 @@ func ToStringMap(v map[string]string) StringMap {
 }
 
 func (t StringMap) StringMap() map[string]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v map[string]string
@@ -329,7 +356,7 @@ func ToComplexStringMap(v map[string]map[string]string) ComplexStringMap {
 	return NewComplexStringMap(string(s))
 }
 func (t ComplexStringMap) TStringMap() map[string]map[string]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v map[string]map[string]string
@@ -356,7 +383,7 @@ func ToStringMaps(v []map[string]string) StringMaps {
 }
 
 func (t StringMaps) StringMaps() []map[string]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []map[string]string
@@ -382,7 +409,7 @@ func ToStringMapsMap(v map[string][]map[string]string) StringMapsMap {
 	return NewStringMapsMap(string(s))
 }
 func (t StringMapsMap) StringMapsMap() map[string][]map[string]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v map[string][]map[string]string
@@ -409,7 +436,7 @@ func ToStringsMap(v map[string][]string) StringsMap {
 }
 
 func (t StringsMap) StringsMap() map[string][]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v map[string][]string
@@ -436,7 +463,7 @@ func ToComplexStringsMap(v map[string][][]string) ComplexStringsMap {
 }
 
 func (t ComplexStringsMap) StringsMap() map[string][][]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v map[string][][]string
@@ -464,10 +491,38 @@ func ToComplexStringMaps(v map[string][][]string) ComplexStringMaps {
 }
 
 func (t ComplexStringMaps) StringMaps() []map[string][]map[string]string {
-	if t.String == "" {
+	if !t.Valid || t.String == "" {
 		return nil
 	}
 	var v []map[string][]map[string]string
+	json.Unmarshal([]byte(t.String), &v)
+	return v
+}
+
+func NewComplexMaps(s string) ComplexMaps {
+	var x ComplexMaps
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
+func ToComplexMaps(v map[string][][]string) ComplexMaps {
+	if len(v) == 0 {
+		return ComplexMaps{}
+	}
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return ComplexMaps{}
+	}
+
+	return NewComplexMaps(string(s))
+}
+
+func (t ComplexMaps) Maps() []map[string]interface{} {
+	if !t.Valid || t.String == "" {
+		return nil
+	}
+	var v []map[string]interface{}
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
