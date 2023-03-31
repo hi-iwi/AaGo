@@ -26,6 +26,8 @@ done
 
 pushAndUpgradeMod(){
   cd "$root/$1" || exit
+  # 单元测试
+  go test ./...
 
   if [ $upgrade -eq 1 ]; then
     echo ">>> UPGRADING go.mod..."
@@ -64,6 +66,8 @@ pushAndUpgradeMod(){
     fi
   fi
 }
+
+
 
 pushAndUpgradeMod 'AaGo'
 

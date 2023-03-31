@@ -219,7 +219,7 @@ func (r *Req) QueryFloat64s(p string, required bool) ([]float64, *ae.Error) {
 		v = make([]float64, s.Len())
 		var err error
 		for i := 0; i < s.Len(); i++ {
-			v[i], err = atype.Float64(s.Index(i).Interface())
+			v[i], err = atype.Float64(s.Index(i).Interface(), 64)
 			if err != nil {
 				return nil, ae.BadParam(p)
 			}

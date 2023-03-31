@@ -243,7 +243,7 @@ func (p *Atype) DefaultFloat32(defaultValue float32) float32 {
 }
 
 func (p *Atype) Float64() (float64, error) {
-	return Float64(p.raw)
+	return Float64(p.raw, 64)
 }
 
 func (p *Atype) DefaultFloat64(defaultValue float64) float64 {

@@ -15,11 +15,11 @@ type NullUints struct{ sql.NullString }         // uint json array
 type NullUint64s struct{ sql.NullString }       // uint64 json array
 type NullStrings struct{ sql.NullString }       // string json array
 type StringMap struct{ sql.NullString }         // map[string]string
-type ComplexStringMap struct{ sql.NullString }  // map[string]map[string]string
-type StringMaps struct{ sql.NullString }        // []map[string]string
 type StringMapsMap struct{ sql.NullString }     // map[string][]map[string]string
 type StringsMap struct{ sql.NullString }        // map[string][]string
+type ComplexStringMap struct{ sql.NullString }  // map[string]map[string]string
 type ComplexStringsMap struct{ sql.NullString } // map[string][][]string
+type StringMaps struct{ sql.NullString }        // []map[string]string
 type ComplexStringMaps struct{ sql.NullString } // []map[string][]map[string]string
 
 type ComplexMaps struct{ sql.NullString } // []map[string]interface{}

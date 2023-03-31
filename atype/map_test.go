@@ -18,30 +18,31 @@ func TestAtypeMap(t *testing.T) {
 			"sex": "male",
 		},
 	}
-
-	name := atype.String(atype.NewMap(arr).Get("name"))
+	x, _ := atype.NewMap(arr).Get("name")
+	name := atype.String(x)
 
 	t.Log("[\"name\"]", name)
 
 	if name != "Iwi" {
 		t.Error("[\"name\"] != Iwi")
 	}
-
-	v, err := atype.Int(atype.NewMap(arr).Get(1))
+	y, _ := atype.NewMap(arr).Get(1)
+	v, err := atype.Int(y)
 
 	if v != 100 {
 		t.Error("[1] != 100")
 	} else {
 		t.Logf(`[1] == %d %s`, v, err)
 	}
-
-	if atype.String(atype.NewMap(arr).Get("1")) != "999" {
+	z, _ := atype.NewMap(arr).Get("1")
+	if atype.String(z) != "999" {
 		t.Error("[\"1\"] != 999")
 	} else {
-		t.Logf("[\"1\"] == %s", atype.String(atype.NewMap(arr).Get("1")))
+		w, _ := atype.NewMap(arr).Get("1")
+		t.Logf("[\"1\"] == %s", atype.String(w))
 	}
-
-	nation := atype.String(atype.NewMap(arr).Get("test.nation"))
+	h, _ := atype.NewMap(arr).Get("test.nation")
+	nation := atype.String(h)
 	if nation != "China" {
 		t.Log("[\"test\".\"nation\"] != China")
 	} else {
@@ -49,6 +50,7 @@ func TestAtypeMap(t *testing.T) {
 	}
 
 	t.Log(atype.NewMap(arr).Get(2, "sex"))
-	sex := atype.String(atype.NewMap(arr).Get(2, "sex"))
+	o, _ := atype.NewMap(arr).Get(2, "sex")
+	sex := atype.String(o)
 	t.Logf("[2.\"sex\"] == %s", sex)
 }
