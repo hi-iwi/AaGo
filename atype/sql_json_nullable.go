@@ -478,7 +478,7 @@ func NewComplexStringMaps(s string) ComplexStringMaps {
 	}
 	return x
 }
-func ToComplexStringMaps(v map[string][][]string) ComplexStringMaps {
+func ToComplexStringMaps(v []map[string][]map[string]string) ComplexStringMaps {
 	if len(v) == 0 {
 		return ComplexStringMaps{}
 	}
@@ -506,7 +506,7 @@ func NewComplexMaps(s string) ComplexMaps {
 	}
 	return x
 }
-func ToComplexMaps(v map[string][][]string) ComplexMaps {
+func ToComplexMaps(v []map[string]interface{}) ComplexMaps {
 	if len(v) == 0 {
 		return ComplexMaps{}
 	}
