@@ -24,12 +24,24 @@ func trimDir(p string) string {
 	return p[i+1:]
 }
 
-func NewImage(p string) Image { return Image(p) }
-func ToImage(p string) Image  { return NewImage(trimDir(p)) }
-func NewVideo(p string) Video { return Video(p) }
-func ToVideo(p string) Video  { return NewVideo(trimDir(p)) }
-func NewAudio(p string) Audio { return Audio(p) }
-func ToAudio(p string) Audio  { return NewAudio(trimDir(p)) }
+func NewImage(p string, filenameOnly bool) Image {
+	if filenameOnly {
+		p = trimDir(p)
+	}
+	return Image(p)
+}
+func NewVideo(p string, filenameOnly bool) Video {
+	if filenameOnly {
+		p = trimDir(p)
+	}
+	return Video(p)
+}
+func NewAudio(p string, filenameOnly bool) Audio {
+	if filenameOnly {
+		p = trimDir(p)
+	}
+	return Audio(p)
+}
 
 func (p Image) String() string                              { return string(p) }
 func (p Image) Src(filler func(string) *ImgSrc) *ImgSrc     { return filler(p.String()) }
@@ -45,9 +57,14 @@ func NewImages(s string) Images {
 	}
 	return x
 }
-func ToImages(v []string) Images {
+func ToImages(v []string, filenameOnly bool) Images {
 	if len(v) == 0 {
 		return Images{}
+	}
+	if filenameOnly {
+		for i, s := range v {
+			v[i] = trimDir(s)
+		}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
@@ -80,9 +97,14 @@ func NewVideos(s string) Videos {
 	}
 	return x
 }
-func ToVideos(v []string) Videos {
+func ToVideos(v []string, filenameOnly bool) Videos {
 	if len(v) == 0 {
 		return Videos{}
+	}
+	if filenameOnly {
+		for i, s := range v {
+			v[i] = trimDir(s)
+		}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {

@@ -18,4 +18,4 @@ type VideoSrc struct {
 	Allowed  [][2]uint16     `json:"allowed"`  // 限定允许的width,height
 }
 
-func (s VideoSrc) Filename() Video { return ToVideo(s.Path) }
+func (s VideoSrc) Filename() Video { return NewVideo(s.Path, true) }

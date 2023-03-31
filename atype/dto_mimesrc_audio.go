@@ -16,7 +16,7 @@ type AudioSrc struct {
 	Duration uint16          `json:"duration"` // 时长，秒
 }
 
-func (s AudioSrc) Filename() Audio { return ToAudio(s.Path) }
+func (s AudioSrc) Filename() Audio { return NewAudio(s.Path, true) }
 
 func (s AudioSrc) FitTo(quality string) string {
 	return strings.ReplaceAll(s.Fit, "${QUALITY}", quality)

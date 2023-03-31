@@ -24,7 +24,7 @@ type ImgSrc struct {
 	Allowed  [][2]uint16     `json:"allowed"` // 允许的width,height
 }
 
-func (s ImgSrc) Filename() Image { return ToImage(s.Path) }
+func (s ImgSrc) Filename() Image { return NewImage(s.Path, true) }
 
 func (s ImgSrc) FillTo(width, height uint16) string {
 	if s.Processor == 0 {
