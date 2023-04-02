@@ -13,20 +13,21 @@ func (r *Req) BodyStrings(p string, required, allowEmptyString bool) ([]string, 
 	}
 	var v []string
 	d := q.Raw()
-	switch reflect.TypeOf(d).Kind() {
-	case reflect.String: // "1,2,3"
-		return r.BodySepStrings(p, ",", required, allowEmptyString)
-	case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
-		s := reflect.ValueOf(d)
-		v = make([]string, 0, s.Len())
-		for i := 0; i < s.Len(); i++ {
-			ts := s.Index(i).String()
-			if allowEmptyString || ts != "" {
-				v = append(v, ts)
+	if d != nil {
+		switch reflect.TypeOf(d).Kind() {
+		case reflect.String: // "1,2,3"
+			return r.BodySepStrings(p, ",", required, allowEmptyString)
+		case reflect.Slice: // 有可能是 [1,"2",3] 这种混合的数组
+			s := reflect.ValueOf(d)
+			v = make([]string, 0, s.Len())
+			for i := 0; i < s.Len(); i++ {
+				ts := atype.String(s.Index(i).Interface()) // 不能用 s.Index(i).String()，否则返回：<interface {} Value>
+				if allowEmptyString || ts != "" {
+					v = append(v, ts)
+				}
 			}
 		}
 	}
-
 	if len(v) == 0 && required {
 		return nil, ae.BadParam(p)
 	}

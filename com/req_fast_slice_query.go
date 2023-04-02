@@ -20,7 +20,7 @@ func (r *Req) QueryStrings(p string, required, allowEmptyString bool) ([]string,
 		s := reflect.ValueOf(d)
 		v = make([]string, 0, s.Len())
 		for i := 0; i < s.Len(); i++ {
-			ts := s.Index(i).String()
+			ts := atype.String(s.Index(i).Interface()) // 不能用 s.Index(i).String()，否则返回：<interface {} Value>
 			if allowEmptyString || ts != "" {
 				v = append(v, ts)
 			}
