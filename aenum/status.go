@@ -4,12 +4,16 @@ import (
 	"strconv"
 )
 
-type Status int8
+type Status int8 // status 字段禁止默认为0，防止意外情况
 
 const (
 	// 最简易的 开关
 	InvalidPart = "invalid" // <0 关   off 是关键字。
 	OkPart      = "ok"      // < MAXVALUE 开
+
+	//NegTernaryPart  = "neg" // -1, LESS 0
+	//ZeroTernaryPart = ""    // 0, LESS 1
+	//PosTernaryPart  = ""    // 1, LESS MAXVALUE
 
 	// 通过与否
 	NotPassPart = "notpass" // < 1
