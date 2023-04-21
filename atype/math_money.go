@@ -47,7 +47,7 @@ func ToPercent(n float64) Percent { return NewPercent(int(n * PercentAug)) }
 func NewPercent16(n int16) Percent16 { return Percent16(n) }
 func (p Percent16) Percent() Percent { return Percent(p) }
 func (p Percent16) Int16() int16     { return int16(p) }
-func NewPercent24(n int16) Percent24 { return Percent24(n) }
+func NewPercent24(n int32) Percent24 { return Percent24(n) }
 func (p Percent24) Percent() Percent { return Percent(p) }
 func (p Percent24) Int32() int32     { return int32(p) }
 

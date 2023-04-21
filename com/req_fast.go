@@ -166,9 +166,21 @@ func (r *Req) QueryDistri(p string, required ...bool) (atype.Distri, *ae.Error) 
 	return atype.NewDistri(x.DefaultUint24(0)), e
 }
 
+func (r *Req) QuerySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.SmallMoney(x.DefaultUint(0)), e
+}
 func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
 	return atype.Money(x.DefaultInt64(0)), e
+}
+func (r *Req) QueryPercent16(p string, required ...bool) (atype.Percent16, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewPercent16(x.DefaultInt16(0)), e
+}
+func (r *Req) QueryPercent24(p string, required ...bool) (atype.Percent24, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewPercent24(x.DefaultInt32(0)), e
 }
 
 func (r *Req) QueryPercent(p string, required ...bool) (atype.Percent, *ae.Error) {
@@ -277,9 +289,21 @@ func (r *Req) BodyDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
 	return atype.NewDistri(x.DefaultUint24(0)), e
 }
 
+func (r *Req) BodySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.SmallMoney(x.DefaultUint(0)), e
+}
 func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.Money(x.DefaultInt64(0)), e
+}
+func (r *Req) BodyPercent16(p string, required ...bool) (atype.Percent16, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewPercent16(x.DefaultInt16(0)), e
+}
+func (r *Req) BodyPercent24(p string, required ...bool) (atype.Percent24, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewPercent24(x.DefaultInt32(0)), e
 }
 func (r *Req) BodyPercent(p string, required ...bool) (atype.Percent, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
