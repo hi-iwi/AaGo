@@ -10,11 +10,15 @@ import (
 
 // 汇率一般保留4位小数，所以这里金额 * 10000
 // 数据库有 money() 函数 money 支持正负；
-type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
+// SmallMoney:  UNSIGNED INT 范围：42万元左右；
+// Money:      BIGINT 范围：正负100亿元；
+type SmallMoney uint // 统一转换为 Money 后使用
+type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
 
-//type SmallMoney Money // uint 范围：42万元左右； price 用 UMoney
+type Percent16 int16 // 需要转换为 Percent 使用；-327.68% ~ 327.67%  即 -3.2768 ~ 3.2767
+type Percent24 Int24 // 需要转换为 Percent 使用； -83886.08% ~ 83886.07%   即 -838.8608 ~ -838.8607
+type Percent int     // 范围： -21474836.48% - 21474836.47%
 
-type Percent int                  // 范围： -21474836.48% - 214748.36.47%  即 -214748.3648 - 214748.3647
 var PercentAug float64 = 100      // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
 var DecimalAug = PercentAug * 100 // 小数转百分比扩大100倍
 
@@ -40,9 +44,19 @@ func NewPercent(n int) Percent { return Percent(n) }
 // ToPercent(80.01) 表示 80.01%
 func ToPercent(n float64) Percent { return NewPercent(int(n * PercentAug)) }
 
+func NewPercent16(n int16) Percent16 { return Percent16(n) }
+func (p Percent16) Percent() Percent { return Percent(p) }
+func (p Percent16) Int16() int16     { return int16(p) }
+func NewPercent24(n int16) Percent24 { return Percent24(n) }
+func (p Percent24) Percent() Percent { return Percent(p) }
+func (p Percent24) Int32() int32     { return int32(p) }
+
 // 范围： -327.68% ~ 32767%  即 -3.2768 ~ +3.2767
-func (p Percent) Int16() int16 { return int16(p) }
-func (p Percent) Int() int     { return int(p) }
+func (p Percent) Int16() int16         { return int16(p) }
+func (p Percent) Percent16() Percent16 { return Percent16(p) }
+func (p Percent) Int32() int32         { return int32(p) }
+func (p Percent) Percent24() Percent24 { return Percent24(p) }
+func (p Percent) Int() int             { return int(p) }
 
 func (p Percent) Percent() float64  { return float64(p.Int()) / PercentAug }
 func (p Percent) Decimal() float64  { return float64(p.Int()) / DecimalAug }
@@ -50,16 +64,23 @@ func (p Percent) Mul(d int64) int64 { return d * int64(p) }
 func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Decimal(), 'f', -1, 32) }
 
 // 采用四舍五入
-func (a Money) MulPercent(p Percent) Money      { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
-func (a Money) MulPercentCeil(p Percent) Money  { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
-func (a Money) MulPercentFloor(p Percent) Money { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
-func (a Money) MulPct(p float64) Money          { return a.MulPercent(ToPercent(p)) }
-func (a Money) MulPctCeil(p float64) Money      { return a.MulPercentCeil(ToPercent(p)) }
-func (a Money) MulPctFloor(p float64) Money     { return a.MulPercentFloor(ToPercent(p)) }
+func (a Money) MulPercent(p Percent) Money     { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
+func (a Money) MulPercentCeil(p Percent) Money { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
+func (a Money) MulPercentFloor(p Percent) Money {
+	return a.Mul(int64(p)).DivFloor(int64(DecimalAug))
+}
+func (a Money) MulPct(p float64) Money      { return a.MulPercent(ToPercent(p)) }
+func (a Money) MulPctCeil(p float64) Money  { return a.MulPercentCeil(ToPercent(p)) }
+func (a Money) MulPctFloor(p float64) Money { return a.MulPercentFloor(ToPercent(p)) }
 
-func NewMoney(m int64) Money  { return Money(m) }
-func ToMoney(y float64) Money { return Money(y * float64(Yuan)) }
-func (a Money) Int64() int64  { return int64(a) }
+func NewSmallMoney(n uint) SmallMoney  { return SmallMoney(n) }
+func (a SmallMoney) Money() Money      { return Money(a) }
+func (a SmallMoney) Uint() uint        { return uint(a) }
+func NewMoney(m int64) Money           { return Money(m) }
+func ToMoney(y float64) Money          { return Money(y * float64(Yuan)) }
+func (a Money) Int64() int64           { return int64(a) }
+func (a Money) Uint() uint             { return uint(a) }
+func (a Money) SmallMoney() SmallMoney { return SmallMoney(a) }
 
 // 整数部分
 func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
