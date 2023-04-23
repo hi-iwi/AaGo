@@ -61,7 +61,7 @@ func (p Percent) Int() int             { return int(p) }
 func (p Percent) Percent() float64  { return float64(p.Int()) / PercentAug }
 func (p Percent) Decimal() float64  { return float64(p.Int()) / DecimalAug }
 func (p Percent) Mul(d int64) int64 { return d * int64(p) }
-func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Decimal(), 'f', -1, 32) }
+func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Percent(), 'f', -1, 32) }
 
 // 采用四舍五入
 func (a Money) MulPercent(p Percent) Money     { return a.Mul(int64(p)).Div(int64(DecimalAug)) }

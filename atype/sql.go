@@ -51,6 +51,7 @@ type Int24 int32
 type Uint24 uint32
 type Year uint16       // uint16 date: yyyy
 type YearMonth Uint24  // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
+type Ymd uint          // yyyymmdd
 type Date string       // yyyy-mm-dd
 type Datetime string   // yyyy-mm-dd hh:ii:ss
 type UnixTime int64    // int 形式 datetime，可与 datetime, date 互转
@@ -59,8 +60,10 @@ type MediumText string // MediumText 16777215 bytes
 type LongText string   // LongText 4294967295 bytes
 
 // type Html template.HTML   HTML 直接使用 template.HTML
-type Distri Uint24 // 6 位地址简码
-type AddrId uint64 // 12 位地址码
+type Province uint8 // 2 位省份地址码
+type Dist uint16    // 4 位地址简码
+type Distri Uint24  // 6 位地址简码
+type AddrId uint64  // 12 位地址码
 
 type NullText struct{ sql.NullString }       // Text
 type NullMediumText struct{ sql.NullString } // MediumText
@@ -273,6 +276,15 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 	return time.Date(y, m, 0, 00, 00, 00, 0, loc)
 }
 
+func (d Ymd) Date() Date {
+	s := strconv.FormatUint(uint64(d), 10)
+	if len(s) != 8 {
+		return MinDate
+	}
+	x := s[0:4] + "-" + s[4:6] + "-" + s[6:]
+	return Date(x)
+}
+
 // time.Now().In()  loc 直接通过 in 传递
 func NewDate(d string, loc *time.Location) Date {
 	if d == "" || d == MinDate.String() {
@@ -291,6 +303,11 @@ func (d Date) Valid() bool {
 func (d Date) String() string { return string(d) }
 func (d Date) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", string(d), loc)
+}
+func (d Date) Ymd() Ymd {
+	s := strings.ReplaceAll(d.String(), "-", "")
+	n, _ := strconv.ParseUint(s, 10, 32)
+	return Ymd(n)
 }
 func (d Date) Int64(loc *time.Location) int64 {
 	tm, err := time.ParseInLocation("2006-01-02", string(d), loc)
