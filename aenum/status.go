@@ -86,10 +86,12 @@ func (s Status) In(a ...Status) bool {
 }
 
 // 显示与不显示的零界点
-func (s Status) IsOk() bool { return s >= Created }
+func (s Status) IsOk() bool  { return s >= Created }
+func (s Status) NotOk() bool { return s < Created }
 
 // 是否审核通过
-func (s Status) IsPassed() bool { return s >= Passed }
+func (s Status) IsPassed() bool  { return s >= Passed }
+func (s Status) NotPassed() bool { return s < Passed }
 
 // Created 也是待审核状态
 func (s Status) IsPending() bool { return s >= Pending && s <= Created }

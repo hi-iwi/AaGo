@@ -38,7 +38,8 @@ func NewSqlError(err error) *Error {
 	dupExp := regexp.MustCompile(`Duplicate\s+entry\s+'([^']*)'\s+for\s+key\s+'([^']*)'`)
 	dupMatches := dupExp.FindAllStringSubmatch(m, -1)
 	if dupMatches != nil && len(dupMatches) > 0 && len(dupMatches[0]) == 3 {
-		return NewError(409, "conflict "+dupMatches[0][1])
+		// dupMatches[0][1]
+		return NewError(409, "key conflict")
 	}
 
 	return NewError(500, pos+" sql error: "+m)
