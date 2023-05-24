@@ -597,6 +597,22 @@ func (d Distri) Uint24() Uint24 {
 func (d Distri) Uint32() uint32 {
 	return uint32(d)
 }
+
+// 某个地区是否在另外一个地区内部
+func (d Distri) In(p Distri) bool {
+	if d == p {
+		return true
+	}
+	b := d % 100
+	if b != 0 && (d-b) == p {
+		return true
+	}
+	b = d % 10000
+	if b != 0 && (d-b) == p {
+		return true
+	}
+	return false
+}
 func NewAddrId(a uint64) AddrId {
 	return AddrId(a)
 }
