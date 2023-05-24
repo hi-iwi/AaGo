@@ -32,6 +32,12 @@ func NewError(code int, msg string) *Error {
 		Msg:  msg,
 	}
 }
+func NewOk(ok bool) *Error {
+	if ok {
+		return nil
+	}
+	return NewE(500)
+}
 func Text(e *Error) string {
 	if e == nil {
 		return "nil"
