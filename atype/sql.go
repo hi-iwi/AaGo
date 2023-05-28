@@ -59,12 +59,6 @@ type Text string       // Text 65535 bytes
 type MediumText string // MediumText 16777215 bytes
 type LongText string   // LongText 4294967295 bytes
 
-// type Html template.HTML   HTML 直接使用 template.HTML
-type Province uint8 // 2 位省份地址码
-type Dist uint16    // 4 位地址简码
-type Distri Uint24  // 6 位地址简码
-type AddrId uint64  // 12 位地址码
-
 type NullText struct{ sql.NullString }       // Text
 type NullMediumText struct{ sql.NullString } // MediumText
 type NullLongText struct{ sql.NullString }   // LongText
@@ -583,41 +577,6 @@ func (t SepUint64s) Uint64s(delimiters ...string) []uint64 {
 		v[i], _ = strconv.ParseUint(a, 10, 64)
 	}
 	return v
-}
-
-func NewDistri(d Uint24) Distri {
-	return Distri(d)
-}
-func ToDistri(d uint32) Distri {
-	return Distri(d)
-}
-func (d Distri) Uint24() Uint24 {
-	return Uint24(d)
-}
-func (d Distri) Uint32() uint32 {
-	return uint32(d)
-}
-
-// 某个地区是否在另外一个地区内部
-func (d Distri) In(p Distri) bool {
-	if d == p {
-		return true
-	}
-	b := d % 100
-	if b != 0 && (d-b) == p {
-		return true
-	}
-	b = d % 10000
-	if b != 0 && (d-b) == p {
-		return true
-	}
-	return false
-}
-func NewAddrId(a uint64) AddrId {
-	return AddrId(a)
-}
-func (a AddrId) Uint64() uint64 {
-	return uint64(a)
 }
 
 func (t Text) String() string           { return string(t) }
