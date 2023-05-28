@@ -12,7 +12,7 @@ var (
 	// 经济特区：海南、深圳、厦门、珠海、汕头
 	SEZs = []Distri{460000, 440300, 350200, 440400, 440500}
 	// 自治区：新疆、西藏、宁夏、内蒙古、广西
-	AutonomousRegions = []Distri{650000, 540000, 640000, 450000}
+	AutonomousRegions = []Distri{650000, 540000, 640000, 150000, 450000}
 	// 特区：香港、澳门
 	SARs = []Distri{810000, 820000}
 )
@@ -28,6 +28,12 @@ func (d Distri) Uint24() Uint24 {
 }
 func (d Distri) Uint32() uint32 {
 	return uint32(d)
+}
+func (d Distri) Province() Province {
+	return Province(d / 10000)
+}
+func (d Distri) Dist() Dist {
+	return Dist(d / 100)
 }
 func (d Distri) AddrId() AddrId {
 	return NewAddrId(uint64(d) * 1000000)

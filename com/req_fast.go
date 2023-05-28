@@ -161,6 +161,20 @@ func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
 	x, e := r.QueryDigit(p, true, required...)
 	return x.DefaultUint64(0), e
 }
+func (r *Req) QueryProvince(p string, required ...bool) (atype.Province, *ae.Error) {
+	distri, e := r.QueryDistri(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return distri.Province(), nil
+}
+func (r *Req) QueryDist(p string, required ...bool) (atype.Dist, *ae.Error) {
+	distri, e := r.QueryDistri(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return distri.Dist(), nil
+}
 func (r *Req) QueryDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
 	return atype.NewDistri(x.DefaultUint24(0)), e
@@ -283,6 +297,20 @@ func (r *Req) BodyUint(p string, required ...bool) (uint, *ae.Error) {
 func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return x.DefaultUint64(0), e
+}
+func (r *Req) BodyProvince(p string, required ...bool) (atype.Province, *ae.Error) {
+	distri, e := r.BodyDistri(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return distri.Province(), nil
+}
+func (r *Req) BodyDist(p string, required ...bool) (atype.Dist, *ae.Error) {
+	distri, e := r.BodyDistri(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return distri.Dist(), nil
 }
 func (r *Req) BodyDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
