@@ -18,10 +18,20 @@ var (
 )
 
 func NewDistri(d Uint24) Distri {
+	// 保持6位数字
+	if d == 0 {
+		return 0
+	}
+	if d < 100 {
+		return Distri(d * 10000)
+	}
+	if d < 10000 {
+		return Distri(d * 100)
+	}
 	return Distri(d)
 }
 func ToDistri(d uint32) Distri {
-	return Distri(d)
+	return NewDistri(Uint24(d))
 }
 func (d Distri) Uint24() Uint24 {
 	return Uint24(d)
