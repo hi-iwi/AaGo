@@ -49,19 +49,21 @@ type Bitwiser struct {
 type Booln uint8
 type Int24 int32
 type Uint24 uint32
-type Year uint16       // uint16 date: yyyy
-type YearMonth Uint24  // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
-type Ymd uint          // yyyymmdd
-type Date string       // yyyy-mm-dd
-type Datetime string   // yyyy-mm-dd hh:ii:ss
-type UnixTime int64    // int 形式 datetime，可与 datetime, date 互转
-type Text string       // Text 65535 bytes
-type MediumText string // MediumText 16777215 bytes
-type LongText string   // LongText 4294967295 bytes
+type Year uint16      // uint16 date: yyyy
+type YearMonth Uint24 // uint24 date: yyyymm  不要用 Date，主要是不需要显示dd。
+type Ymd uint         // yyyymmdd
+type Date string      // yyyy-mm-dd
+type Datetime string  // yyyy-mm-dd hh:ii:ss
+type UnixTime int64   // int 形式 datetime，可与 datetime, date 互转
 
-type NullText struct{ sql.NullString }       // Text
-type NullMediumText struct{ sql.NullString } // MediumText
-type NullLongText struct{ sql.NullString }   // LongText
+// Text 将不存在，统一使用  template.HTML
+//type Text string // Text 65535 bytes
+//type MediumText string // MediumText 16777215 bytes
+//type LongText string   // LongText 4294967295 bytes
+
+//type NullText struct{ sql.NullString }       // Text
+//type NullMediumText struct{ sql.NullString } // MediumText
+//type NullLongText struct{ sql.NullString }   // LongText
 
 type SepStrings string // a,b,c,d,e
 type SepUint8s string  // 1,2,3,4
@@ -577,26 +579,4 @@ func (t SepUint64s) Uint64s(delimiters ...string) []uint64 {
 		v[i], _ = strconv.ParseUint(a, 10, 64)
 	}
 	return v
-}
-
-func (t Text) String() string           { return string(t) }
-func NewText(s string) Text             { return Text(s) }
-func (t MediumText) String() string     { return string(t) }
-func NewMediumText(s string) MediumText { return MediumText(s) }
-func (t LongText) String() string       { return string(t) }
-func NewLongText(s string) LongText     { return LongText(s) }
-func NewNullText(s string) NullText {
-	var t NullText
-	t.Scan(s)
-	return t
-}
-func NewNullMediumText(s string) NullMediumText {
-	var t NullMediumText
-	t.Scan(s)
-	return t
-}
-func NewNullLongText(s string) NullLongText {
-	var t NullLongText
-	t.Scan(s)
-	return t
 }
