@@ -5,9 +5,11 @@ import (
 	"strings"
 )
 
+type File string
 type Image string // varchar(55)   45 + 5(.webp) + 5 扩展
 type Video string // varchar(55)
 type Audio string // varchar(55)
+type Files struct{ NullStrings }
 type Images struct{ NullStrings }
 type Videos struct{ NullStrings }
 type Audios struct{ NullStrings }
@@ -23,7 +25,12 @@ func trimDir(p string) string {
 	}
 	return p[i+1:]
 }
-
+func NewFile(p string, filenameOnly bool) File {
+	if filenameOnly {
+		p = trimDir(p)
+	}
+	return File(p)
+}
 func NewImage(p string, filenameOnly bool) Image {
 	if filenameOnly {
 		p = trimDir(p)
@@ -42,13 +49,54 @@ func NewAudio(p string, filenameOnly bool) Audio {
 	}
 	return Audio(p)
 }
-
+func (p File) String() string                               { return string(p) }
+func (p File) Src(filler func(string) *FileSrc) *FileSrc    { return filler(p.String()) }
 func (p Image) String() string                              { return string(p) }
 func (p Image) Src(filler func(string) *ImgSrc) *ImgSrc     { return filler(p.String()) }
 func (p Video) String() string                              { return string(p) }
 func (p Video) Src(filler func(string) *VideoSrc) *VideoSrc { return filler(p.String()) }
 func (p Audio) String() string                              { return string(p) }
 func (p Audio) Src(filler func(string) *AudioSrc) *AudioSrc { return filler(p.String()) }
+
+func NewFiles(s string) Files {
+	var x Files
+	if s != "" {
+		x.Scan(s)
+	}
+	return x
+}
+func ToFiles(v []string, filenameOnly bool) Files {
+	if len(v) == 0 {
+		return Files{}
+	}
+	if filenameOnly {
+		for i, s := range v {
+			v[i] = trimDir(s)
+		}
+	}
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return Files{}
+	}
+
+	return NewFiles(string(s))
+}
+
+func (im Files) Srcs(filler func(path string) *FileSrc) []FileSrc {
+	if !im.Valid || im.String == "" {
+		return nil
+	}
+	ims := im.Strings()
+	srcs := make([]FileSrc, 0, len(ims))
+	for _, im := range ims {
+		if im != "" {
+			if fi := filler(im); fi != nil {
+				srcs = append(srcs, *filler(im))
+			}
+		}
+	}
+	return srcs
+}
 
 func NewImages(s string) Images {
 	var x Images

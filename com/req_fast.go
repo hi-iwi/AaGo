@@ -224,6 +224,7 @@ func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (aty
 	}
 	return atype.NewDatetime(x.String(), loc), nil
 }
+
 func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) {
 	x, e := r.Body(p, required...)
 	return x.String(), e
@@ -405,4 +406,20 @@ func (r *Req) QueryPaging(limitMax uint, firstPages ...uint) atype.Paging {
 		Offset: offset,
 		Limit:  limit,
 	}
+}
+func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
+	x, e := r.BodyString(p, required)
+	return atype.NewImage(x, true), e
+}
+func (r *Req) BodyVideo(p string, required ...bool) (atype.Image, *ae.Error) {
+	x, e := r.BodyString(p, required)
+	return atype.NewImage(x, true), e
+}
+func (r *Req) BodyImages(p string, required ...bool) (atype.Images, *ae.Error) {
+	rq := true
+	if len(required) == 1 {
+		rq = required[0]
+	}
+	x, e := r.BodyStrings(p, rq, false)
+	return atype.ToImages(x, true), e
 }
