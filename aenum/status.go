@@ -34,9 +34,11 @@ const (
 	CreatedPartB   = "created"   // = 0 审核中，显示在公开列表（适用于白名单用户）
 	PassedPartB    = "passed"    // >=1 公开列表显示
 
-	PublicPartBs  = CreatedPartB + "," + PassedPartB                         // 公开列表
-	VisiblePartBs = NonPublicPartB + "," + PendingPartB + "," + PublicPartBs // 仅用户可见 + 公开列表
+	PublicPartBs  = CreatedPartB + "," + PassedPartB // 公开列表
 	PendingPartBs = PendingPartB + "," + CreatedPartB
+	VisPartBs     = PendingPartB + "," + PublicPartBs
+	VisiblePartBs = NonPublicPartB + "," + VisPartBs // 仅用户可见 + 公开列表
+
 )
 
 const (

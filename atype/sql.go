@@ -271,7 +271,9 @@ func (ym YearMonth) Time(loc *time.Location) time.Time {
 	y, m := ym.Date()
 	return time.Date(y, m, 0, 00, 00, 00, 0, loc)
 }
-
+func (d Ymd) Uint() uint {
+	return uint(d)
+}
 func (d Ymd) Date() Date {
 	s := strconv.FormatUint(uint64(d), 10)
 	if len(s) != 8 {
