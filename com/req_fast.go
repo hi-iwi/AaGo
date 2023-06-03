@@ -388,6 +388,7 @@ func (r *Req) QueryPaging(firstPageLimit uint, limit uint) atype.Paging {
 
 	if page <= 1 {
 		page = 1
+		limit = firstPageLimit
 	} else {
 		offset = firstPageLimit + (page-2)*limit
 		prev = page - 1
