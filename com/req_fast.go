@@ -377,34 +377,28 @@ func (r *Req) QueryId(p string, params ...interface{}) (sid string, id uint64, e
 	return
 }
 
-func (r *Req) QueryPaging(limitMax uint, firstPages ...uint) atype.Paging {
+// 不可再指定offset/limit了，单一原则，通过page分页
+// @param firstPageLimit 首页行数
+// @param limitMax 其他页行数
+func (r *Req) QueryPaging(firstPageLimit uint, limit uint) atype.Paging {
 	page, _ := r.QueryUint(ParamPage, false)
-	offset, _ := r.QueryUint(ParamOffset, false)
-	limit, _ := r.QueryUint(ParamLimit, false)
 
-	if limit < 1 || limit > limitMax {
-		limit = limitMax
-	}
+	var offset uint
+	var prev uint
 
-	if offset > 0 {
-		page = (offset / limit) + 1
+	if page <= 1 {
+		page = 1
 	} else {
-		if page < 1 {
-			page = 1
-			if len(firstPages) > 0 {
-				page = firstPages[0]
-				limit = page * limitMax
-			}
-		} else {
-			// change ?limit=3&offset=10 to ?limit=0&offset=10
-			offset = (page - 1) * limit
-		}
+		offset = firstPageLimit + (page-2)*limit
+		prev = page - 1
 	}
 
 	return atype.Paging{
 		Page:   page,
 		Offset: offset,
 		Limit:  limit,
+		Prev:   prev,
+		Next:   page + 1,
 	}
 }
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
