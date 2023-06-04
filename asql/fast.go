@@ -3,6 +3,7 @@ package asql
 import (
 	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
+	"strings"
 )
 
 func In(field string, ids []uint64) string {
@@ -22,6 +23,27 @@ func InUint(field string, ids []uint) string {
 		return field + "=" + strconv.FormatUint(uint64(ids[0]), 10)
 	}
 	return field + " IN (" + atype.JoinUint(ids, ',') + ")"
+}
+func InValues(field string, ids []string) string {
+	if len(ids) == 0 {
+		return "1!=1"
+	}
+	if len(ids) == 1 {
+		return field + "=\"" + ids[0] + "\""
+	}
+	var s strings.Builder
+	s.WriteString(field)
+	s.WriteString(" IN (")
+	for i, id := range ids {
+		if i > 0 {
+			s.WriteByte(',')
+		}
+		s.WriteByte('"')
+		s.WriteString(id)
+		s.WriteByte('"')
+	}
+	s.WriteByte(')')
+	return s.String()
 }
 
 /*
