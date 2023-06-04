@@ -12,7 +12,7 @@ func In(field string, ids []uint64) string {
 	if len(ids) == 1 {
 		return field + "=" + strconv.FormatUint(ids[0], 10)
 	}
-	return field + "=" + atype.JoinUint64(ids, ',')
+	return field + " IN (" + atype.JoinUint64(ids, ',') + ")"
 }
 func InUint(field string, ids []uint) string {
 	if len(ids) == 0 {
@@ -21,7 +21,7 @@ func InUint(field string, ids []uint) string {
 	if len(ids) == 1 {
 		return field + "=" + strconv.FormatUint(uint64(ids[0]), 10)
 	}
-	return field + "=" + atype.JoinUint(ids, ',')
+	return field + " IN (" + atype.JoinUint(ids, ',') + ")"
 }
 
 /*
