@@ -26,9 +26,9 @@ func NewSex(s interface{}) (Sex, bool) {
 	switch ss {
 	case "0", "U", "UNKNOWN":
 		return NilSex, true
-	case "1", "M", "MALE":
+	case "1", "M", "MALE", "男":
 		return Male, true
-	case "2", "F", "FEMALE":
+	case "2", "F", "FEMALE", "女":
 		return Female, true
 	case "255":
 		return OtherSex, true
@@ -50,13 +50,26 @@ func (x Sex) In(args ...Sex) bool {
 func (x Sex) Name() string {
 	switch x {
 	case NilSex:
-		return "unknown sex"
+		return "*"
 	case Male:
 		return "male"
 	case Female:
 		return "female"
 	case OtherSex:
-		return "other sex"
+		return "*"
+	}
+	return x.String()
+}
+func (x Sex) NameCn() string {
+	switch x {
+	case NilSex:
+		return "*"
+	case Male:
+		return "男"
+	case Female:
+		return "女"
+	case OtherSex:
+		return "*"
 	}
 	return x.String()
 }
