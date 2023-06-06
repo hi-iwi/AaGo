@@ -57,7 +57,7 @@ func timeDiff(a, b time.Time) (year, month, day, hour, min, sec int) {
 }
 
 // 计算两个日期之差
-// @param layout:  %Y %M %D %H %I %S，%% 表示分隔符   e.g. `(%Y年%M个月%%)` %Y Years and %M Months
+// @param layout:  %Y %M %D %H %I %S  e.g. `{%Y年}{%M个月}`
 
 func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
 	if layout == "" {
@@ -67,51 +67,53 @@ func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
 	if y == 0 && m == 0 && d == 0 && h == 0 && mi == 0 && sec == 0 {
 		return ""
 	}
-	lays := strings.Split(layout, "%")
-	var out string
-	for i := 0; i < len(lays); i++ {
-		if lays[i] == "" {
-			continue
-		}
-		if i == 0 && layout[0] != '%' {
-			out += lays[i]
-			continue
-		}
-		switch lays[i][0] {
-		case 'Y':
-			if y > 0 {
-				out += strconv.Itoa(y) + lays[i][1:]
-			}
-		case 'M':
-			if m > 0 {
-				out += strconv.Itoa(m) + lays[i][1:]
-			}
-		case 'D':
-			if d > 0 {
-				out += strconv.Itoa(d) + lays[i][1:]
-			}
-		case 'H':
-			if h > 0 {
-				out += strconv.Itoa(h) + lays[i][1:]
-			}
-		case 'I':
-			if mi > 0 {
-				out += strconv.Itoa(mi) + lays[i][1:]
-			}
-		case 'S':
-			if sec > 0 {
-				out += strconv.Itoa(sec) + lays[i][1:]
-			}
-		default:
-			if i > 0 && lays[i-1] == "" {
-				// %% 分隔符
-				out += lays[i]
-			} else {
-				out += "%" + lays[i]
-			}
-		}
+	p := map[rune]int{
+		'Y': y,
+		'M': m,
+		'D': d,
+		'H': h,
+		'I': mi,
+		'S': sec,
 	}
-	return out
+	var out strings.Builder
+	la := []rune(layout)
+	n := len(la)
+	start := false
+	ignore := false
+	var c rune
+	for i := 0; i < n; i++ {
+		c = la[i]
+		if start {
+			if c == '}' {
+				start = false
+				ignore = false
+				continue
+			}
+			if !ignore {
+				out.WriteRune(c)
+			}
+			continue
+		}
+		if c != '{' || i > n-3 || la[i+1] != '%' {
+			out.WriteRune(c)
+			continue
+		}
+		q, ok := p[la[i+2]]
+		if !ok {
+			out.WriteRune(c)
+			continue
+		}
+
+		if q == 0 {
+			ignore = true
+		} else {
+			out.WriteString(strconv.Itoa(q))
+		}
+		i += 2
+		start = true
+	}
+
+	return out.String()
 }
 
 func DurationInChinese(d time.Duration) string {
