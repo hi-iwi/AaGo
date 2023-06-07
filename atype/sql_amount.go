@@ -9,7 +9,7 @@ type SepPercents string
 type SepMoneys string
 
 func ToSepPercents(elems []Percent) SepPercents {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
@@ -45,7 +45,7 @@ func (t SepPercents) Percents() []Percent {
 }
 
 func ToSepMoneys(elems []Money) SepMoneys {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""

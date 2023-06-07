@@ -1,106 +1,84 @@
 package asql
 
 import (
-	"log"
-	"reflect"
+	"strconv"
+	"strings"
 )
 
-type Limit struct {
-	Offset uint `name:"offset"`
-	Limit  uint `name:"limit"`
+type Stmt struct {
+	Cond_    string
+	OrderBy_ string
+	Offset_  uint
+	Limit_   uint
 }
 
-type CombineOperator string
-
-const (
-	OrCombineOperator  = ") OR ("
-	AndCombineOperator = ") AND ("
-)
-
-type ORM struct {
-	CombineOperator CombineOperator
-	Limit           *Limit
-	OrderBy         string
-	OrderByDesc     string
-	AndFields       []string
-	OrFields        []string
-	LikeFields      []string
-
-	Index []string
-	And   map[string]ASQL
-	Or    map[string]ASQL
+func (o *Stmt) Concat(operator, field, asqlGrammar string) *Stmt {
+	s := MakeASQL(asqlGrammar).Fmt(field)
+	if o.Cond_ != "" {
+		o.Cond_ += " " + operator + " "
+	}
+	o.Cond_ += s
+	return o
 }
 
-// name u struct; ele name name
-func name(u interface{}, ele string) string {
-	if !(ele[0] >= 'A' && ele[0] <= 'Z') {
-		return ele
-	}
-
-	defer func() {
-		if err := recover(); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	t := reflect.TypeOf(u)
-	for j := 0; j < t.NumField(); j++ {
-		f := t.Field(j)
-		if f.Name == ele {
-			return f.Tag.Get("name")
-		}
-	}
-	return ele
+func (o *Stmt) And(field, asqlGrammar string) *Stmt {
+	return o.Concat("AND", field, asqlGrammar)
 }
 
-func indexes(idx []string, asqls map[string]ASQL) []string {
-	if len(idx) == 0 {
-		idx = make([]string, 0)
-	}
-	newIdx := idx
-	for k, _ := range asqls {
-		ins := false
-		for i := 0; i < len(idx); i++ {
-			if idx[i] == k {
-				ins = true
-				break
-			}
-		}
-		if !ins {
-			newIdx = append(newIdx, k)
-		}
-	}
-	return newIdx
+func (o *Stmt) Or(field, asqlGrammar string) *Stmt {
+	return o.Concat("OR", field, asqlGrammar)
 }
 
-func (orm ORM) WithWhere(t interface{}) string {
-	ands := ""
-	ors := ""
+func (o *Stmt) OrderBy(keyword string) *Stmt {
+	if o.OrderBy_ != "" {
+		o.OrderBy_ += ","
+	}
+	o.OrderBy_ += keyword
+	return o
+}
 
-	idx := indexes(orm.Index, orm.And)
+func (o *Stmt) Limit(offset, limit uint) *Stmt {
+	o.Offset_ = offset
+	o.Limit_ = limit
+	return o
+}
 
-	for i := 0; i < len(idx); i++ {
-		for k, a := range orm.And {
-			if idx[i] != k {
-				continue
-			}
-			if f := a.Fmt(name(t, k)); f != "" {
-				ands += " AND " + f
-			}
-		}
+func (o *Stmt) TryOrderBy(keyword string) *Stmt {
+	if o.OrderBy_ == "" {
+		o.OrderBy_ = keyword
+	}
+	return o
+}
+
+func (o *Stmt) TryLimit(offset, limit uint) *Stmt {
+	if limit > 0 {
+		o.Offset_ = offset
+		o.Limit_ = limit
+	}
+	return o
+}
+
+func (o *Stmt) LimitStmt() string {
+	if o.Limit_ == 0 {
+		o.Limit_ = 100
+	}
+	a := strconv.FormatUint(uint64(o.Offset_), 10)
+	b := strconv.FormatUint(uint64(o.Limit_), 10)
+	return "LIMIT " + a + "," + b
+}
+
+func (o *Stmt) Stmt() string {
+	var s strings.Builder
+	if o.Cond_ != "" {
+		s.WriteString(" WHERE ")
+		s.WriteString(o.Cond_)
+	}
+	if o.OrderBy_ != "" {
+		s.WriteString(" ORDER BY ")
+		s.WriteString(o.OrderBy_)
 	}
 
-	idx = indexes(orm.Index, orm.Or)
-	for i := 0; i < len(idx); i++ {
-		for k, a := range orm.Or {
-			if idx[i] != k {
-				continue
-			}
-			if f := a.Fmt(name(t, k)); f != "" {
-				ors += " OR " + f
-			}
-		}
-	}
-	operator := string(orm.CombineOperator)
-	return Where("(", And(t, orm.AndFields...), ands, operator, Or(t, orm.OrFields...), ors, operator, Like(t, orm.LikeFields...), ")")
+	s.WriteByte(' ')
+	s.WriteString(o.LimitStmt())
+	return s.String()
 }

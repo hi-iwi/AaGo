@@ -1,0 +1,125 @@
+package asql
+
+import (
+	"github.com/hi-iwi/AaGo/atype"
+	"log"
+	"reflect"
+	"strings"
+)
+
+type CombineOperator string
+
+const (
+	OrCombineOperator  = ") OR ("
+	AndCombineOperator = ") AND ("
+)
+
+type Condition struct {
+	CombineOperator CombineOperator
+	Paging          atype.Paging
+	OrderBy         string
+	OrderByDesc     string
+	AndFields       []string
+	OrFields        []string
+	LikeFields      []string
+
+	Index []string
+	And   map[string]ASQL
+	Or    map[string]ASQL
+}
+func Fields(u interface{}, fields ...string) string {
+	s := ""
+	if byAlias(fields...) {
+		s = atype.JoinByNames(u, atype.JoinKeys, ",", fields...)
+	} else {
+		s = atype.JoinNamesByElements(u, atype.JoinKeys, ",", fields...)
+
+	}
+	return strings.Trim(s, " ")
+}
+
+func (r Condition) OrderByStmt(u interface{}) string {
+	if len(r.OrderByDesc) > 0 {
+		fs := strings.Split(r.OrderByDesc, ",")
+		return " ORDER BY " + Fields(u, fs...) + " DESC "
+	} else if len(r.OrderBy) > 0 {
+		fs := strings.Split(r.OrderByDesc, ",")
+		return " ORDER BY " + Fields(u, fs...) + " "
+	}
+	return ""
+}
+
+// name u struct; ele name name
+func name(u interface{}, ele string) string {
+	if !(ele[0] >= 'A' && ele[0] <= 'Z') {
+		return ele
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	t := reflect.TypeOf(u)
+	for j := 0; j < t.NumField(); j++ {
+		f := t.Field(j)
+		if f.Name == ele {
+			return f.Tag.Get("name")
+		}
+	}
+	return ele
+}
+
+func indexes(idx []string, asqls map[string]ASQL) []string {
+	if len(idx) == 0 {
+		idx = make([]string, 0)
+	}
+	newIdx := idx
+	for k, _ := range asqls {
+		ins := false
+		for i := 0; i < len(idx); i++ {
+			if idx[i] == k {
+				ins = true
+				break
+			}
+		}
+		if !ins {
+			newIdx = append(newIdx, k)
+		}
+	}
+	return newIdx
+}
+
+// @param t interface{}  entity
+func (r Condition) WithWhere(t interface{}) string {
+	ands := ""
+	ors := ""
+
+	idx := indexes(r.Index, r.And)
+
+	for i := 0; i < len(idx); i++ {
+		for k, a := range r.And {
+			if idx[i] != k {
+				continue
+			}
+			if f := a.Fmt(name(t, k)); f != "" {
+				ands += " AND " + f
+			}
+		}
+	}
+
+	idx = indexes(r.Index, r.Or)
+	for i := 0; i < len(idx); i++ {
+		for k, a := range r.Or {
+			if idx[i] != k {
+				continue
+			}
+			if f := a.Fmt(name(t, k)); f != "" {
+				ors += " OR " + f
+			}
+		}
+	}
+	operator := string(r.CombineOperator)
+	return Where("(", And(t, r.AndFields...), ands, operator, Or(t, r.OrFields...), ors, operator, Like(t, r.LikeFields...), ")")
+}

@@ -386,7 +386,7 @@ func (t SepStrings) Strings(delimiters ...string) []string {
 }
 
 func ToSepUint8s(elems []uint8, delimiters ...string) SepUint8s {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
@@ -420,7 +420,7 @@ func (t SepUint8s) Uint8s(delimiters ...string) []uint8 {
 }
 
 func ToSepUint16s(elems []uint16, delimiters ...string) SepUint16s {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
@@ -453,7 +453,7 @@ func (t SepUint16s) Uint16s(delimiters ...string) []uint16 {
 }
 
 func ToSepUint24s(elems []Uint24, delimiters ...string) SepUint24s {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
@@ -487,7 +487,7 @@ func (t SepUint24s) Uint32s(delimiters ...string) []Uint24 {
 }
 
 func ToSepInts(elems []int, delimiters ...string) SepInts {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
@@ -520,7 +520,7 @@ func (t SepInts) Ints(delimiters ...string) []int {
 }
 
 func ToSepUints(elems []uint, delimiters ...string) SepUints {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
@@ -553,7 +553,7 @@ func (t SepUints) Uints(delimiters ...string) []uint {
 }
 
 func ToSepUint64s(elems []uint64, delimiters ...string) SepUint64s {
-	// strings.Join 类同
+	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
 		return ""
