@@ -6,10 +6,10 @@ import (
 )
 
 type Stmt struct {
-	Cond_    string
-	OrderBy_ string
-	Offset_  uint
-	Limit_   uint
+	Cond_   string
+	orderby string
+	offset  uint
+	limit   uint
 }
 
 func (o *Stmt) Concat(operator, field, asqlGrammar string) *Stmt {
@@ -30,41 +30,45 @@ func (o *Stmt) Or(field, asqlGrammar string) *Stmt {
 }
 
 func (o *Stmt) OrderBy(keyword string) *Stmt {
-	if o.OrderBy_ != "" {
-		o.OrderBy_ += ","
+	if o.orderby != "" {
+		o.orderby += ","
 	}
-	o.OrderBy_ += keyword
+	o.orderby += keyword
 	return o
 }
 
 func (o *Stmt) Limit(offset, limit uint) *Stmt {
-	o.Offset_ = offset
-	o.Limit_ = limit
+	o.offset = offset
+	o.limit = limit
 	return o
 }
 
 func (o *Stmt) TryOrderBy(keyword string) *Stmt {
-	if o.OrderBy_ == "" {
-		o.OrderBy_ = keyword
+	if o.orderby == "" {
+		o.orderby = keyword
 	}
 	return o
 }
 
 func (o *Stmt) TryLimit(offset, limit uint) *Stmt {
 	if limit > 0 {
-		o.Offset_ = offset
-		o.Limit_ = limit
+		o.offset = offset
+		o.limit = limit
 	}
 	return o
 }
 
 func (o *Stmt) LimitStmt() string {
-	if o.Limit_ == 0 {
-		o.Limit_ = 100
+	if o.limit == 0 {
+		o.limit = 100
 	}
-	a := strconv.FormatUint(uint64(o.Offset_), 10)
-	b := strconv.FormatUint(uint64(o.Limit_), 10)
+	a := strconv.FormatUint(uint64(o.offset), 10)
+	b := strconv.FormatUint(uint64(o.limit), 10)
 	return "LIMIT " + a + "," + b
+}
+
+func (o *Stmt) OrderByStmt() string {
+	return "ORDER BY " + o.orderby
 }
 
 func (o *Stmt) Stmt() string {
@@ -73,11 +77,10 @@ func (o *Stmt) Stmt() string {
 		s.WriteString(" WHERE ")
 		s.WriteString(o.Cond_)
 	}
-	if o.OrderBy_ != "" {
+	if o.orderby != "" {
 		s.WriteString(" ORDER BY ")
-		s.WriteString(o.OrderBy_)
+		s.WriteString(o.orderby)
 	}
-
 	s.WriteByte(' ')
 	s.WriteString(o.LimitStmt())
 	return s.String()
