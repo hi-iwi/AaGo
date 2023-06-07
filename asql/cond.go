@@ -58,16 +58,20 @@ func (c *Cond) TryLimit(offset, limit uint) *Cond {
 	return c
 }
 
-func (c *Cond) LimitStmt() string {
-	if c.limit == 0 {
-		if c.offset == 0 {
-			c.limit = 20
-		} else {
-			c.limit = 10
-		}
+func (c *Cond) LimitN() uint {
+	if c.limit > 0 {
+		return c.limit
 	}
+	if c.offset == 0 {
+		return 20
+	}
+	return 10
+}
+
+func (c *Cond) LimitStmt() string {
+	limit := c.LimitN()
 	a := strconv.FormatUint(uint64(c.offset), 10)
-	b := strconv.FormatUint(uint64(c.limit), 10)
+	b := strconv.FormatUint(uint64(limit), 10)
 	return "LIMIT " + a + "," + b
 }
 
