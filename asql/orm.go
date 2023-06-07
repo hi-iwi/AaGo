@@ -51,7 +51,7 @@ func (o *Stmt) TryOrderBy(keyword string) *Stmt {
 }
 
 func (o *Stmt) TryLimit(offset, limit uint) *Stmt {
-	if limit > 0 {
+	if limit == 0 {
 		o.offset = offset
 		o.limit = limit
 	}
@@ -60,7 +60,11 @@ func (o *Stmt) TryLimit(offset, limit uint) *Stmt {
 
 func (o *Stmt) LimitStmt() string {
 	if o.limit == 0 {
-		o.limit = 100
+		if o.offset == 0 {
+			o.limit = 20
+		} else {
+			o.limit = 10
+		}
 	}
 	a := strconv.FormatUint(uint64(o.offset), 10)
 	b := strconv.FormatUint(uint64(o.limit), 10)
