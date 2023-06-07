@@ -13,11 +13,11 @@ type Cond struct {
 	limit      uint
 }
 
-func ToCond(paging atype.Paging) Cond {
-	return Cond{offset: paging.Offset, limit: paging.Limit}
+func NewCond(paging atype.Paging) *Cond {
+	return &Cond{offset: paging.Offset, limit: paging.Limit}
 }
 
-func (c Cond) Concat(operator, field, asqlGrammar string) Cond {
+func (c *Cond) Concat(operator, field, asqlGrammar string) *Cond {
 	s := MakeASQL(asqlGrammar).Fmt(field)
 	if c.Constraint != "" {
 		c.Constraint += " " + operator + " "
@@ -26,15 +26,15 @@ func (c Cond) Concat(operator, field, asqlGrammar string) Cond {
 	return c
 }
 
-func (c Cond) And(field, asqlGrammar string) Cond {
+func (c *Cond) And(field, asqlGrammar string) *Cond {
 	return c.Concat("AND", field, asqlGrammar)
 }
 
-func (c Cond) Or(field, asqlGrammar string) Cond {
+func (c *Cond) Or(field, asqlGrammar string) *Cond {
 	return c.Concat("OR", field, asqlGrammar)
 }
 
-func (c Cond) OrderBy(keyword string) Cond {
+func (c *Cond) OrderBy(keyword string) *Cond {
 	if c.orderby != "" {
 		c.orderby += ","
 	}
@@ -42,13 +42,13 @@ func (c Cond) OrderBy(keyword string) Cond {
 	return c
 }
 
-func (c Cond) Limit(offset, limit uint) Cond {
+func (c *Cond) Limit(offset, limit uint) *Cond {
 	c.offset = offset
 	c.limit = limit
 	return c
 }
 
-func (c Cond) Try(orderBy string, offset, limit uint) Cond {
+func (c *Cond) Try(orderBy string, offset, limit uint) *Cond {
 	if c.orderby == "" {
 		c.orderby = orderBy
 	}
@@ -59,7 +59,7 @@ func (c Cond) Try(orderBy string, offset, limit uint) Cond {
 	return c
 }
 
-func (c Cond) LimitN() uint {
+func (c *Cond) LimitN() uint {
 	if c.limit > 0 {
 		return c.limit
 	}
@@ -69,18 +69,18 @@ func (c Cond) LimitN() uint {
 	return 10
 }
 
-func (c Cond) LimitStmt() string {
+func (c *Cond) LimitStmt() string {
 	limit := c.LimitN()
 	a := strconv.FormatUint(uint64(c.offset), 10)
 	b := strconv.FormatUint(uint64(limit), 10)
 	return "LIMIT " + a + "," + b
 }
 
-func (c Cond) OrderByStmt() string {
+func (c *Cond) OrderByStmt() string {
 	return "ORDER BY " + c.orderby
 }
 
-func (c Cond) Stmt() string {
+func (c *Cond) Stmt() string {
 	var s strings.Builder
 	if c.Constraint != "" {
 		s.WriteString(" WHERE ")
