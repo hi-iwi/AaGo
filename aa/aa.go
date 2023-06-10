@@ -1,7 +1,6 @@
 package aa
 
 import (
-	"github.com/RussellLuo/timingwheel"
 	"sync"
 )
 
@@ -19,7 +18,7 @@ type App struct {
 
 type Aa struct {
 	App
-	wheelTimer *timingwheel.TimingWheel
+	//wheelTimer *timingwheel.TimingWheel
 }
 
 func NewApp(ini string) (*App, error) {
@@ -35,14 +34,14 @@ func NewApp(ini string) (*App, error) {
 	return app, nil
 }
 
-func New(ini string, timer *timingwheel.TimingWheel) (*Aa, error) {
+func New(ini string) (*Aa, error) {
 	app, err := NewApp(ini)
 	if err != nil {
 		return nil, err
 	}
 	a := &Aa{
-		App:        *app,
-		wheelTimer: timer,
+		App: *app,
+		//wheelTimer: timer,
 	}
 	return a, nil
 }

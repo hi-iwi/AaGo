@@ -7,7 +7,7 @@ import (
 )
 
 type Cond struct {
-	Constraint string
+	Constraint strings.Builder
 	orderby    string
 	offset     uint
 	limit      uint
@@ -19,10 +19,12 @@ func NewCond(paging atype.Paging) *Cond {
 
 func (c *Cond) Concat(operator, field, asqlGrammar string) *Cond {
 	s := MakeASQL(asqlGrammar).Fmt(field)
-	if c.Constraint != "" {
-		c.Constraint += " " + operator + " "
+	if c.Constraint.Len() > 0 {
+		c.Constraint.WriteByte(' ')
+		c.Constraint.WriteString(operator)
+		c.Constraint.WriteByte(' ')
 	}
-	c.Constraint += s
+	c.Constraint.WriteString(s)
 	return c
 }
 
@@ -82,9 +84,9 @@ func (c *Cond) OrderByStmt() string {
 
 func (c *Cond) Stmt() string {
 	var s strings.Builder
-	if c.Constraint != "" {
+	if c.Constraint.Len() > 0 {
 		s.WriteString(" WHERE ")
-		s.WriteString(c.Constraint)
+		s.WriteString(c.Constraint.String())
 	}
 	if c.orderby != "" {
 		s.WriteString(" ORDER BY ")
