@@ -98,6 +98,7 @@ func (s Status) NotPassed() bool { return s < Passed }
 // Created 也是待审核状态
 func (s Status) IsPending() bool { return s >= Pending && s <= Created }
 func (s Status) IsFailed() bool  { return s <= Failed }
+func (s Status) IsDiscard() bool { return s <= Deleted }
 
 // After/Before 不包括； From/Within 包括
 // FromPending 一般用户检测某个状态是否在审核中，或者已审核通过。
