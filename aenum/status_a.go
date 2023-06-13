@@ -1,37 +1,70 @@
 package aenum
 
-//type StatusA int8
-//
 //const (
-//	OnlyVisibleToMe            Status = -6 // 用户设置：仅自己可见，审核中
-//	OnlyVisibleToSpecificUsers Status = -5 // 用户设置：只对特定用户开放，审核中
-//	NotVisibleToSpecificUsers  Status = -6 // 用户设置：选定的特定用户不展示
-//	OnlyVisibleToFollowee      Status = -3 // 用户设置：仅自己关注者可见，审核中
-//	OnlyVisibleToFans          Status = -2 // 用户设置：仅粉丝可见，审核中
+//	// 最简易的 开关
+//	InvalidPart = "invalid" // <0 关   off 是关键字。
+//	OkPart      = "ok"      // < MAXVALUE 开
 //
-//	OnlyMeCanComment            Status = -5 // 用户设置：仅自己可评论（任何人都可以看），审核中
-//	OnlySpecificUsersCanComment Status = -4 // 用户设置：仅特定用户可评论（任何人都可以看），审核中
-//	OnlyFolloweeCanComment      Status = -3 // 用户设置：仅自己关注者可评论（任何人都可以看），审核中
-//	OnlyFansCanComment          Status = -2 // 用户设置：仅粉丝可评论（任何人都可以看），审核中
+//	//NegTernaryPart  = "neg" // -1, LESS 0
+//	//ZeroTernaryPart = ""    // 0, LESS 1
+//	//PosTernaryPart  = ""    // 1, LESS MAXVALUE
 //
-//	OnlyFansCanCommentOk          Status = 2 // 审核通过后，用户设置：仅粉丝可评论（任何人都可以看）
-//	OnlyFolloweeCanCommentOk      Status = 3 // 审核通过后，用户设置：仅自己关注者可评论（任何人都可以看）
-//	OnlySpecificUsersCanCommentOk Status = 4 // 审核通过后，用户设置：仅特定用户可评论（任何人都可以看）
-//	OnlyMeCanCommentOk            Status = 5 // 审核通过后，用户设置：仅自己可评论（任何人都可以看） --> 仅自己可以评论
+//	// 通过与否
+//	NotPassPart = "notpass" // < 1      StsNotPassed()
+//	PassedPart  = "passed"  // <MAXVALUE   StsPassed()
 //
-//	OnlyVisibleToMeOk            Status = 21 // 审核通过, 仅自己可见
-//	OnlyVisibleToSpecificUsersOk Status = 22 // 审核通过, 只对特定用户开放
-//	NotVisibleToSpecificUsersOk  Status = 23 // 审核通过, 选定的特定用户不展示
-//	OnlyVisibleToFolloweeOk      Status = 24 // 审核通过, 仅自己关注者可见
-//	OnlyVisibleToFansOk          Status = 25 // 审核通过, 仅粉丝可见
+//	// 无用户操作的状态，仅后台管理
+//	InvalidPartA = "invalid" // < Pending
+//	PendingPartA = "pending" // < 0
+//	ValidPartA   = "valid"   // < MAXVALUE
 //
-//	Marked                            Status = 60 // 审核通过后，用户进行标记，如置顶、加精 --> 提示，修改为置顶，将对所有人开放
-//	MarkedOnlyMeCanComment            Status = 61 // 审核通过后，用户进行标记，如置顶、加精 --> 提示，修改为置顶，将对所有人开放
-//	MarkedOnlyFansCanComment          Status = 62 // 审核通过后，用户进行标记，如置顶、加精 --> 提示，修改为置顶，将对所有人开放
-//	MarkedOnlyFolloweeCanComment      Status = 63 // 审核通过后，用户进行标记，如置顶、加精 --> 提示，修改为置顶，将对所有人开放
-//	MarkedOnlySpecificUsersCanComment Status = 64 // 审核通过后，用户进行标记，如置顶、加精 --> 提示，修改为置顶，将对所有人开放
+//	PublicPartAs  = ValidPartA              // StsPublic
+//	PendingPartAs = PendingPartA           // StsPending
 //
-//	SysLockedComment Status = 120 // 系统已锁定，所有人禁止评论（仅作者可以评论、删除评论）
-//	SysLockedModify  Status = 126 // 系统锁定，禁止修改（允许评论）
+//	// 含用户操作的状态
+//	DeletedPartB   = "deleted"   // < -99 后期需要清理的数据
+//	NonPublicPartB = "nonpublic" // < Pending 仅用户自己可见
+//	PendingPartB   = "pending"   // < 0
+//	CreatedPartB   = "created"   // = 0 审核中，显示在公开列表（适用于白名单用户）
+//	PassedPartB    = "passed"    // >=1 公开列表显示
+//
+//
+//	PublicPartBs  = CreatedPartB + "," + PassedPartB // StsPublic()
+//	PendingPartBs = PendingPartB + "," + CreatedPartB // StsPendingC()
+//	VisPartBs     = PendingPartB + "," + PublicPartBs  //  StsVisible()
+//	VisiblePartBs = NonPublicPartB + "," + VisPartBs // StsVis()
+//
 //)
 //
+//func (s Status) EasyPart() string {
+//	if s.IsOk() {
+//		return OkPart
+//	}
+//	return InvalidPart
+//}
+//func (s Status) Part() string {
+//	if s.IsPassed() {
+//		return PassedPart
+//	}
+//	return NotPassPart
+//}
+//func (s Status) PartA() string {
+//	if s < Pending {
+//		return InvalidPartA
+//	} else if s < 0 {
+//		return PendingPartA
+//	}
+//	return ValidPartA
+//}
+//func (s Status) PartB() string {
+//	if s < -99 {
+//		return DeletedPartB
+//	} else if s < Pending {
+//		return NonPublicPartB
+//	} else if s < 0 {
+//		return PendingPartB
+//	} else if s == 0 {
+//		return CreatedPartB
+//	}
+//	return PassedPartB
+//}

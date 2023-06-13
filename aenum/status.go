@@ -7,41 +7,6 @@ import (
 type Status int8 // status 字段禁止默认为0，防止意外情况
 
 const (
-	// 最简易的 开关
-	InvalidPart = "invalid" // <0 关   off 是关键字。
-	OkPart      = "ok"      // < MAXVALUE 开
-
-	//NegTernaryPart  = "neg" // -1, LESS 0
-	//ZeroTernaryPart = ""    // 0, LESS 1
-	//PosTernaryPart  = ""    // 1, LESS MAXVALUE
-
-	// 通过与否
-	NotPassPart = "notpass" // < 1
-	PassedPart  = "passed"  // <MAXVALUE
-
-	// 无用户操作的状态，仅后台管理
-	InvalidPartA = "invalid" // < Pending
-	PendingPartA = "pending" // < 0
-	ValidPartA   = "valid"   // < MAXVALUE
-
-	PublicPartAs  = ValidPartA
-	PendingPartAs = PendingPartA
-
-	// 含用户操作的状态
-	DeletedPartB   = "deleted"   // < -99 后期需要清理的数据
-	NonPublicPartB = "nonpublic" // < Pending 仅用户自己可见
-	PendingPartB   = "pending"   // < 0
-	CreatedPartB   = "created"   // = 0 审核中，显示在公开列表（适用于白名单用户）
-	PassedPartB    = "passed"    // >=1 公开列表显示
-
-	PublicPartBs  = CreatedPartB + "," + PassedPartB // 公开列表
-	PendingPartBs = PendingPartB + "," + CreatedPartB
-	VisPartBs     = PendingPartB + "," + PublicPartBs
-	VisiblePartBs = NonPublicPartB + "," + VisPartBs // 仅用户可见 + 公开列表
-
-)
-
-const (
 	SysRevoked Status = -128 // 已注销，系统删除（可能审核失败）
 	Expired    Status = -121 // 已失效/已过期，后面系统会自动删除
 	Deleted    Status = -100 // 用户已删除，谁都不可见
@@ -66,6 +31,8 @@ const (
 )
 
 var (
+	deletedStr      = strconv.Itoa(int(Deleted))
+	pendingLimit    = strconv.Itoa(int(Pending - 1))
 	MeReadableRange = [2]Status{Failed, SysTakeover} // 会显示在我列表的区间
 )
 
@@ -110,35 +77,23 @@ func (s Status) MeReadable() bool { return s >= MeReadableRange[0] && s <= MeRea
 // 用户是否可以修改、删除
 func (s Status) Modifiable() bool { return s.In(Failed, Pending, Created, Passed) }
 
-func (s Status) EasyPart() string {
-	if s.IsOk() {
-		return OkPart
-	}
-	return InvalidPart
+func StsInvalid(k string) string   { return k + "<0" }
+func StsPublic(k string) string    { return k + ">-1" }
+func StsPassed(k string) string    { return k + ">0" }
+func StsNotPassed(k string) string { return k + "<1" }
+
+// 公开可见的状态，即审核中、创建、审核通过
+func StsVisible(k string) string { return k + ">" + pendingLimit }
+
+// 纯审核中
+func StsPending(k string) string {
+	return k + ">" + pendingLimit + " AND " + k + "<0"
 }
-func (s Status) Part() string {
-	if s.IsPassed() {
-		return PassedPart
-	}
-	return NotPassPart
+
+// 审核中、创建的状态
+func StsPendingC(k string) string {
+	return k + ">" + pendingLimit + " AND " + k + "<1"
 }
-func (s Status) PartA() string {
-	if s < Pending {
-		return InvalidPartA
-	} else if s < 0 {
-		return PendingPartA
-	}
-	return ValidPartA
-}
-func (s Status) PartB() string {
-	if s < -99 {
-		return DeletedPartB
-	} else if s < Pending {
-		return NonPublicPartB
-	} else if s < 0 {
-		return PendingPartB
-	} else if s == 0 {
-		return CreatedPartB
-	}
-	return PassedPartB
-}
+
+// 自己可见
+func StsVis(k string) string { return k + ">" + deletedStr }
