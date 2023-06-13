@@ -62,7 +62,7 @@ func (d *DB) Execute(ctx context.Context, query string, args ...interface{}) (sq
 }
 
 func (d *DB) Exec(ctx context.Context, query string, args ...interface{}) *ae.Error {
-	_, e := d.Execute(ctx, query, args)
+	_, e := d.Execute(ctx, query, args...)
 	return e
 }
 func (d *DB) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
