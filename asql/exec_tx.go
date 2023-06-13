@@ -41,14 +41,14 @@ func (t *Tx) Prepare(ctx context.Context, query string) (*sql.Stmt, *ae.Error) {
 	return stmt, ae.NewSqlError(err)
 }
 
-func (t *Tx) Exec(query string, args ...interface{}) (sql.Result, *ae.Error) {
-	res, err := t.Tx.Exec(query, args...)
-	return res, ae.NewSqlError(err)
-}
-
 func (t *Tx) Execute(ctx context.Context, query string, args ...interface{}) (sql.Result, *ae.Error) {
 	res, err := t.Tx.ExecContext(ctx, query, args...)
 	return res, ae.NewSqlError(err)
+}
+
+func (t *Tx) Exec(ctx context.Context, query string, args ...interface{}) *ae.Error {
+	_, e := t.Execute(ctx, query, args...)
+	return e
 }
 
 func (t *Tx) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {

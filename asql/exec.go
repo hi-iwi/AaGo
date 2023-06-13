@@ -56,16 +56,15 @@ func (d *DB) Prepare(ctx context.Context, query string) (*sql.Stmt, *ae.Error) {
 /*
   stmt close 必须要等到相关都执行完（包括  res.LastInsertId()  ,  row.Scan()
 */
-func (d *DB) Exec(query string, args ...interface{}) (sql.Result, *ae.Error) {
-	res, err := d.DB.Exec(query, args...)
-	return res, ae.NewSqlError(err)
-}
-
 func (d *DB) Execute(ctx context.Context, query string, args ...interface{}) (sql.Result, *ae.Error) {
 	res, err := d.DB.ExecContext(ctx, query, args...)
 	return res, ae.NewSqlError(err)
 }
 
+func (d *DB) Exec(ctx context.Context, query string, args ...interface{}) *ae.Error {
+	_, e := d.Execute(ctx, query, args)
+	return e
+}
 func (d *DB) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
 	res, e := d.Execute(ctx, query, args...)
 	if e != nil {
