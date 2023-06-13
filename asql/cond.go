@@ -16,7 +16,19 @@ type Cond struct {
 func NewCond(paging atype.Paging) *Cond {
 	return &Cond{offset: paging.Offset, limit: paging.Limit}
 }
-
+func (c *Cond) WriteString(s string) *Cond {
+	c.Constraint.WriteByte(' ')
+	c.Constraint.WriteString(s)
+	return c
+}
+func (c *Cond) Write(operator, s string) *Cond {
+	if c.Constraint.Len() == 0 {
+		operator = ""
+	} else {
+		operator += " "
+	}
+	return c.WriteString(operator + s)
+}
 func (c *Cond) Concat(operator, field, asqlGrammar string) *Cond {
 	s := MakeASQL(asqlGrammar).Fmt(field)
 	if c.Constraint.Len() > 0 {

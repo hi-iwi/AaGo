@@ -2,8 +2,8 @@ package aenum
 
 //const (
 //	// 最简易的 开关
-//	InvalidPart = "invalid" // <0 关   off 是关键字。
-//	OkPart      = "ok"      // < MAXVALUE 开
+//	InvalidPart = "invalid" // <0 关   off 是关键字。  aenum.StsInvalid("status")
+//	OkPart      = "ok"      // < MAXVALUE 开           aenum.StsPublic("status")
 //
 //	//NegTernaryPart  = "neg" // -1, LESS 0
 //	//ZeroTernaryPart = ""    // 0, LESS 1
@@ -18,8 +18,8 @@ package aenum
 //	PendingPartA = "pending" // < 0
 //	ValidPartA   = "valid"   // < MAXVALUE
 //
-//	PublicPartAs  = ValidPartA              // StsPublic
-//	PendingPartAs = PendingPartA           // StsPending
+//	PublicPartAs  = ValidPartA              // aenum.StsPublic("status")
+//	PendingPartAs = PendingPartA           // aenum.StsPending("status")
 //
 //	// 含用户操作的状态
 //	DeletedPartB   = "deleted"   // < -99 后期需要清理的数据
@@ -29,10 +29,10 @@ package aenum
 //	PassedPartB    = "passed"    // >=1 公开列表显示
 //
 //
-//	PublicPartBs  = CreatedPartB + "," + PassedPartB // StsPublic()
-//	PendingPartBs = PendingPartB + "," + CreatedPartB // StsPendingC()
-//	VisPartBs     = PendingPartB + "," + PublicPartBs  //  StsVisible()
-//	VisiblePartBs = NonPublicPartB + "," + VisPartBs // StsVis()
+//	PublicPartBs  = CreatedPartB + "," + PassedPartB // aenum.StsPublic("status")
+//	PendingPartBs = PendingPartB + "," + CreatedPartB // aenum.StsPendingC("status")
+//	VisPartBs     = PendingPartB + "," + PublicPartBs  //  aenum.StsVisible("status")
+//	VisiblePartBs = NonPublicPartB + "," + VisPartBs // aenum.StsVis("status")
 //
 //)
 //
