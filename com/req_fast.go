@@ -400,3 +400,26 @@ func (r *Req) BodyImages(p string, required ...bool) (atype.Images, *ae.Error) {
 	x, e := r.BodyStrings(p, rq, false)
 	return atype.ToImages(x, true), e
 }
+
+func (r *Req) BodyPosition(p string, required ...bool) (atype.Position, *ae.Error) {
+	x, e := r.BodyString(p, required)
+	if e != nil {
+		return atype.Position{}, e
+	}
+	if x == "" {
+		return atype.Position{}, nil
+	}
+	a := strings.Split(x, ",")
+	if len(a) != 2 {
+		return atype.Position{}, ae.BadParam(p)
+	}
+	var coord atype.Coordinate
+	var err error
+	if coord.Latitude, err = strconv.ParseFloat(a[0], 64); err != nil {
+		return atype.Position{}, ae.BadParam(p)
+	}
+	if coord.Longitude, err = strconv.ParseFloat(a[1], 64); err != nil {
+		return atype.Position{}, ae.BadParam(p)
+	}
+	return atype.ToPosition(&coord), nil
+}
