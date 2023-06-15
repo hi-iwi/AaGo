@@ -84,12 +84,11 @@ func (r *Req) FastXparam(name string) *ReqProp {
 	return v
 }
 func reqDigit(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
-	required := len(xargs) == 0 || xargs[0]
 	reg := `^[-\d]\d*$`
 	if positive {
 		reg = `^\d+$`
 	}
-	return method(p, reg, required)
+	return method(p, reg, len(xargs) == 0 || xargs[0])
 }
 func (r *Req) QueryDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	return reqDigit(r.Query, p, positive, xargs...)
@@ -203,22 +202,14 @@ func (r *Req) QueryPercent(p string, required ...bool) (atype.Percent, *ae.Error
 }
 
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
-	rq := true
-	if len(required) == 1 {
-		rq = required[0]
-	}
-	x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, rq)
+	x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", ae.NewError(400, "invalid date ("+p+"): "+x.String())
 	}
 	return atype.NewDate(x.String(), loc), nil
 }
 func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
-	rq := true
-	if len(required) == 1 {
-		rq = required[0]
-	}
-	x, e := r.Query(p, `^`+aenum.DatetimeRegExp+`$`, rq)
+	x, e := r.Query(p, `^`+aenum.DatetimeRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", ae.NewError(400, "invalid datetime ("+p+"): "+x.String())
 	}
@@ -336,22 +327,14 @@ func (r *Req) BodyPercent(p string, required ...bool) (atype.Percent, *ae.Error)
 }
 
 func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
-	rq := true
-	if len(required) == 1 {
-		rq = required[0]
-	}
-	x, e := r.Body(p, `^`+aenum.DateRegExp+`$`, rq)
+	x, e := r.Body(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", ae.NewError(400, "invalid date ("+p+"): "+x.String())
 	}
 	return atype.NewDate(x.String(), loc), nil
 }
 func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
-	rq := true
-	if len(required) == 1 {
-		rq = required[0]
-	}
-	x, e := r.Body(p, `^`+aenum.DatetimeRegExp+`$`, rq)
+	x, e := r.Body(p, `^`+aenum.DatetimeRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", ae.NewError(400, "invalid datetime ("+p+"): "+x.String())
 	}
@@ -385,11 +368,11 @@ func (r *Req) QueryPaging(args ...uint) atype.Paging {
 	return atype.NewPaging(page, args...)
 }
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
-	x, e := r.BodyString(p, required)
+	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	return atype.NewImage(x, true), e
 }
 func (r *Req) BodyVideo(p string, required ...bool) (atype.Image, *ae.Error) {
-	x, e := r.BodyString(p, required)
+	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	return atype.NewImage(x, true), e
 }
 func (r *Req) BodyImages(p string, required, allowEmptyString bool) (atype.Images, *ae.Error) {
@@ -398,7 +381,7 @@ func (r *Req) BodyImages(p string, required, allowEmptyString bool) (atype.Image
 }
 
 func (r *Req) BodyPosition(p string, required ...bool) (atype.Position, *ae.Error) {
-	x, e := r.BodyString(p, required)
+	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	if e != nil {
 		return atype.Position{}, e
 	}
