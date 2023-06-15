@@ -392,12 +392,8 @@ func (r *Req) BodyVideo(p string, required ...bool) (atype.Image, *ae.Error) {
 	x, e := r.BodyString(p, required)
 	return atype.NewImage(x, true), e
 }
-func (r *Req) BodyImages(p string, required ...bool) (atype.Images, *ae.Error) {
-	rq := true
-	if len(required) == 1 {
-		rq = required[0]
-	}
-	x, e := r.BodyStrings(p, rq, false)
+func (r *Req) BodyImages(p string, required, allowEmptyString bool) (atype.Images, *ae.Error) {
+	x, e := r.BodyStrings(p, required, allowEmptyString)
 	return atype.ToImages(x, true), e
 }
 
