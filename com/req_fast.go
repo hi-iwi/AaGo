@@ -415,10 +415,10 @@ func (r *Req) BodyPosition(p string, required ...bool) (atype.Position, *ae.Erro
 	}
 	var coord atype.Coordinate
 	var err error
-	if coord.Latitude, err = strconv.ParseFloat(a[0], 64); err != nil {
+	if coord.Longitude, err = strconv.ParseFloat(a[0], 64); err != nil {
 		return atype.Position{}, ae.BadParam(p)
 	}
-	if coord.Longitude, err = strconv.ParseFloat(a[1], 64); err != nil {
+	if coord.Latitude, err = strconv.ParseFloat(a[1], 64); err != nil {
 		return atype.Position{}, ae.BadParam(p)
 	}
 	return atype.ToPosition(&coord), nil
