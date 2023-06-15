@@ -181,47 +181,47 @@ func ToAudios(v []string) Audios {
 	return NewAudios(string(s))
 }
 
-func (im Files) Files() []File {
+func (im Files) Files(filenameOnly bool) []File {
 	imgs := im.Strings()
 	if len(imgs) == 0 {
 		return nil
 	}
 	ims := make([]File, len(imgs))
 	for i, img := range imgs {
-		ims[i] = File(img)
+		ims[i] = NewFile(img, filenameOnly)
 	}
 	return ims
 }
-func (im Images) Images() []Image {
+func (im Images) Images(filenameOnly bool) []Image {
 	imgs := im.Strings()
 	if len(imgs) == 0 {
 		return nil
 	}
 	ims := make([]Image, len(imgs))
 	for i, img := range imgs {
-		ims[i] = Image(img)
+		ims[i] = NewImage(img, filenameOnly)
 	}
 	return ims
 }
-func (im Videos) Videos() []Video {
+func (im Videos) Videos(filenameOnly bool) []Video {
 	imgs := im.Strings()
 	if len(imgs) == 0 {
 		return nil
 	}
 	ims := make([]Video, len(imgs))
 	for i, img := range imgs {
-		ims[i] = Video(img)
+		ims[i] = NewVideo(img, filenameOnly)
 	}
 	return ims
 }
-func (im Audios) Audios() []Audio {
+func (im Audios) Audios(filenameOnly bool) []Audio {
 	imgs := im.Strings()
 	if len(imgs) == 0 {
 		return nil
 	}
 	ims := make([]Audio, len(imgs))
 	for i, img := range imgs {
-		ims[i] = Audio(img)
+		ims[i] = NewAudio(img, filenameOnly)
 	}
 	return ims
 }
