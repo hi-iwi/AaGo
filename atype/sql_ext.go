@@ -180,3 +180,48 @@ func ToAudios(v []string) Audios {
 
 	return NewAudios(string(s))
 }
+
+func (im Files) Files() []File {
+	imgs := im.Strings()
+	if len(imgs) == 0 {
+		return nil
+	}
+	ims := make([]File, len(imgs))
+	for i, img := range imgs {
+		ims[i] = File(img)
+	}
+	return ims
+}
+func (im Images) Images() []Image {
+	imgs := im.Strings()
+	if len(imgs) == 0 {
+		return nil
+	}
+	ims := make([]Image, len(imgs))
+	for i, img := range imgs {
+		ims[i] = Image(img)
+	}
+	return ims
+}
+func (im Videos) Videos() []Video {
+	imgs := im.Strings()
+	if len(imgs) == 0 {
+		return nil
+	}
+	ims := make([]Video, len(imgs))
+	for i, img := range imgs {
+		ims[i] = Video(img)
+	}
+	return ims
+}
+func (im Audios) Audios() []Audio {
+	imgs := im.Strings()
+	if len(imgs) == 0 {
+		return nil
+	}
+	ims := make([]Audio, len(imgs))
+	for i, img := range imgs {
+		ims[i] = Audio(img)
+	}
+	return ims
+}
