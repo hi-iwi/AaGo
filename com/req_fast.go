@@ -375,9 +375,9 @@ func (r *Req) BodyAudio(p string, filenameOnly bool, required ...bool) (atype.Au
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	return atype.NewAudio(x, filenameOnly), e
 }
-func (r *Req) BodyVideo(p string, filenameOnly bool, required ...bool) (atype.Image, *ae.Error) {
+func (r *Req) BodyVideo(p string, filenameOnly bool, required ...bool) (atype.Video, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewImage(x, filenameOnly), e
+	return atype.NewVideo(x, filenameOnly), e
 }
 func (r *Req) BodyImages(p string, filenameOnly bool, required ...bool) (atype.Images, *ae.Error) {
 	x, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
