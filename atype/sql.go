@@ -302,6 +302,19 @@ func (d Date) String() string { return string(d) }
 func (d Date) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02", string(d), loc)
 }
+func (d Date) OrMin() Date {
+	if !d.Valid() {
+		return MinDate
+	}
+	return d
+}
+func (d Date) OrMax() Date {
+	if !d.Valid() {
+		return MaxDate
+	}
+	return d
+}
+
 func (d Date) Ymd() Ymd {
 	s := strings.ReplaceAll(d.String(), "-", "")
 	n, _ := strconv.ParseUint(s, 10, 32)
@@ -345,7 +358,18 @@ func (d Datetime) Time(loc *time.Location) (time.Time, error) {
 	return time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
 }
 func (d Datetime) Date() Date { return Date(d[0:len(MinDate)]) }
-
+func (d Datetime) OrMin() Datetime {
+	if !d.Valid() {
+		return MinDatetime
+	}
+	return d
+}
+func (d Datetime) OrMax() Datetime {
+	if !d.Valid() {
+		return MaxDatetime
+	}
+	return d
+}
 func (d Datetime) Int64(loc *time.Location) int64 {
 	tm, err := time.ParseInLocation("2006-01-02 15:04:05", string(d), loc)
 	if err != nil {
