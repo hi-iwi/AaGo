@@ -296,7 +296,7 @@ func NewDate(d string, loc *time.Location) Date {
 }
 func ToDate(t time.Time) Date { return Date(t.Format("2006-01-02")) }
 func (d Date) Valid() bool {
-	return d != "" && d != MinDate && d != MaxDate && d != "1970-01-01"
+	return len(d) == 10 && d != MinDate && d != MaxDate && d != "1970-01-01"
 }
 func (d Date) String() string { return string(d) }
 func (d Date) Time(loc *time.Location) (time.Time, error) {
@@ -347,11 +347,7 @@ func ToDatetime(t time.Time) Datetime                     { return Datetime(t.Fo
 func UnixToDatetime(u int64, loc *time.Location) Datetime { return NewUnixTime(u).Datetime(loc) }
 
 func (d Datetime) Valid() bool {
-	s := d.String()
-	ok := s != "" && d != MinDatetime && s != MinDate.String()
-	ok = ok && s != "1970-01-01 00:00:00" && s != "1970-01-01"
-	ok = ok && d != MaxDatetime && s != MaxDate.String()
-	return ok
+	return len(d) == 19 && d != MinDatetime && d != MaxDatetime && d.String() != "1970-01-01 00:00:00"
 }
 func (d Datetime) String() string { return string(d) }
 func (d Datetime) Time(loc *time.Location) (time.Time, error) {
