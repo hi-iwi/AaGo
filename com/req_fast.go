@@ -367,18 +367,32 @@ func (r *Req) QueryPaging(args ...uint) atype.Paging {
 	page, _ := r.QueryUint(ParamPage, false)
 	return atype.NewPaging(page, args...)
 }
-func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
+func (r *Req) BodyImage(p string, filenameOnly bool, required ...bool) (atype.Image, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewImage(x, true), e
+	return atype.NewImage(x, filenameOnly), e
 }
-func (r *Req) BodyVideo(p string, required ...bool) (atype.Image, *ae.Error) {
+func (r *Req) BodyAudio(p string, filenameOnly bool, required ...bool) (atype.Audio, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewImage(x, true), e
+	return atype.NewAudio(x, filenameOnly), e
 }
-func (r *Req) BodyImages(p string, required, allowEmptyString bool) (atype.Images, *ae.Error) {
-	x, e := r.BodyStrings(p, required, allowEmptyString)
-	return atype.ToImages(x, true), e
+func (r *Req) BodyVideo(p string, filenameOnly bool, required ...bool) (atype.Image, *ae.Error) {
+	x, e := r.BodyString(p, len(required) == 0 || required[0])
+	return atype.NewImage(x, filenameOnly), e
 }
+func (r *Req) BodyImages(p string, filenameOnly bool, required ...bool) (atype.Images, *ae.Error) {
+	x, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
+	return atype.ToImages(x, filenameOnly), e
+}
+
+// 下面很少使用，就不要封装了。以后使用的时候，业务层直接组装就行
+//func (r *Req) BodyAudios(p string, required, allowEmptyString, filenameOnly bool) (atype.Audios, *ae.Error) {
+//	x, e := r.BodyStrings(p, required, allowEmptyString)
+//	return atype.ToAudios(x, filenameOnly), e
+//}
+//func (r *Req) BodyVideos(p string, required, allowEmptyString, filenameOnly bool) (atype.Videos, *ae.Error) {
+//	x, e := r.BodyStrings(p, required, allowEmptyString)
+//	return atype.ToVideos(x, filenameOnly), e
+//}
 
 func (r *Req) BodyPosition(p string, required ...bool) (atype.Position, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])

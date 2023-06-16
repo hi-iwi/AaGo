@@ -169,9 +169,14 @@ func NewAudios(s string) Audios {
 	}
 	return x
 }
-func ToAudios(v []string) Audios {
+func ToAudios(v []string, filenameOnly bool) Audios {
 	if len(v) == 0 {
 		return Audios{}
+	}
+	if filenameOnly {
+		for i, s := range v {
+			v[i] = trimDir(s)
+		}
 	}
 	s, _ := json.Marshal(v)
 	if len(s) == 0 {
