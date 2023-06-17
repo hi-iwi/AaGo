@@ -9,6 +9,7 @@ const (
 	Mp3              AudioType = 1
 	X3pg             AudioType = 2
 	X3pg2            AudioType = 3
+	Aiff             AudioType = 4
 )
 
 func NewAudioType(mime string) (AudioType, bool) {
@@ -19,7 +20,8 @@ func NewAudioType(mime string) (AudioType, bool) {
 		return X3pg, true
 	case "3g2", ".3g2", "audio/3gpp2":
 		return X3pg2, true
-
+	case "aiff", ".aiff", "aif", ".aif", "aifc", ".aifc", "audio/x-aiff":
+		return Aiff, true
 	}
 	return UnknownAudioType, false
 }
@@ -44,6 +46,8 @@ func (t AudioType) Name() string {
 		return "3gp"
 	case X3pg2:
 		return "3g2"
+	case Aiff:
+		return "aiff"
 	}
 	return t.String()
 }

@@ -12,6 +12,8 @@ const (
 	Mp4              VideoType = 4 // MPEG-4
 	X3gp             VideoType = 5
 	X3gp2            VideoType = 6
+	Webm             VideoType = 7
+	Wav              VideoType = 8
 )
 
 func NewVideoType(mime string) (VideoType, bool) {
@@ -28,6 +30,10 @@ func NewVideoType(mime string) (VideoType, bool) {
 		return X3gp, true
 	case "3g2", ".3g2", "video/3gpp2":
 		return X3gp2, true
+	case "webm", ".webm", "video/webm":
+		return Webm, true
+	case "wav", ".wav", "video/x-wav":
+		return Wav, true
 	}
 	return UnknownVideoType, false
 }
@@ -57,6 +63,10 @@ func (t VideoType) Name() string {
 		return "3gp"
 	case X3gp2:
 		return "3g2"
+	case Webm:
+		return "webm"
+	case Wav:
+		return "wav"
 	}
 	return t.String()
 }
