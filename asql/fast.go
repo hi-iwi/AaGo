@@ -46,22 +46,54 @@ func InValues(field string, ids []string) string {
 	return s.String()
 }
 
+type ArgStmt struct {
+	Field   string
+	Value   interface{}
+	Valid   bool
+	Ignores []string // 忽略部分不同步的字段
+}
+
 /*
   组合sql语句，用于修改符合valid条件的字段
-  @return ["a=?","b=?"], [$a,$b]
+  @return ["a=?","b=?"], [$a,$b, $condId?]
 */
-func AppendArgs(field string, v interface{}, valid bool, ffs []string, fargs []interface{}, nosync []string) ([]string, []interface{}) {
-	if !valid {
-		return ffs, fargs
-	}
-	if nosync != nil {
-		for _, no := range nosync {
-			if no == field {
-				return ffs, fargs
+func ArgPairs(condId interface{}, args []ArgStmt) ([]string, []interface{}) {
+	var n int
+loop1:
+	for i, arg := range args {
+		if arg.Valid {
+			continue
+		}
+		if arg.Ignores != nil {
+			for _, no := range arg.Ignores {
+				if no == arg.Field {
+					args[i].Valid = false // 重置为忽略
+					continue loop1
+				}
 			}
 		}
+		n++
 	}
-	ffs = append(ffs, field+"=?")
-	fargs = append(fargs, v)
-	return ffs, fargs
+	if n == 0 {
+		return nil, nil
+	}
+	n2 := n
+	if condId != nil {
+		n2++
+	}
+	fs := make([]string, n)
+	fas := make([]interface{}, n2)
+	var i int
+	for _, arg := range args {
+		if !arg.Valid {
+			continue
+		}
+		fs[i] = arg.Field + "=?"
+		fas[i] = arg.Value
+		i++
+	}
+	if condId != nil {
+		fas[i] = condId
+	}
+	return fs, fas
 }
