@@ -61,7 +61,7 @@ func ArgPairs(condId interface{}, args []ArgStmt) (string, []interface{}, bool) 
 	var n int
 loop1:
 	for i, arg := range args {
-		if arg.Valid {
+		if !arg.Valid {
 			continue
 		}
 		if arg.Ignores != nil {
