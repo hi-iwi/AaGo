@@ -57,7 +57,7 @@ type ArgStmt struct {
   组合sql语句，用于修改符合valid条件的字段
   @return ["a=?","b=?"], [$a,$b, $condId?]
 */
-func ArgPairs(condId interface{}, args []ArgStmt) ([]string, []interface{}) {
+func ArgPairs(condId interface{}, args []ArgStmt) (string, []interface{}, bool) {
 	var n int
 loop1:
 	for i, arg := range args {
@@ -75,25 +75,30 @@ loop1:
 		n++
 	}
 	if n == 0 {
-		return nil, nil
+		return "", nil, false
 	}
 	n2 := n
 	if condId != nil {
 		n2++
 	}
-	fs := make([]string, n)
+	var fs strings.Builder
+	//fs.Grow()
 	fas := make([]interface{}, n2)
 	var i int
 	for _, arg := range args {
 		if !arg.Valid {
 			continue
 		}
-		fs[i] = arg.Field + "=?"
+		if i > 0 {
+			fs.WriteByte(',')
+		}
+		fs.WriteString(arg.Field)
+		fs.WriteString("=?")
 		fas[i] = arg.Value
 		i++
 	}
 	if condId != nil {
 		fas[i] = condId
 	}
-	return fs, fas
+	return fs.String(), fas, true
 }
