@@ -145,9 +145,26 @@ func (p *Atype) Float64s() ([]float64, bool) {
 	return v, true
 }
 func (p *Atype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
+	// 也可能客户端传的是 string ，也可能是对象原数
+	bytes, ok := p.raw.([]byte)
+	if ok {
+		if bytes[0] == '[' {
+			return bytes, true
+		} else {
+			return bytes, false
+		}
+	}
+
+	uint8s, ok := p.raw.([]uint8)
+	if ok {
+		v, _ := MarshalUint8s(uint8s)
+		return v, true
+	}
+
 	arr, ok := p.raw.([]interface{})
 	if ok {
 		v, _ := json.Marshal(arr)
+
 		return v, true
 	}
 	if allowNil {
@@ -155,15 +172,6 @@ func (p *Atype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 			return nil, true
 		} else if s, _ := p.raw.(string); s == "" {
 			return nil, true
-		}
-	}
-	// 也可能客户端传的是 string ，也可能使对象原数
-	bytes, ok := p.raw.([]byte)
-	if ok {
-		if bytes[0] == '[' {
-			return bytes, true
-		} else {
-			return bytes, false
 		}
 	}
 

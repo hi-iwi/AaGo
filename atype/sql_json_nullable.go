@@ -60,7 +60,7 @@ func ToNullUint8s(v []uint8) NullUint8s {
 	if len(v) == 0 {
 		return NullUint8s{}
 	}
-	s, _ := json.Marshal(v)
+	s, _ := MarshalUint8s(v)
 	if len(s) == 0 {
 		return NullUint8s{}
 	}
@@ -72,15 +72,7 @@ func (t NullUint8s) Uint8s() []uint8 {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
-	json.Unmarshal([]byte(t.String), &v)
-	if len(v) == 0 {
-		return nil
-	}
-	w := make([]uint8, len(v))
-	for i, x := range v {
-		w[i] = New(x).DefaultUint8(0)
-	}
+	w, _ := UnmarshalUint8s([]byte(t.String))
 	return w
 }
 func NewNullUint16s(s string) NullUint16s {
