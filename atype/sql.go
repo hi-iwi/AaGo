@@ -75,6 +75,8 @@ type SepUints string   // 1,2,3,4
 type SepUint64s string // 1,2,3,4
 
 const (
+	False       Booln    = 0
+	True        Booln    = 1
 	MinDate     Date     = "0000-00-00"
 	MaxDate     Date     = "9999-12-31"
 	MinDatetime Datetime = "0000-00-00 00:00:00"
@@ -231,15 +233,15 @@ func (b Bitwise) unsetStmt(fieldName string) string {
 
 func ToBooln(b bool) Booln {
 	if b {
-		return 1
+		return True
 	}
-	return 0
+	return False
 }
 func NewBooln(b uint8) Booln {
 	if b > 0 {
-		return 1
+		return True
 	}
-	return 0
+	return False
 }
 func (b Booln) Uint8() uint8 {
 	if b.Bool() {

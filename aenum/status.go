@@ -9,6 +9,7 @@ type Status int8 // status 字段禁止默认为0，防止意外情况
 const (
 	SysRevoked Status = -128 // 已注销，系统删除（可能审核失败）
 	Expired    Status = -121 // 已失效/已过期，后面系统会自动删除
+	NotExists  Status = -114 // 数据不存在 --> 一般用于初始化一个字段，不常用
 	Deleted    Status = -100 // 用户已删除，谁都不可见
 
 	/********************* <=-100  属于需要删除的内容，方便分区删除整个分区 ************************/
@@ -38,7 +39,7 @@ var (
 
 func NewStatus(sts int8) (Status, bool) {
 	s := Status(sts)
-	ok := s == SysRevoked || s == Expired || s == Deleted || s == Failed
+	ok := s == SysRevoked || s == Expired || s == NotExists || s == Deleted || s == Failed
 	ok = ok || (s >= Pending && s <= Passed) || s == SysTakeover
 	return s, ok
 }
@@ -66,6 +67,7 @@ func (s Status) NotPassed() bool { return s < Passed }
 func (s Status) IsPending() bool { return s >= Pending && s <= Created }
 func (s Status) IsFailed() bool  { return s <= Failed }
 func (s Status) IsDiscard() bool { return s <= Deleted }
+func (s Status) NotExits() bool  { return s == NotExists }
 
 // After/Before 不包括； From/Within 包括
 // FromPending 一般用户检测某个状态是否在审核中，或者已审核通过。
