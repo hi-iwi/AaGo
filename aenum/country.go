@@ -240,21 +240,19 @@ func (c Country) In(args ...Country) bool {
 	return false
 }
 
-func ToCallingCode(cc Country) uint16 {
-	switch cc {
+func (c Country) CallingCode() string {
+	switch c {
 	case Canada:
-		return 1
+		return "001"
 	case NetherlandsAntilles:
-		return 599
+		return "00599"
 	case WesternSahara:
-		return 212
+		return "00212"
 	}
-	return uint16(cc)
+	return "00" + strconv.FormatUint(uint64(c), 10)
 }
 
 // 转化成拨打模式
-func TelWithCallingCode(cc Country, tel string) string {
-	c := ToCallingCode(cc)
-	cs := strconv.FormatUint(uint64(c), 10)
-	return cs + tel
+func ToFullTel(c Country, tel string) string {
+	return c.CallingCode() + " " + tel
 }
