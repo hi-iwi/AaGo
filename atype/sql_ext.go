@@ -105,7 +105,15 @@ func NewImages(s string) Images {
 	}
 	return x
 }
-func ToImages(v []string, filenameOnly bool) Images {
+func ToImages(v []Image) Images {
+	s, _ := json.Marshal(v)
+	if len(s) == 0 {
+		return Images{}
+	}
+
+	return NewImages(string(s))
+}
+func ToImages2(v []string, filenameOnly bool) Images {
 	if len(v) == 0 {
 		return Images{}
 	}
