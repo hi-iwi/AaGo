@@ -379,9 +379,16 @@ func (r *Req) BodyVideo(p string, filenameOnly bool, required ...bool) (atype.Vi
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	return atype.NewVideo(x, filenameOnly), e
 }
-func (r *Req) BodyImages(p string, filenameOnly bool, required ...bool) (atype.Images, *ae.Error) {
+func (r *Req) BodyImages(p string, filenameOnly bool, required ...bool) ([]atype.Image, *ae.Error) {
 	x, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
-	return atype.ToImages(x, filenameOnly), e
+	if e != nil || len(x) == 0 {
+		return nil, e
+	}
+	imgs := make([]atype.Image, len(x))
+	for i, s := range x {
+		imgs[i] = atype.NewImage(s, filenameOnly)
+	}
+	return imgs, e
 }
 
 // 下面很少使用，就不要封装了。以后使用的时候，业务层直接组装就行
