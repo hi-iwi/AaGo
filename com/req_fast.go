@@ -400,26 +400,25 @@ func (r *Req) BodyImages(p string, filenameOnly bool, required ...bool) ([]atype
 //	x, e := r.BodyStrings(p, required, allowEmptyString)
 //	return atype.ToVideos(x, filenameOnly), e
 //}
-
-func (r *Req) BodyPosition(p string, required ...bool) (atype.Position, *ae.Error) {
+func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	if e != nil {
-		return atype.Position{}, e
+		return nil, e
 	}
 	if x == "" {
-		return atype.Position{}, nil
+		return nil, nil
 	}
 	a := strings.Split(x, ",")
 	if len(a) != 2 {
-		return atype.Position{}, ae.BadParam(p)
+		return nil, ae.BadParam(p)
 	}
 	var coord atype.Coordinate
 	var err error
 	if coord.Longitude, err = strconv.ParseFloat(a[0], 64); err != nil {
-		return atype.Position{}, ae.BadParam(p)
+		return nil, ae.BadParam(p)
 	}
 	if coord.Latitude, err = strconv.ParseFloat(a[1], 64); err != nil {
-		return atype.Position{}, ae.BadParam(p)
+		return nil, ae.BadParam(p)
 	}
-	return atype.ToPosition(&coord), nil
+	return &coord, nil
 }
