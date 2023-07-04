@@ -31,11 +31,23 @@ func NewFile(p string, filenameOnly bool) File {
 	}
 	return File(p)
 }
+func MakeFile(img *FileSrc, filenameOnly bool) File {
+	if img == nil {
+		return ""
+	}
+	return NewFile(img.Path, filenameOnly)
+}
 func NewImage(p string, filenameOnly bool) Image {
 	if filenameOnly {
 		p = trimDir(p)
 	}
 	return Image(p)
+}
+func MakeImage(img *ImgSrc, filenameOnly bool) Image {
+	if img == nil {
+		return ""
+	}
+	return NewImage(img.Path, filenameOnly)
 }
 func NewVideo(p string, filenameOnly bool) Video {
 	if filenameOnly {
@@ -43,11 +55,23 @@ func NewVideo(p string, filenameOnly bool) Video {
 	}
 	return Video(p)
 }
+func MakeVideo(video *VideoSrc, filenameOnly bool) Video {
+	if video == nil {
+		return ""
+	}
+	return NewVideo(video.Path, filenameOnly)
+}
 func NewAudio(p string, filenameOnly bool) Audio {
 	if filenameOnly {
 		p = trimDir(p)
 	}
 	return Audio(p)
+}
+func MakeAudio(audio *VideoSrc, filenameOnly bool) Audio {
+	if audio == nil {
+		return ""
+	}
+	return NewAudio(audio.Path, filenameOnly)
 }
 func (p File) String() string                               { return string(p) }
 func (p File) Src(filler func(string) *FileSrc) *FileSrc    { return filler(p.String()) }
@@ -129,7 +153,27 @@ func ToImages2(v []string, filenameOnly bool) Images {
 
 	return NewImages(string(s))
 }
+func ToImages3(v []ImgSrc, filenameOnly bool) Images {
+	if len(v) == 0 {
+		return Images{}
+	}
+	imgs := make([]string, len(v))
 
+	for i, s := range v {
+		if filenameOnly {
+			imgs[i] = trimDir(s.Path)
+		} else {
+			imgs[i] = s.Path
+		}
+	}
+
+	s, _ := json.Marshal(imgs)
+	if len(s) == 0 {
+		return Images{}
+	}
+
+	return NewImages(string(s))
+}
 func (im Images) Srcs(filler func(path string) *ImgSrc) []ImgSrc {
 	if !im.Valid || im.String == "" {
 		return nil
