@@ -337,7 +337,7 @@ func (resp *RespStruct) TryWrite(a interface{}, e *ae.Error) error {
 	}
 	return resp.Write(a)
 }
-func (resp *RespStruct) TryOutput(output string, e *ae.Error) error {
+func (resp *RespStruct) Output(output string, e *ae.Error) error {
 	if e != nil {
 		return resp.WriteE(e)
 	}
