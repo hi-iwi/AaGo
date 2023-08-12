@@ -337,6 +337,12 @@ func (resp *RespStruct) TryWrite(a interface{}, e *ae.Error) error {
 	}
 	return resp.Write(a)
 }
+func (resp *RespStruct) TryOutput(output string, e *ae.Error) error {
+	if e != nil {
+		return resp.WriteE(e)
+	}
+	return resp.Write(map[string]string{"output": output})
+}
 
 func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) error {
 	cs := RespContentDTO{
