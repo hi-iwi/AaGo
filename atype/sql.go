@@ -178,7 +178,7 @@ func ToIp(addr string) Ip {
 		return ip
 	}
 	nip := net.ParseIP(addr)
-	if nip != nil {
+	if nip == nil {
 		return ip
 	}
 
