@@ -37,13 +37,12 @@ func xlogHeader(ctx context.Context, caller string, level ErrorLevel) string {
 	return b.String()
 }
 
-func xprintf(ctx context.Context, skip int, level ErrorLevel, msg string, args ...interface{}) {
+func xprintf(ctx context.Context, level ErrorLevel, msg string, args ...interface{}) {
 	errlevel := errorlevel(ctx)
 	if errlevel != AllError && errlevel&level == 0 {
 		return
 	}
-	skip++ // 跳出 xprintf 自身函数
-	head := xlogHeader(ctx, ae.Caller(skip), level)
+	head := xlogHeader(ctx, ae.Caller(1), level)
 	msg = head + msg
 	if len(args) == 0 {
 		log.Println(msg)
@@ -51,7 +50,7 @@ func xprintf(ctx context.Context, skip int, level ErrorLevel, msg string, args .
 		log.Printf(msg+"\n", args...)
 	}
 }
-func (l *xlog) New(prefix string, f func(context.Context, int, string, ...interface{}), suffix ...string) func(context.Context, int, string, ...interface{}) {
+func (l *xlog) New(prefix string, f func(context.Context, string, ...interface{}), suffix ...string) func(context.Context, string, ...interface{}) {
 	var s string
 	if len(suffix) > 0 {
 		s = " " + suffix[0]
@@ -59,47 +58,47 @@ func (l *xlog) New(prefix string, f func(context.Context, int, string, ...interf
 	if prefix != "" {
 		prefix += " "
 	}
-	return func(ctx context.Context, skip int, msg string, args ...interface{}) {
-		f(ctx, skip+2, prefix+msg+s, args...)
+	return func(ctx context.Context, msg string, args ...interface{}) {
+		f(ctx, prefix+msg+s, args...)
 	}
 }
-func (l *xlog) Debug(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Debug, msg, args...)
+func (l *xlog) Debug(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Debug, msg, args...)
 }
 
-func (l *xlog) Info(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Info, msg, args...)
+func (l *xlog) Info(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Info, msg, args...)
 }
 
-func (l *xlog) Notice(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Notice, msg, args...)
+func (l *xlog) Notice(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Notice, msg, args...)
 }
 
-func (l *xlog) Warn(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Warn, msg, args...)
+func (l *xlog) Warn(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Warn, msg, args...)
 }
 
-func (l *xlog) Error(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Err, msg, args...)
+func (l *xlog) Error(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Err, msg, args...)
 }
 
-func (l *xlog) Crit(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Crit, msg, args...)
+func (l *xlog) Crit(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Crit, msg, args...)
 }
 
-func (l *xlog) Alert(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Alert, msg, args...)
+func (l *xlog) Alert(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Alert, msg, args...)
 }
 
-func (l *xlog) Emerg(ctx context.Context, skip int, msg string, args ...interface{}) {
-	xprintf(ctx, skip+1, Emerg, msg, args...)
+func (l *xlog) Emerg(ctx context.Context, msg string, args ...interface{}) {
+	xprintf(ctx, Emerg, msg, args...)
 }
 
-func (l *xlog) Println(ctx context.Context, skip int, msg ...interface{}) {
-	log.Println(xlogHeader(ctx, ae.Caller(skip+1), AllError), fmt.Sprint(msg...))
+func (l *xlog) Println(ctx context.Context, msg ...interface{}) {
+	log.Println(xlogHeader(ctx, ae.Caller(1), AllError), fmt.Sprint(msg...))
 }
 
-func (l *xlog) Trace(ctx context.Context, skip int) {
+func (l *xlog) Trace(ctx context.Context) {
 	tid := traceid(ctx)
-	log.Printf("[TRACE]{%s} %s\n", tid, ae.Caller(skip+1))
+	log.Printf("[TRACE]{%s} %s\n", tid, ae.Caller(1))
 }

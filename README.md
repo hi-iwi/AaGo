@@ -61,7 +61,7 @@ Application
                     + phone                  # phone view
                         + dto                   # 对外开放的
                 + ss          # S/S架构，Server/Server
-            + mservice   # app_name 内通用 service  
+            + service   # app_name 内通用 service  
         + app_name2 ....  其他微服务应用
         + router                 # 路由
             + middleware

@@ -14,7 +14,7 @@ func Hint(msg string) {
 	fmt.Println(ns + " " + msg)
 }
 func (app *Aa) Hint(ctx context.Context, msg string) {
-	app.Log.Warn(ctx, 1, msg)
+	app.Log.Warn(ctx, msg)
 	fmt.Println(app.FmtNow() + " " + msg)
 }
 
