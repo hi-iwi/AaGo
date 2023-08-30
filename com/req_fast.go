@@ -367,26 +367,26 @@ func (r *Req) QueryPaging(args ...uint) atype.Paging {
 	page, _ := r.QueryUint(ParamPage, false)
 	return atype.NewPaging(page, args...)
 }
-func (r *Req) BodyImage(p string, filenameOnly bool, required ...bool) (atype.Image, *ae.Error) {
+func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewImage(x, filenameOnly), e
+	return atype.NewImage(x, true), e
 }
-func (r *Req) BodyAudio(p string, filenameOnly bool, required ...bool) (atype.Audio, *ae.Error) {
+func (r *Req) BodyAudio(p string, required ...bool) (atype.Audio, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewAudio(x, filenameOnly), e
+	return atype.NewAudio(x, true), e
 }
-func (r *Req) BodyVideo(p string, filenameOnly bool, required ...bool) (atype.Video, *ae.Error) {
+func (r *Req) BodyVideo(p string, required ...bool) (atype.Video, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewVideo(x, filenameOnly), e
+	return atype.NewVideo(x, true), e
 }
-func (r *Req) BodyImages(p string, filenameOnly bool, required ...bool) ([]atype.Image, *ae.Error) {
+func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) {
 	x, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
 	if e != nil || len(x) == 0 {
 		return nil, e
 	}
 	imgs := make([]atype.Image, len(x))
 	for i, s := range x {
-		imgs[i] = atype.NewImage(s, filenameOnly)
+		imgs[i] = atype.NewImage(s, true)
 	}
 	return imgs, e
 }
