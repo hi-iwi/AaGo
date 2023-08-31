@@ -220,6 +220,10 @@ func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) 
 	x, e := r.Body(p, required...)
 	return x.String(), e
 }
+func (r *Req) BodyText(p string, required ...interface{}) (atype.Text, *ae.Error) {
+	x, e := r.Body(p, required...)
+	return atype.NewText(x.String()), e
+}
 func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Error) {
 	x, e := r.Body(p, required...)
 	return template.HTML(x.String()), e
