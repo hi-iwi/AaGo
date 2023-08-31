@@ -5,27 +5,16 @@ import (
 	"html/template"
 )
 
-type Text struct{ sql.NullString }       // Text 65535 bytes
-type MediumText struct{ sql.NullString } // MediumText 16777215 bytes
-type LongText struct{ sql.NullString }   // LongText 4294967295 bytes
+// 文本不存在太长的，阅读也不方便。太长的，应使用html
+type Text struct{ sql.NullString } // Text 65535 bytes
+//type MediumText struct{ sql.NullString } // MediumText 16777215 bytes
+//type LongText struct{ sql.NullString }   // LongText 4294967295 bytes
 
 type Html struct{ sql.NullString }       // TEXT保存的 HTML 格式
 type MediumHtml struct{ sql.NullString } // MediumText 16777215 bytes
 type LongHtml struct{ sql.NullString }   // LongText 4294967295 bytes
 
 func NewText(s string) (t Text) {
-	if s != "" {
-		t.Scan(s)
-	}
-	return
-}
-func NewMediumText(s string) (t MediumText) {
-	if s != "" {
-		t.Scan(s)
-	}
-	return
-}
-func NewLongText(s string) (t LongText) {
 	if s != "" {
 		t.Scan(s)
 	}
