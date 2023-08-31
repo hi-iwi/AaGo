@@ -18,7 +18,7 @@ type ObjScan interface {
 type Coordinate struct {
 	Latitude  float64 `json:"lat"`
 	Longitude float64 `json:"lng"`
-	Height    float64 `json:"height"`
+	Height    float64 `json:"height"` // 保留
 }
 type Point struct {
 	X float64 `json:"x"`
