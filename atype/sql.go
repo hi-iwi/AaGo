@@ -56,15 +56,6 @@ type Date string      // yyyy-mm-dd
 type Datetime string  // yyyy-mm-dd hh:ii:ss
 type UnixTime int64   // int 形式 datetime，可与 datetime, date 互转
 
-// Text 将不存在，统一使用  template.HTML
-//type Text string // Text 65535 bytes
-//type MediumText string // MediumText 16777215 bytes
-//type LongText string   // LongText 4294967295 bytes
-
-//type NullText struct{ sql.NullString }       // Text
-//type NullMediumText struct{ sql.NullString } // MediumText
-//type NullLongText struct{ sql.NullString }   // LongText
-
 type SepStrings string // a,b,c,d,e
 type SepUint8s string  // 1,2,3,4
 type SepUint16s string // 1,2,3,4
