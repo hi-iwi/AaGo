@@ -4,7 +4,6 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
-	"html/template"
 	"strconv"
 	"strings"
 	"time"
@@ -220,14 +219,15 @@ func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) 
 	x, e := r.Body(p, required...)
 	return x.String(), e
 }
-func (r *Req) BodyText(p string, required ...interface{}) (atype.Text, *ae.Error) {
-	x, e := r.Body(p, required...)
-	return atype.Text(x.String()), e
-}
-func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Error) {
-	x, e := r.Body(p, required...)
-	return template.HTML(x.String()), e
-}
+
+//func (r *Req) BodyText(p string, required ...interface{}) (atype.Text, *ae.Error) {
+//	x, e := r.Body(p, required...)
+//	return atype.Text(x.String()), e
+//}
+//func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Error) {
+//	x, e := r.Body(p, required...)
+//	return template.HTML(x.String()), e
+//}
 func (r *Req) BodyBool(p string, required ...interface{}) (bool, *ae.Error) {
 	x, e := r.Body(p, required...)
 	if e != nil {
