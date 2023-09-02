@@ -56,6 +56,21 @@ func (r *Req) BodyInterfaces(p string, requireds ...bool) ([]interface{}, *ae.Er
 	}
 	return b, nil
 }
+func (r *Req) BodyFloat64Map(p string, requireds ...bool) (map[string]float64, *ae.Error) {
+	b, e := r.BodyInterfaceMap(p, requireds...)
+	if e != nil {
+		return nil, e
+	}
+	maps, err := atype.ConvFloat64Map(b)
+	if err != nil {
+		return nil, ae.BadParam(p)
+	}
+	required := len(requireds) == 0 || requireds[0]
+	if required && maps == nil {
+		return nil, ae.BadParam(p)
+	}
+	return maps, nil
+}
 func (r *Req) BodyStringMap(p string, requireds ...bool) (map[string]string, *ae.Error) {
 	b, e := r.BodyInterfaceMap(p, requireds...)
 	if e != nil {

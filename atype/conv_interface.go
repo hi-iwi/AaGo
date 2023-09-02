@@ -1,5 +1,20 @@
 package atype
 
+func ConvFloat64Map(mi map[string]interface{}) (map[string]float64, error) {
+	if len(mi) == 0 {
+		return nil, nil
+	}
+	maps := make(map[string]float64, len(mi))
+	var err error
+	for k, m := range mi {
+		maps[k], err = Float64(m, 64)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return maps, nil
+}
+
 func ConvStrings(ai []interface{}) []string {
 	if len(ai) == 0 {
 		return nil

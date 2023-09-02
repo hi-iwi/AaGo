@@ -406,24 +406,35 @@ func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) 
 //	return atype.ToVideos(x, filenameOnly), e
 //}
 func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	if e != nil {
+	x, e := r.BodyFloat64Map(p, required...)
+	if e != nil || x == nil {
 		return nil, e
 	}
-	if x == "" {
-		return nil, nil
-	}
-	a := strings.Split(x, ",")
-	if len(a) != 2 {
+	lat, ok := x["lat"]
+	if !ok {
 		return nil, ae.BadParam(p)
 	}
-	var coord atype.Coordinate
-	var err error
-	if coord.Longitude, err = strconv.ParseFloat(a[0], 64); err != nil {
+	lng, ok := x["lng"]
+	if !ok {
 		return nil, ae.BadParam(p)
 	}
-	if coord.Latitude, err = strconv.ParseFloat(a[1], 64); err != nil {
-		return nil, ae.BadParam(p)
+	height, _ := x["height"]
+	coord := atype.Coordinate{
+		Latitude:  lat,
+		Longitude: lng,
+		Height:    height,
 	}
 	return &coord, nil
+}
+func (r *Req) BodyPosition(required bool) (coord *atype.Coordinate, distri atype.Distri, addr string, e *ae.Error) {
+	coord, e = r.BodyCoordinate("position", required)
+	if e != nil {
+		return
+	}
+	distri, e = r.BodyDistri("distri", required)
+	if e != nil {
+		return
+	}
+	addr, e = r.BodyString("addr", required)
+	return
 }
