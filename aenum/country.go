@@ -4,7 +4,18 @@ import (
 	"strconv"
 )
 
+type Continent uint8
 type Country uint16
+
+const (
+	Asia         Continent = 1
+	Europe       Continent = 2
+	NorthAmerica Continent = 3
+	SouthAmerica Continent = 4
+	Oceania      Continent = 5
+	Africa       Continent = 6
+	Antarctica   Continent = 7
+)
 
 const (
 	Canada        Country = 50001
@@ -168,56 +179,56 @@ const (
 	Curacao                      Country = 599
 	NetherlandsAntilles          Country = 50599
 	EastTimor                    Country = 670
-	Antarctica                   Country = 672
-	Brunei                       Country = 673
-	Nauru                        Country = 674
-	PapuaNewGuinea               Country = 675
-	Tonga                        Country = 676
-	SolomonIslands               Country = 677
-	Vanuatu                      Country = 678
-	Fiji                         Country = 679
-	Palau                        Country = 680
-	WallisAndFutuna              Country = 681
-	CookIslands                  Country = 682
-	Niue                         Country = 683
-	Samoa                        Country = 685
-	Kiribati                     Country = 686
-	NewCaledonia                 Country = 687
-	Tuvalu                       Country = 688
-	FrenchPolynesia              Country = 689
-	Tokelau                      Country = 690
-	Micronesia                   Country = 691
-	MarshallIslands              Country = 692
-	NorthKorea                   Country = 850
-	HongKong                     Country = 852
-	Macau                        Country = 853
-	Cambodia                     Country = 855
-	Laos                         Country = 856
-	Bangladesh                   Country = 880
-	Taiwan                       Country = 886
-	Maldives                     Country = 960
-	Lebanon                      Country = 961
-	Jordan                       Country = 962
-	Syria                        Country = 963
-	Iraq                         Country = 964
-	Kuwait                       Country = 965
-	SaudiArabia                  Country = 966
-	Yemen                        Country = 967
-	Oman                         Country = 968
-	Palestine                    Country = 970
-	UnitedArabEmirates           Country = 971
-	Israel                       Country = 972
-	Bahrain                      Country = 973
-	Qatar                        Country = 974
-	Bhutan                       Country = 975
-	Mongolia                     Country = 976
-	Nepal                        Country = 977
-	Tajikistan                   Country = 992
-	Turkmenistan                 Country = 993
-	Azerbaijan                   Country = 994
-	Georgia                      Country = 995
-	Kyrgyzstan                   Country = 996
-	Uzbekistan                   Country = 998
+	// Antarctica                   Country = 672  南极洲
+	Brunei             Country = 673
+	Nauru              Country = 674
+	PapuaNewGuinea     Country = 675
+	Tonga              Country = 676
+	SolomonIslands     Country = 677
+	Vanuatu            Country = 678
+	Fiji               Country = 679
+	Palau              Country = 680
+	WallisAndFutuna    Country = 681
+	CookIslands        Country = 682
+	Niue               Country = 683
+	Samoa              Country = 685
+	Kiribati           Country = 686
+	NewCaledonia       Country = 687
+	Tuvalu             Country = 688
+	FrenchPolynesia    Country = 689
+	Tokelau            Country = 690
+	Micronesia         Country = 691
+	MarshallIslands    Country = 692
+	NorthKorea         Country = 850
+	HongKong           Country = 852
+	Macau              Country = 853
+	Cambodia           Country = 855
+	Laos               Country = 856
+	Bangladesh         Country = 880
+	Taiwan             Country = 886
+	Maldives           Country = 960
+	Lebanon            Country = 961
+	Jordan             Country = 962
+	Syria              Country = 963
+	Iraq               Country = 964
+	Kuwait             Country = 965
+	SaudiArabia        Country = 966
+	Yemen              Country = 967
+	Oman               Country = 968
+	Palestine          Country = 970
+	UnitedArabEmirates Country = 971
+	Israel             Country = 972
+	Bahrain            Country = 973
+	Qatar              Country = 974
+	Bhutan             Country = 975
+	Mongolia           Country = 976
+	Nepal              Country = 977
+	Tajikistan         Country = 992
+	Turkmenistan       Country = 993
+	Azerbaijan         Country = 994
+	Georgia            Country = 995
+	Kyrgyzstan         Country = 996
+	Uzbekistan         Country = 998
 )
 
 func NewCountry(id uint16) (Country, bool) {
