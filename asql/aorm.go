@@ -35,36 +35,40 @@ func DupUintN(field string) SafeDupIncrN {
 func DupUint64N(field string) SafeDupIncrN {
 	return SafeDupIncrN{field, "0", StrUint64}
 }
-func SafeDupIncrs(ns []SafeDupIncrN) string {
+
+// @warn 如果类型是 unsigned ，一定要使用 INSERT IGNORE ，否则若值为负数，则直接报错，走不到 ON DUPLICATE KEY UPDATE 部分
+func SafeDupIncrs(tb string, ns []SafeDupIncrN) string {
 	var s strings.Builder
 	s.Grow(len(ns) * 168)
 	for i, n := range ns {
 		if i > 0 {
 			s.WriteByte(',')
 		}
-		// recmds=CASE WHEN recmds+VALUES(recmds)<$MIN THEN $MIN WHEN recmds+VALUES(recmds)>$MAX THEN $MAX ELSE recmds+VALUES(recmds) END
+		old := tb + "." + n.Field
+		ntb := "new_" + tb + "." + n.Field
+		// recmds=CASE WHEN tb.recmds-$MIN<=-new_tb.recmds THEN $MIN WHEN new_tb.recmds>=$MAX-tb.recmds THEN $MAX ELSE tb.recmds+new_tb.recmds END
 		s.WriteString(n.Field)
 		s.WriteString("=CASE WHEN ")
-		s.WriteString(n.Field)
-		s.WriteString("+VALUES(")
-		s.WriteString(n.Field)
-		s.WriteString(")<=")
+		s.WriteString(old)
+		s.WriteString("-")
 		s.WriteString(n.Min)
+		s.WriteString("<=")
+		s.WriteString("-" + ntb)
 		s.WriteString(" THEN ")
 		s.WriteString(n.Min)
 		s.WriteString(" WHEN ")
-		s.WriteString(n.Field)
-		s.WriteString("+VALUES(")
-		s.WriteString(n.Field)
-		s.WriteString(")>=")
+		s.WriteString(ntb)
+		s.WriteString(">=")
 		s.WriteString(n.Max)
+		s.WriteString("-")
+		s.WriteString(old)
 		s.WriteString(" THEN ")
 		s.WriteString(n.Max)
 		s.WriteString(" ELSE ")
-		s.WriteString(n.Field)
-		s.WriteString(" +VALUES(")
-		s.WriteString(n.Field)
-		s.WriteString(") END")
+		s.WriteString(old)
+		s.WriteString("+")
+		s.WriteString(ntb)
+		s.WriteString(" END")
 	}
 	return s.String()
 }
