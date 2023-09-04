@@ -14,7 +14,14 @@ import (
 type ObjScan interface {
 	Scan(value interface{}) error
 }
-
+type Location struct {
+	Valid     bool    `json:"-"`
+	Latitude  float64 `json:"lat"`
+	Longitude float64 `json:"lng"`
+	Height    float64 `json:"height"` // 保留
+	Name      string  `json:"name"`
+	Address   string  `json:"address"`
+}
 type Coordinate struct {
 	Latitude  float64 `json:"lat"`
 	Longitude float64 `json:"lng"`
@@ -81,6 +88,19 @@ func delimiter(delimiters ...string) string {
 		return ","
 	}
 	return delimiters[0]
+}
+func (l Location) Coordinate() *Coordinate {
+	if !l.Valid {
+		return nil
+	}
+	return &Coordinate{
+		Latitude:  l.Latitude,
+		Longitude: l.Longitude,
+		Height:    l.Height,
+	}
+}
+func (l Location) Position() Position {
+	return ToPosition(l.Coordinate())
 }
 
 // https://dev.mysql.com/doc/refman/8.0/en/gis-data-formats.html

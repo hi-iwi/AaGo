@@ -427,39 +427,37 @@ func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae
 	return &coord, nil
 }
 
-func (r *Req) BodyPosition(p string, required ...bool) (coord *atype.Coordinate, name, address string, e *ae.Error) {
-	var x map[string]interface{}
-	x, e = r.BodyInterfaceMap(p, required...)
+func (r *Req) BodyLocation(p string, required ...bool) (atype.Location, *ae.Error) {
+	x, e := r.BodyInterfaceMap(p, required...)
 	if e != nil || x == nil {
-		return
+		return atype.Location{}, e
 	}
-	var c atype.Coordinate
+	var loc atype.Location
 	lat, ok := x["lat"]
 	if !ok {
 		e = ae.BadParam(p)
-		return
+		return atype.Location{}, e
 	}
 
-	if c.Latitude, ok = lat.(float64); !ok {
+	if loc.Latitude, ok = lat.(float64); !ok {
 		e = ae.BadParam(p)
-		return
+		return atype.Location{}, e
 	}
 	lng, ok := x["lng"]
 	if !ok {
 		e = ae.BadParam(p)
-		return
+		return atype.Location{}, e
 	}
 
-	if c.Longitude, ok = lng.(float64); !ok {
+	if loc.Longitude, ok = lng.(float64); !ok {
 		e = ae.BadParam(p)
-		return
+		return atype.Location{}, e
 	}
 	if ht, ok := x["height"]; ok {
-		c.Height, _ = ht.(float64)
+		loc.Height, _ = ht.(float64)
 	}
-	name = atype.String(x["name"])
-	address = atype.String(x["address"])
-	coord = &c
-	return
-
+	loc.Valid = true
+	loc.Name = atype.String(x["name"])
+	loc.Address = atype.String(x["address"])
+	return loc, nil
 }
