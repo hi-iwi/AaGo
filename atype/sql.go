@@ -14,7 +14,13 @@ import (
 type ObjScan interface {
 	Scan(value interface{}) error
 }
-
+type Location struct {
+	Latitude  float64 `json:"lat"`
+	Longitude float64 `json:"lng"`
+	Height    float64 `json:"height"` // 保留
+	Name      string  `json:"name"`   // 用户选择显示的地址名，没有就填空字符串
+	Address   string  `json:"address"`
+}
 type Coordinate struct {
 	Latitude  float64 `json:"lat"`
 	Longitude float64 `json:"lng"`

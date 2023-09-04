@@ -426,19 +426,43 @@ func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae
 	}
 	return &coord, nil
 }
-func (r *Req) BodyPosition(required bool) (coord *atype.Coordinate, cn aenum.Country, distri atype.Distri, addr string, e *ae.Error) {
-	coord, e = r.BodyCoordinate("position", required)
-	if e != nil {
-		return
+
+func (r *Req) BodyPosition(p string, required ...bool) (coord *atype.Location, e *ae.Error) {
+	x, e := r.BodyInterfaceMap(p, required...)
+	if e != nil || x == nil {
+		return nil, e
 	}
-	cn, e = r.BodyCountry("pos_country", required)
-	if e != nil {
-		return
+	lat, ok := x["lat"]
+	if !ok {
+		return nil, ae.BadParam(p)
 	}
-	distri, e = r.BodyDistri("pos_distri", required)
-	if e != nil {
-		return
+	lati, ok := lat.(float64)
+	if !ok {
+		return nil, ae.BadParam(p)
 	}
-	addr, e = r.BodyString("pos_addr", required)
-	return
+	lng, ok := x["lng"]
+	if !ok {
+		return nil, ae.BadParam(p)
+	}
+	lngi, ok := lng.(float64)
+	if !ok {
+		return nil, ae.BadParam(p)
+	}
+	var height float64
+	if ht, ok := x["height"]; ok {
+		height, _ = ht.(float64)
+	}
+	name := atype.String(x["name"])
+	address := atype.String(x["address"])
+
+	loc := atype.Location{
+		Latitude:  lati,
+		Longitude: lngi,
+		Height:    height,
+		Name:      name,
+		Address:   address,
+	}
+
+	return &loc, nil
+
 }
