@@ -14,13 +14,7 @@ import (
 type ObjScan interface {
 	Scan(value interface{}) error
 }
-type Location struct {
-	Latitude  float64 `json:"lat"`
-	Longitude float64 `json:"lng"`
-	Height    float64 `json:"height"` // 保留
-	Name      string  `json:"name"`   // 用户选择显示的地址名，没有就填空字符串
-	Address   string  `json:"address"`
-}
+
 type Coordinate struct {
 	Latitude  float64 `json:"lat"`
 	Longitude float64 `json:"lng"`
@@ -116,19 +110,6 @@ func ToPosition(coord *Coordinate) Position {
 	}
 	//  4326 是GPS   WGS84，表示按 lat-lng 保存
 	return ToPositionBase(4326, 1, 1, coord.Latitude, coord.Longitude)
-}
-func ToCoordinate(loc *Location) *Coordinate {
-	if loc == nil {
-		return nil
-	}
-	return &Coordinate{
-		Latitude:  loc.Latitude,
-		Longitude: loc.Longitude,
-		Height:    loc.Height,
-	}
-}
-func ToPos(loc *Location) Position {
-	return ToPosition(ToCoordinate(loc))
 }
 func (p Position) Bytes() []byte {
 	if !p.Ok() {
