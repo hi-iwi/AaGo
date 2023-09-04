@@ -374,7 +374,14 @@ func (r *Req) QueryPaging(args ...uint) atype.Paging {
 }
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	return atype.NewImage(x, true), e
+	if e != nil {
+		return "", e
+	}
+	if strings.IndexByte(x, ' ') > -1 {
+		return "", ae.BadParam(p)
+	}
+
+	return atype.NewImage(x, true), nil
 }
 func (r *Req) BodyAudio(p string, required ...bool) (atype.Audio, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
@@ -391,6 +398,9 @@ func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) 
 	}
 	imgs := make([]atype.Image, len(x))
 	for i, s := range x {
+		if strings.IndexByte(s, ' ') > -1 {
+			return nil, ae.BadParam(p)
+		}
 		imgs[i] = atype.NewImage(s, true)
 	}
 	return imgs, e
