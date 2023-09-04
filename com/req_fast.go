@@ -426,15 +426,19 @@ func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae
 	}
 	return &coord, nil
 }
-func (r *Req) BodyPosition(required bool) (coord *atype.Coordinate, distri atype.Distri, addr string, e *ae.Error) {
+func (r *Req) BodyPosition(required bool) (coord *atype.Coordinate, cn aenum.Country, distri atype.Distri, addr string, e *ae.Error) {
 	coord, e = r.BodyCoordinate("position", required)
 	if e != nil {
 		return
 	}
-	distri, e = r.BodyDistri("distri", required)
+	cn, e = r.BodyCountry("pos_country", required)
 	if e != nil {
 		return
 	}
-	addr, e = r.BodyString("addr", required)
+	distri, e = r.BodyDistri("pos_distri", required)
+	if e != nil {
+		return
+	}
+	addr, e = r.BodyString("pos_addr", required)
 	return
 }
