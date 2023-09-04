@@ -29,7 +29,7 @@ type Point struct {
  一般point 需要建 spatial 索引，就需要单独到一个表里，不应该放在一起
 */
 type Position struct{ sql.NullString } // []byte // postion, coordinate or point
-type Ip struct{ sql.NullString }       //  net.IP               // IP Address
+type Ip struct{ sql.NullString }       //  固定16位长度 net.IP               // IP Address
 
 // https://en.wikipedia.org/wiki/Bit_numbering
 type BitPos uint8       // bit position (in big endian)
@@ -169,9 +169,13 @@ func ToIp(addr string) Ip {
 	if addr == "" {
 		return ip
 	}
-	nip := net.ParseIP(addr)
+	nip := net.ParseIP(addr) // 无论是IPv4还是IPv6都是16字节
 	if nip == nil {
 		return ip
+	}
+	ip2 := nip.To4() // 将IPv4的转为4字节
+	if ip2 != nil {
+		nip = ip2
 	}
 
 	ip.Scan(nip.String())
@@ -187,18 +191,28 @@ func (ip Ip) Bytes() []byte {
 func (ip Ip) Ok() bool {
 	return ip.Valid && len(ip.String) == net.IPv4len || len(ip.String) == net.IPv6len
 }
-
-func (ip Ip) To16() string {
+func (ip Ip) Net() net.IP {
 	b := ip.Bytes()
 	if b == nil {
-		return ""
+		return nil
 	}
-	ip2 := net.IP(b)
+	return b
+}
+
+// 是不是 IPv4
+func (ip Ip) Is4() bool {
+	return len(ip.String) == net.IPv4len
+}
+
+// 无论是4字节的IPv4，还是16字节的IPv4或IPv6，都能输出可阅读的IP地址
+func (ip Ip) To16() string {
+	ip2 := ip.Net()
 	// 包括ipv4 / ipv16
-	if nip := ip2.To16(); len(nip) > 0 {
-		return nip.String()
+	nip := ip2.To16() // 此时IP长度为16
+	if nip == nil {
+
 	}
-	return ""
+	return nip.String() // 返回IPv4样式IP地址
 }
 
 func (n Uint24) Uint32() uint32 { return uint32(n) }
