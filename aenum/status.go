@@ -66,7 +66,7 @@ func (s Status) NotPassed() bool { return s < Passed }
 // Created 也是待审核状态
 func (s Status) IsPending() bool { return s >= Pending && s <= Created }
 func (s Status) IsFailed() bool  { return s <= Failed }
-func (s Status) IsDiscard() bool { return s <= Deleted }
+func (s Status) IsDiscard() bool { return s <= Deleting }
 func (s Status) NotExits() bool  { return s == NotExists }
 
 // After/Before 不包括； From/Within 包括
@@ -79,10 +79,11 @@ func (s Status) MeReadable() bool { return s >= MeReadableRange[0] && s <= MeRea
 // 用户是否可以修改、删除
 func (s Status) Modifiable() bool { return s.In(Failed, Pending, Created, Passed) }
 
-func StsInvalid(k string) string   { return k + "<0" }
-func StsPublic(k string) string    { return k + ">-1" }
-func StsPassed(k string) string    { return k + ">0" }
-func StsNotPassed(k string) string { return k + "<1" }
+func StsInvalid(k string) string    { return k + "<0" }
+func StsPublic(k string) string     { return k + ">-1" }
+func StsPassed(k string) string     { return k + ">0" }
+func StsNotPassed(k string) string  { return k + "<1" }
+func StsNotDiscard(k string) string { return k + ">-90" }
 
 // 公开可见的状态，即审核中、创建、审核通过
 func StsVisible(k string) string { return k + ">" + pendingLimit }
