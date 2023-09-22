@@ -24,6 +24,8 @@ var (
 	// 若是 code:200, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
 	NoRows = &Error{444, "no rows"}
 
+	//RetryWith = &Error{449, "locked"}
+
 	Locked           = &Error{423, "locked"}
 	FailedDependency = &Error{424, "failed dependency"} // 之前发生错误
 
@@ -34,6 +36,10 @@ var (
 
 	ServerException = &Error{503, "server exception"} // 客户端自定义，表示未知服务端错误；最常见的就是，没有正确返回数据，或者返回 {code:0,msg:""} 等未协商的数据，导致客户端无法正常处理
 )
+
+func RetryWith(redirect string) *Error {
+	return &Error{449, redirect} // 特殊错误码，msg 用于跳转
+}
 
 // 服务端数据存储解析存在异常
 func ParseFailed(k, v string) *Error {
