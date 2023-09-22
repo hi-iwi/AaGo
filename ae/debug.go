@@ -1,21 +1,11 @@
 package ae
 
 import (
-	"encoding/json"
-	"fmt"
 	"runtime"
 	"strconv"
 	"strings"
 )
 
-func Print(v interface{}) {
-	s, err := json.Marshal(v)
-	if err != nil {
-		fmt.Println(v, err)
-		return
-	}
-	fmt.Println(string(s))
-}
 func Caller(skip int) string {
 	for {
 		skip++ // 跳出Caller当前函数

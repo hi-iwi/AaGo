@@ -1,21 +1,28 @@
 package aa
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/hi-iwi/AaGo/atype"
 	"log"
 	"time"
 )
 
-func Hint(msg string) {
+func Println(args ...interface{}) {
 	ns := time.Now().Format("2006-01-02 15:04:05")
-	log.Println(msg)
-	fmt.Println(ns + " " + msg)
-}
-func (app *Aa) Hint(ctx context.Context, msg string) {
-	app.Log.Warn(ctx, msg)
-	fmt.Println(app.FmtNow() + " " + msg)
+	for _, arg := range args {
+		msg, ok := arg.(string)
+		if !ok {
+			s, err := json.Marshal(arg)
+			if err != nil {
+				msg = err.Error()
+			} else {
+				msg = string(s)
+			}
+		}
+		log.Println(msg)
+		fmt.Println(ns + " " + msg)
+	}
 }
 
 func (app *Aa) Now() time.Time {

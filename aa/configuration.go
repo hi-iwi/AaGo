@@ -11,13 +11,15 @@ import (
 
 type Env string
 
-func (env Env) String() string        { return string(env) }
-func (env Env) IsLocal() bool         { return env == "local" || env == "loc" }
-func (env Env) IsDevelopment() bool   { return env == "development" || env == "dev" }
-func (env Env) IsIntegration() bool   { return env == "integration" }
-func (env Env) IsTesting() bool       { return env == "testing" || env == "test" || env == "qc" }
-func (env Env) IsPreProduction() bool { return env == "pre-production" || env == "pre" || env == "demo" }
-func (env Env) IsProduction() bool    { return env == "production" || env == "pro" || env == "live" }
+func (env Env) String() string      { return string(env) }
+func (env Env) IsLocal() bool       { return env == "local" || env == "loc" }
+func (env Env) IsDevelopment() bool { return env == "development" || env == "dev" }
+func (env Env) IsIntegration() bool { return env == "integration" }
+func (env Env) IsTesting() bool     { return env == "testing" || env == "test" || env == "qc" }
+func (env Env) IsPreProduction() bool {
+	return env == "pre-production" || env == "pre" || env == "demo"
+}
+func (env Env) IsProduction() bool { return env == "production" || env == "pro" || env == "live" }
 
 type Configuration struct {
 	/*
@@ -76,7 +78,7 @@ func ParseToConfiguration(cfg Config) Configuration {
 
 func (c *Configuration) Log() {
 	msg := fmt.Sprintf("lauching...\nenv: %s\ntimezone_id: %s\nmock: %v\ngit_ver: %s", c.Env, c.TimezoneID, c.Mock, util.GitVersion())
-	Hint(msg)
+	Println(msg)
 }
 
 // ParseTimeout connection timeout, r timeout, w timeout, heartbeat interval
