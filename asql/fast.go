@@ -6,36 +6,72 @@ import (
 	"strings"
 )
 
-func In(field string, ids []uint64) string {
+func In(field string, ids map[uint64]struct{}) string {
 	if len(ids) == 0 {
 		return "1!=1"
 	}
 	if len(ids) == 1 {
-		return field + "=" + strconv.FormatUint(ids[0], 10)
+		for id, _ := range ids {
+			return field + "=" + strconv.FormatUint(id, 10)
+		}
 	}
-	return field + " IN (" + atype.JoinUint64(ids, ',') + ")"
+	var s strings.Builder
+	s.Grow(len(field) + len(" IN ()") + (1+atype.MaxUint64Len)*len(ids))
+	s.WriteString(field + " IN (")
+	isFirst := true
+	for id, _ := range ids {
+		if isFirst {
+			isFirst = false
+		} else {
+			s.WriteByte(',')
+		}
+		s.WriteString(strconv.FormatUint(id, 10))
+	}
+	s.WriteByte(')')
+	return s.String()
 }
-func InUint(field string, ids []uint) string {
+func InUint(field string, ids map[uint]struct{}) string {
 	if len(ids) == 0 {
 		return "1!=1"
 	}
 	if len(ids) == 1 {
-		return field + "=" + strconv.FormatUint(uint64(ids[0]), 10)
+		for id, _ := range ids {
+			return field + "=" + strconv.FormatUint(uint64(id), 10)
+		}
 	}
-	return field + " IN (" + atype.JoinUint(ids, ',') + ")"
+	var s strings.Builder
+	s.Grow(len(field) + len(" IN ()") + (1+atype.MaxUintLen)*len(ids))
+	s.WriteString(field + " IN (")
+	isFirst := true
+	for id, _ := range ids {
+		if isFirst {
+			isFirst = false
+		} else {
+			s.WriteByte(',')
+		}
+		s.WriteString(strconv.FormatUint(uint64(id), 10))
+	}
+	s.WriteByte(')')
+	return s.String()
 }
-func InValues(field string, ids []string) string {
+func InValues(field string, ids map[string]struct{}) string {
 	if len(ids) == 0 {
 		return "1!=1"
 	}
 	if len(ids) == 1 {
-		return field + "=\"" + ids[0] + "\""
+		for id, _ := range ids {
+			return field + `="` + id + `"`
+		}
 	}
+
 	var s strings.Builder
 	s.WriteString(field)
 	s.WriteString(" IN (")
-	for i, id := range ids {
-		if i > 0 {
+	isFirst := true
+	for id, _ := range ids {
+		if isFirst {
+			isFirst = false
+		} else {
 			s.WriteByte(',')
 		}
 		s.WriteByte('"')
