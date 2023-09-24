@@ -17,11 +17,11 @@ type ImgSrc struct {
 	   不要独立出来 filename，一方面太多内容了；另一方面增加业务侧复杂度
 	*/
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
-	Filetype aenum.ImageType `json:"filetype"` // aenum.Filetype.Int8()
-	Size     Uint24          `json:"size"`     // atype.Uint24.Int8()
-	Width    uint16          `json:"width"`
-	Height   uint16          `json:"height"`
-	Allowed  [][2]uint16     `json:"allowed"` // 允许的width,height
+	Filetype aenum.FileType `json:"filetype"` // aenum.Filetype.Int8()
+	Size     Uint24         `json:"size"`     // atype.Uint24.Int8()
+	Width    uint16         `json:"width"`
+	Height   uint16         `json:"height"`
+	Allowed  [][2]uint16    `json:"allowed"` // 允许的width,height
 }
 
 func (s ImgSrc) Filename() Image { return NewImage(s.Path, true) }
