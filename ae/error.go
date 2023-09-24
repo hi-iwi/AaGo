@@ -55,3 +55,7 @@ func (e *Error) NoMatched() bool {
 func (e *Error) IsServerError() bool {
 	return e.Code > 499
 }
+
+func (e *Error) IsRetryWith() bool {
+	return e.Code == 449 && e.Msg != ""
+}
