@@ -6,7 +6,39 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/atype"
 	"strconv"
+	"time"
 )
+
+func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
+	_, err := rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		err1 := pipe.HSet(ctx, k, values...).Err()
+		err2 := pipe.Expire(ctx, k, expires).Err()
+		return ae.CatchError(err1, err2)
+	})
+
+	return ae.NewRedisError(err)
+}
+
+func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
+	keys := make(map[string]struct{}, len(values)/2)
+	for i := 1; i < len(values); i += 2 {
+		f, _ := values[i].(string)
+		if f == "" {
+			return ae.NewErr("hmset %s empty field name", k)
+		}
+		if _, ok := keys[f]; ok {
+			return ae.NewErr("hmset %s conflict %s", k, f)
+		}
+		keys[f] = struct{}{}
+	}
+	_, err := rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		err1 := pipe.HMSet(ctx, k, values...).Err()
+		err2 := pipe.Expire(ctx, k, expires).Err()
+		return ae.CatchError(err1, err2)
+	})
+
+	return ae.NewRedisError(err)
+}
 
 func HScan(ctx context.Context, rdb *redis.Client, dest interface{}, k string, fields ...string) *ae.Error {
 	c := rdb.HMGet(ctx, k, fields...)

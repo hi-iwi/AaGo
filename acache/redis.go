@@ -26,37 +26,6 @@ func Uint64s(vs []string, err error) ([]uint64, *ae.Error) {
 	}
 	return ids, nil
 }
-
-func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
-	var err error
-	ttl, _ := rdb.TTL(ctx, k).Result()
-	if ttl > 0 && ttl < expires {
-		_, err = rdb.HSet(ctx, k, values...).Result()
-	} else {
-		_, err = rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-			err1 := pipe.HSet(ctx, k, values...).Err()
-			err2 := pipe.Expire(ctx, k, expires).Err()
-			return ae.CatchError(err1, err2)
-		})
-	}
-	return ae.NewRedisError(err)
-}
-
-func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
-	var err error
-	ttl, _ := rdb.TTL(ctx, k).Result()
-	if ttl > 0 && ttl < expires {
-		_, err = rdb.HMSet(ctx, k, values...).Result()
-	} else {
-		_, err = rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-			err1 := pipe.HMSet(ctx, k, values...).Err()
-			err2 := pipe.Expire(ctx, k, expires).Err()
-			return ae.CatchError(err1, err2)
-		})
-	}
-	return ae.NewRedisError(err)
-}
-
 func HIncrBy(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, field string, incr int64) (int64, *ae.Error) {
 	var reply int64
 	var err error
