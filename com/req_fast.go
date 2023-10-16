@@ -115,27 +115,6 @@ func (r *Req) QueryBooln(p string, required ...interface{}) (atype.Booln, *ae.Er
 	return atype.ToBooln(b), nil
 }
 
-func (r *Req) QueryEnum(p string, validator func(uint8) bool) (uint8, *ae.Error) {
-	x, e := r.QueryUint8(p, false)
-	if e != nil {
-		return 0, e
-	}
-	if ok := validator(x); !ok {
-		return 0, ae.BadParam(p)
-	}
-	return x, nil
-}
-func (r *Req) QueryEnumInt8(p string, validator func(int8) bool) (int8, *ae.Error) {
-	x, e := r.QueryInt8(p, false)
-	if e != nil {
-		return 0, e
-	}
-	if ok := validator(x); !ok {
-		return 0, ae.BadParam(p)
-	}
-	return x, nil
-}
-
 // 允许0  --> 直接用  x.Int8() 就可以了
 func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
@@ -264,26 +243,7 @@ func (r *Req) BodyBooln(p string, required ...interface{}) (atype.Booln, *ae.Err
 	}
 	return atype.ToBooln(b), nil
 }
-func (r *Req) BodyEnum(p string, validator func(uint8) bool) (uint8, *ae.Error) {
-	x, e := r.BodyUint8(p, false)
-	if e != nil {
-		return 0, e
-	}
-	if ok := validator(x); !ok {
-		return 0, ae.BadParam(p)
-	}
-	return x, nil
-}
-func (r *Req) BodyEnumInt8(p string, validator func(int8) bool) (int8, *ae.Error) {
-	x, e := r.BodyInt8(p, false)
-	if e != nil {
-		return 0, e
-	}
-	if ok := validator(x); !ok {
-		return 0, ae.BadParam(p)
-	}
-	return x, nil
-}
+
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return x.DefaultInt8(0), e
