@@ -11,31 +11,31 @@ type FileType uint16
 const (
 	UnknownType FileType = 0
 
-	// 图片类型范围：1-9999
+	// 图片类型范围：1-999
 	Jpeg       FileType = 1
 	Png        FileType = 2
 	Gif        FileType = 3
 	Webp       FileType = 4
 	Heic       FileType = 5 // iPhone 拍摄的照片
-	OtherImage FileType = 9999
+	OtherImage FileType = 999
 
-	// 音频类型范围：10000-19999
-	Mp3        FileType = 10000
-	X3pg       FileType = 10001
-	X3pg2      FileType = 10002
-	Aiff       FileType = 10003
-	OtherAudio FileType = 19999
+	// 音频类型范围：1000-1999
+	Mp3        FileType = 1000
+	X3pg       FileType = 1001
+	X3pg2      FileType = 1002
+	Aiff       FileType = 1003
+	OtherAudio FileType = 1999
 
-	// 视频范围：20000-29999
-	Avi        FileType = 20000
-	Mov        FileType = 20001 // Apple QuickTime
-	Mpeg       FileType = 20002
-	Mp4        FileType = 20003 // MPEG-4
-	X3gp       FileType = 20004
-	X3gp2      FileType = 20005
-	Webm       FileType = 20006
-	Wav        FileType = 20007
-	OtherVideo FileType = 29999
+	// 视频范围：2000-2999
+	Avi        FileType = 2000
+	Mov        FileType = 2001 // Apple QuickTime
+	Mpeg       FileType = 2002
+	Mp4        FileType = 2003 // MPEG-4
+	X3gp       FileType = 2004
+	X3gp2      FileType = 2005
+	Webm       FileType = 2006
+	Wav        FileType = 2007
+	OtherVideo FileType = 2999
 
 	// 文件范围
 )
