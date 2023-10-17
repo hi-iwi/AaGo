@@ -48,6 +48,9 @@ func ParseFailed(k, v string) *Error {
 func BadParam(param string) *Error {
 	return NewError(400, "bad parameter `"+param+"`")
 }
+func ProxyAuthRequired(param string) *Error {
+	return NewError(407, "proxy authentication required for parameter `"+param+"`")
+}
 func Catch(es ...*Error) *Error {
 	for _, e := range es {
 		if e != nil {
