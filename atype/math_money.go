@@ -91,6 +91,7 @@ func (a Money) SmallMoney() SmallMoney { return SmallMoney(a) }
 
 // 整数部分
 func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
+func (a Money) ToCent() int64    { return int64(a) / int64(Cent) }
 
 // 小数部分
 func (a Money) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
