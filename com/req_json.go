@@ -11,7 +11,7 @@ func (r *Req) BodyInterfaceMap(p string, requireds ...bool) (map[string]interfac
 	if e != nil {
 		return nil, e
 	}
-	if x.IsNil() {
+	if x.IsNil() || x.String() == "" {
 		if required {
 			return nil, ae.BadParam(p)
 		}
@@ -37,7 +37,7 @@ func (r *Req) BodyInterfaces(p string, requireds ...bool) ([]interface{}, *ae.Er
 	if e != nil {
 		return nil, e
 	}
-	if x.IsNil() {
+	if x.IsNil() || x.String() == "" {
 		if required {
 			return nil, ae.BadParam(p)
 		}
