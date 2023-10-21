@@ -231,7 +231,7 @@ func (ip Ip) To16() string {
 	// 包括ipv4 / ipv16
 	nip := ip2.To16() // 此时IP长度为16
 	if nip == nil {
-
+		return ""
 	}
 	return nip.String() // 返回IPv4样式IP地址
 }
