@@ -21,7 +21,7 @@ func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k strin
 
 func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
 	keys := make(map[string]struct{}, len(values)/2)
-	for i := 1; i < len(values); i += 2 {
+	for i := 0; i < len(values); i += 2 {
 		f, _ := values[i].(string)
 		if f == "" {
 			return ae.NewErr("hmset %s empty field name", k)
