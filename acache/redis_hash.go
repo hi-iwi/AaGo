@@ -2,6 +2,7 @@ package acache
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/atype"
@@ -22,7 +23,7 @@ func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k strin
 func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
 	keys := make(map[string]struct{}, len(values)/2)
 	for i := 0; i < len(values); i += 2 {
-		f, _ := values[i].(string)
+		f := fmt.Sprintf("%v", values[i])
 		if f == "" {
 			return ae.NewErr("hmset %s empty field name", k)
 		}
