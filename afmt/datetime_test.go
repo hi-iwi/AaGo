@@ -9,30 +9,43 @@ import (
 func TestTimeDiff(t *testing.T) {
 	a, _ := time.Parse("2006-01-02 15:04:05", "2006-01-02 15:04:05")
 	b, _ := time.Parse("2006-01-02 15:04:05", "2022-11-19 20:48:08")
-	d1 := afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b)
+	d1 := afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b, true)
 	d2 := "（16年10个月17天5个小时44分钟3秒）"
 	if d1 != d2 {
 		t.Errorf("afmt.TimeDiff failed " + d1)
 	}
 	a, _ = time.Parse("2006-01-02 15:04:05", "2006-01-02 15:04:05")
 	b, _ = time.Parse("2006-01-02 15:04:05", "2022-11-02 15:04:05")
-	d1 = afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b)
+	d1 = afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b, true)
 	d2 = "（16年10个月）"
 	if d1 != d2 {
 		t.Errorf("afmt.TimeDiff failed " + d1)
 	}
 	a, _ = time.Parse("2006-01-02 15:04:05", "2006-01-02 15:04:05")
 	b, _ = time.Parse("2006-01-02 15:04:05", "2022-01-05 15:04:05")
-	d1 = afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b)
+	d1 = afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b, true)
 	d2 = "（16年3天）"
+	if d1 != d2 {
+		t.Errorf("afmt.TimeDiff failed " + d1)
+	}
+
+	a, _ = time.Parse("2006-01-02 15:04:05", "2006-01-02 15:03:05")
+	b, _ = time.Parse("2006-01-02 15:04:05", "2022-04-05 15:04:05")
+	d1 = afmt.TimeDiff("（{%Y年}{%D天}）", a, b, true)
+	d2 = "（16年94天）"
 	if d1 != d2 {
 		t.Errorf("afmt.TimeDiff failed " + d1)
 	}
 
 	a, _ = time.Parse("2006-01-02 15:04:05", "2006-01-02 15:04:05")
 	b, _ = time.Parse("2006-01-02 15:04:05", "2022-01-05 15:04:05")
-	d1 = afmt.TimeDiff("（{%Y年}{%M个月}{%D天}{%H个小时}{%I分钟}{%S秒}）", a, b)
-	d2 = "（16年3天）"
+	d1 = afmt.TimeDiff("（{%Y年}）", a, b, true)
+	d2 = "（17年）"
+	if d1 != d2 {
+		t.Errorf("afmt.TimeDiff failed " + d1)
+	}
+	d1 = afmt.TimeDiff("（{%Y年}）", a, b, false)
+	d2 = "（16年）"
 	if d1 != d2 {
 		t.Errorf("afmt.TimeDiff failed " + d1)
 	}

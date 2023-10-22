@@ -22,12 +22,12 @@ func timeDiff(a, b time.Time) (year, month, day, hour, min, sec int) {
 	h1, m1, s1 := a.Clock()
 	h2, m2, s2 := b.Clock()
 
-	year = int(y2 - y1)
+	year = y2 - y1
 	month = int(M2 - M1)
-	day = int(d2 - d1)
-	hour = int(h2 - h1)
-	min = int(m2 - m1)
-	sec = int(s2 - s1)
+	day = d2 - d1
+	hour = h2 - h1
+	min = m2 - m1
+	sec = s2 - s1
 
 	// Normalize negative values
 	if sec < 0 {
@@ -52,14 +52,83 @@ func timeDiff(a, b time.Time) (year, month, day, hour, min, sec int) {
 		month += 12
 		year--
 	}
-
 	return
+}
+func carryTimeDiff(p map[rune]*int, ls map[rune]bool) map[rune]*int {
+	arr := []rune{'S', 'I', 'H', 'D', 'M', 'Y'}
+	var g bool
+	for _, a := range arr {
+		if ls[a] {
+			if g {
+				*p[a]++
+			}
+			break
+		}
+		if *p[a] > 0 {
+			g = true
+		}
+	}
+
+	if *p['S'] > 59 {
+		*p['S'] -= 60
+		*p['I']++
+	}
+	if *p['I'] > 59 {
+		*p['I'] -= 60
+		*p['H']++
+	}
+	if *p['H'] > 23 {
+		*p['H'] -= 24
+		*p['D']++
+	}
+	if *p['D'] > 30 {
+		*p['D'] -= 31
+		*p['M']++
+	}
+	if *p['M'] > 11 {
+		*p['M'] -= 12
+		*p['Y']++
+	}
+
+	return p
+}
+func loadTimeDiff(la []rune, p map[rune]*int) (map[rune]bool, map[rune]*int) {
+	ls := map[rune]bool{
+		'Y': false,
+		'M': false,
+		'D': false,
+		'H': false,
+		'I': false,
+		'S': false,
+	}
+
+	n := len(la)
+	start := false
+	for i := 0; i < n; i++ {
+		c := la[i]
+		if start {
+			if c == '}' {
+				start = false
+			}
+			continue
+		}
+		if c != '{' || i > n-3 || la[i+1] != '%' {
+			continue
+		}
+
+		if _, ok := p[la[i+2]]; ok {
+			ls[la[i+2]] = true
+			i += 2
+			start = true
+		}
+	}
+	return ls, p
 }
 
 // 计算两个日期之差
 // @param layout:  %Y %M %D %H %I %S  e.g. `{%Y年}{%M个月}`
-
-func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
+// @param carry  false 尾数忽略；true 尾数后面>0，就+1
+func TimeDiff(layout string, d1 time.Time, d2 time.Time, carry bool) string {
 	if layout == "" {
 		return ""
 	}
@@ -67,22 +136,47 @@ func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
 	if y == 0 && m == 0 && d == 0 && h == 0 && mi == 0 && sec == 0 {
 		return ""
 	}
-	p := map[rune]int{
-		'Y': y,
-		'M': m,
-		'D': d,
-		'H': h,
-		'I': mi,
-		'S': sec,
+	p := map[rune]*int{
+		'Y': &y,
+		'M': &m,
+		'D': &d,
+		'H': &h,
+		'I': &mi,
+		'S': &sec,
+	}
+	var ls map[rune]bool
+	la := []rune(layout)
+	ls, p = loadTimeDiff(la, p)
+	if carry {
+		p = carryTimeDiff(p, ls)
+	}
+
+	if y > 0 && !ls['Y'] {
+		m += y * 12
+		y = 0
+	}
+	if m > 0 && !ls['M'] {
+		d += m * 30 // 近似天数
+		m = 0
+	}
+	if d > 0 && !ls['D'] {
+		h += d * 24
+		d = 0
+	}
+	if h > 0 && !ls['H'] {
+		mi += h * 60
+		h = 0
+	}
+	if mi > 0 && !ls['I'] {
+		sec += mi * 60
+		mi = 0
 	}
 	var out strings.Builder
-	la := []rune(layout)
 	n := len(la)
 	start := false
 	ignore := false
-	var c rune
 	for i := 0; i < n; i++ {
-		c = la[i]
+		c := la[i]
 		if start {
 			if c == '}' {
 				start = false
@@ -103,11 +197,10 @@ func TimeDiff(layout string, d1 time.Time, d2 time.Time) string {
 			out.WriteRune(c)
 			continue
 		}
-
-		if q == 0 {
+		if *q == 0 {
 			ignore = true
 		} else {
-			out.WriteString(strconv.Itoa(q))
+			out.WriteString(strconv.Itoa(*q))
 		}
 		i += 2
 		start = true
