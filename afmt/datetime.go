@@ -92,7 +92,7 @@ func carryTimeDiff(p map[rune]*int, ls map[rune]bool) map[rune]*int {
 
 	return p
 }
-func loadTimeDiff(la []rune, p map[rune]*int) (map[rune]bool, map[rune]*int) {
+func loadTimeDiff(layout []rune, p map[rune]*int) map[rune]bool {
 	ls := map[rune]bool{
 		'Y': false,
 		'M': false,
@@ -102,33 +102,33 @@ func loadTimeDiff(la []rune, p map[rune]*int) (map[rune]bool, map[rune]*int) {
 		'S': false,
 	}
 
-	n := len(la)
+	n := len(layout)
 	start := false
 	for i := 0; i < n; i++ {
-		c := la[i]
+		c := layout[i]
 		if start {
 			if c == '}' {
 				start = false
 			}
 			continue
 		}
-		if c != '{' || i > n-3 || la[i+1] != '%' {
+		if c != '{' || i > n-3 || layout[i+1] != '%' {
 			continue
 		}
-
-		if _, ok := p[la[i+2]]; ok {
-			ls[la[i+2]] = true
+		r := layout[i+2]
+		if _, ok := p[r]; ok {
+			ls[r] = true
 			i += 2
 			start = true
 		}
 	}
-	return ls, p
+	return ls
 }
 
 // 计算两个日期之差
 // @param layout:  %Y %M %D %H %I %S  e.g. `{%Y年}{%M个月}`
-// @param carry  false 尾数忽略；true 尾数后面>0，就+1
-func TimeDiff(layout string, d1 time.Time, d2 time.Time, carry bool) string {
+// @param noCarry  true 尾数忽略；false 尾数后面>0，就+1
+func TimeDiff(layout string, d1 time.Time, d2 time.Time, noCarry bool) string {
 	if layout == "" {
 		return ""
 	}
@@ -136,6 +136,7 @@ func TimeDiff(layout string, d1 time.Time, d2 time.Time, carry bool) string {
 	if y == 0 && m == 0 && d == 0 && h == 0 && mi == 0 && sec == 0 {
 		return ""
 	}
+	la := []rune(layout)
 	p := map[rune]*int{
 		'Y': &y,
 		'M': &m,
@@ -144,32 +145,30 @@ func TimeDiff(layout string, d1 time.Time, d2 time.Time, carry bool) string {
 		'I': &mi,
 		'S': &sec,
 	}
-	var ls map[rune]bool
-	la := []rune(layout)
-	ls, p = loadTimeDiff(la, p)
-	if carry {
+	ls := loadTimeDiff(la, p)
+	if !noCarry {
 		p = carryTimeDiff(p, ls)
 	}
 
-	if y > 0 && !ls['Y'] {
-		m += y * 12
-		y = 0
+	if *p['Y'] > 0 && !ls['Y'] {
+		m += *p['Y'] * 12
+		*p['Y'] = 0
 	}
-	if m > 0 && !ls['M'] {
-		d += m * 30 // 近似天数
-		m = 0
+	if *p['M'] > 0 && !ls['M'] {
+		*p['D'] += *p['M'] * 30 // 近似天数
+		*p['M'] = 0
 	}
-	if d > 0 && !ls['D'] {
-		h += d * 24
-		d = 0
+	if *p['D'] > 0 && !ls['D'] {
+		*p['H'] += *p['D'] * 24
+		*p['D'] = 0
 	}
-	if h > 0 && !ls['H'] {
-		mi += h * 60
-		h = 0
+	if *p['H'] > 0 && !ls['H'] {
+		*p['I'] += *p['H'] * 60
+		*p['H'] = 0
 	}
-	if mi > 0 && !ls['I'] {
-		sec += mi * 60
-		mi = 0
+	if *p['I'] > 0 && !ls['I'] {
+		*p['S'] += *p['I'] * 60
+		*p['I'] = 0
 	}
 	var out strings.Builder
 	n := len(la)
