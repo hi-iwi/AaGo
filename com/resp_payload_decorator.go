@@ -58,7 +58,8 @@ func stringifyStruct(t reflect.Type, v reflect.Value, tagname string) (interface
 		if ks == "" {
 			m, ok := w.(map[string]interface{})
 			if !ok {
-				p[t.Name()] = w
+				//p[t.Name()] = w  // 忽略 json/xml tag不存在或为空
+				continue
 			} else {
 				for y, z := range m {
 					p[y], _ = StringifyPayloadFields(z, tagname)

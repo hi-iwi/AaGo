@@ -22,7 +22,11 @@ func jsons(v interface{}, e *ae.Error) string {
 }
 
 func TestStringifyPayloadFields(t *testing.T) {
+	type Child struct {
+		Test string `json:"test"`
+	}
 	type y struct {
+		Child
 		Bad    atype.Images   `json:"bad"`
 		Tmp    atype.ImgSrc   `json:"-"`
 		t      []atype.ImgSrc `json:"images"`
@@ -31,6 +35,7 @@ func TestStringifyPayloadFields(t *testing.T) {
 		Images []atype.ImgSrc `json:"ims"`
 	}
 	type x struct {
+		Child
 		A string       `json:"a"`
 		B int64        `json:"b"`
 		C int          `json:"c"`
@@ -43,7 +48,7 @@ func TestStringifyPayloadFields(t *testing.T) {
 	yy := 10000
 	y0 := y{Y: &yy, Images: ims}
 	a := x{A: "LOVE", B: 100, C: 300, Y: &y0}
-	as := `{"a":"LOVE","b":"100","c":300,"m":null,"money":"0","y":{"bad":{"NullString":false},"img":null,"ims":[{"allowed":null,"filetype":0,"fill":"","fit":"","height":0,"origin":"","path":"","processor":0,"size":0,"width":0}],"y":10000}}`
+	as := `{"a":"LOVE","b":"100","c":300,"m":null,"money":"0","test":"","y":{"bad":{},"img":null,"ims":[{"allowed":null,"filetype":0,"fill":"","fit":"","height":0,"origin":"","path":"","processor":0,"size":0,"width":0}],"test":"","y":10000}}`
 	s := jsons(com.StringifyPayloadFields(a, "json"))
 	if s != as {
 		t.Errorf("%s --> %s", s, as)
