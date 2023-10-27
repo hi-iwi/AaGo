@@ -95,15 +95,6 @@ func (app *App) Try(ctx context.Context, e *ae.Error) bool {
 	return false
 }
 
-// 快捷记录错误
-func (app *App) Test(ctx context.Context, err error) bool {
-	if err == nil {
-		return true
-	}
-	app.Log.Error(ctx, err.Error())
-	return false
-}
-
 // 快捷panic
 func (app *App) TryOrPanic(ctx context.Context, e *ae.Error) {
 	if e != nil && e.IsServerError() {
