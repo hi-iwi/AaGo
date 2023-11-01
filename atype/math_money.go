@@ -40,16 +40,9 @@ const (
 
 )
 
-func (c Coin) ToMoney() Money {
-	return Money(c) * Cent
-}
-func (a SmallMoney) ToCoin() Coin {
-	return Coin(a.Money() / Cent)
-}
-
-func (a Money) ToCoin() Coin {
-	return Coin(a / Cent)
-}
+// @param exchange 1 元可以兑换多少coin
+func (a SmallMoney) ToCoin(exchange Coin) Coin { return a.ToCoin(exchange) }
+func (a Money) ToCoin(exchange Coin) Coin      { return Coin(a/Yuan) * exchange }
 
 // @param n 本身就是转换后的值，如10000，即表示为 100*PercentAug，即 100%
 func NewPercent(n int) Percent { return Percent(n) }
