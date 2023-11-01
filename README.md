@@ -45,8 +45,11 @@ Application
             + do          # dynamic object，app_name 内通用数据传递对象
             + dic           # 放置翻译文件；   
             + entity      # data entity 数据实体
-            + ienum      APP 内enum  # 放常量、枚举 huodongerconf  和  ienum 区别是： huodongerconf 纯服务端用到；ienum 客户端也需要用到
+            + enum      APP 内enum  # 放常量、枚举 huodongerconf  和  ienum 区别是： huodongerconf 纯服务端用到；ienum 客户端也需要用到
                         # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
+            + job
+                + queue
+                    + channel
             + module                        # 提高微服务特性，module仅用于区分客户端、服务端、CMS端
                 + syncUser                        # Service/Server 对服务端的接口
                 + cms                       # 内容管理系统
@@ -60,6 +63,9 @@ Application
                         + dto                   # 对外开放的
                     + phone                  # phone view
                         + dto                   # 对外开放的
+                    + task
+                    service.go
+                    xxxx   
                 + ss          # S/S架构，Server/Server
             + service   # app_name 内通用 service  
         + app_name2 ....  其他微服务应用
@@ -67,7 +73,6 @@ Application
             + middleware
         + rservice                  # remote service 其他远程服务或第三方服务（如微信、支付宝）
             + rpci                  # rpc interface ，对内提供的
-        + service    不同app间，service
     + grpc
         + gboot
         + protos                    # .proto

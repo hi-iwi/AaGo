@@ -15,6 +15,8 @@ import (
 type SmallMoney uint // 统一转换为 Money 后使用
 type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
 
+type Coin uint // 1 coin = 1 cent  = Money(100)  范围 4200万元左右
+
 type Percent16 int16 // 需要转换为 Percent 使用；-327.68% ~ 327.67%  即 -3.2768 ~ 3.2767
 type Percent24 Int24 // 需要转换为 Percent 使用； -83886.08% ~ 83886.07%   即 -838.8608 ~ -838.8607
 type Percent int     // 范围： -21474836.48% - 21474836.47%
@@ -37,6 +39,17 @@ const (
 	MaxMoney = 100 * YiYuan  // 100亿
 
 )
+
+func (c Coin) ToMoney() Money {
+	return Money(c) * Cent
+}
+func (a SmallMoney) ToCoin() Coin {
+	return Coin(a.Money() / Cent)
+}
+
+func (a Money) ToCoin() Coin {
+	return Coin(a / Cent)
+}
 
 // @param n 本身就是转换后的值，如10000，即表示为 100*PercentAug，即 100%
 func NewPercent(n int) Percent { return Percent(n) }
