@@ -8,11 +8,11 @@ import (
 
 func TestPercent(t *testing.T) {
 	m := atype.ToMoney(1000.0)
-	if m.MulPct(0.6) != atype.ToMoney(6) {
-		t.Errorf("atype.ToMoney(1000).MulPct(0.6) != atype.ToMoney(6)")
+	if m.MulPercent(0.6) != atype.ToMoney(6) {
+		t.Errorf("atype.ToMoney(1000).MulPercent(0.6) != atype.ToMoney(6)")
 	}
-	if m.MulPct(30) != atype.ToMoney(300) {
-		t.Errorf("atype.ToMoney(1000).MulPct(30) != atype.ToMoney(300)")
+	if m.MulPercent(30) != atype.ToMoney(300) {
+		t.Errorf("atype.ToMoney(1000).MulPercent(30) != atype.ToMoney(300)")
 	}
 }
 func TestMoney(t *testing.T) {
@@ -24,7 +24,7 @@ func TestMoney(t *testing.T) {
 		t.Errorf("atype.ToMoney(1888000).Fmt() : %s != 188.80", m.Format())
 	}
 	p := atype.ToPercent(0.7)
-	s := atype.ToMoney(2360).MulPercent(p).Fmt()
+	s := atype.ToMoney(2360).MulRate(p).Fmt()
 	if s != "16.52" {
 		t.Errorf("2360*0.7%% : %s != 16.52", s)
 	}

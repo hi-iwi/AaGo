@@ -15,14 +15,7 @@ import (
 type SmallMoney uint // 统一转换为 Money 后使用
 type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
 
-type Coin uint // 1 coin = 1 cent  = Money(100)  范围 4200万元左右
-
-type Percent16 int16 // 需要转换为 Percent 使用；-327.68% ~ 327.67%  即 -3.2768 ~ 3.2767
-type Percent24 Int24 // 需要转换为 Percent 使用； -83886.08% ~ 83886.07%   即 -838.8608 ~ -838.8607
-type Percent int     // 范围： -21474836.48% - 21474836.47%
-
-var PercentAug float64 = 100      // 扩大100 * 100倍 --> 这里按百分比算，而不是小数  3* Percent 为 3% = 0.03
-var DecimalAug = PercentAug * 100 // 小数转百分比扩大100倍
+type Coin Money // 1 coin = 1 money
 
 const (
 	Cent    Money = 100           // 分
@@ -38,53 +31,19 @@ const (
 	MinMoney = -100 * YiYuan // -100亿
 	MaxMoney = 100 * YiYuan  // 100亿
 
+	UnitCoin = Coin(Yuan)
 )
 
-// @param exchange 1 元可以兑换多少coin
-func (a SmallMoney) ToCoin(exchange Coin) Coin { return a.ToCoin(exchange) }
-func (a Money) ToCoin(exchange Coin) Coin      { return Coin(a/Yuan) * exchange }
-
-// @param n 本身就是转换后的值，如10000，即表示为 100*PercentAug，即 100%
-func NewPercent(n int) Percent { return Percent(n) }
-
-// ToPercent(80.01) 表示 80.01%
-func ToPercent(n float64) Percent { return NewPercent(int(n * PercentAug)) }
-
-func NewPercent16(n int16) Percent16 { return Percent16(n) }
-func (p Percent16) Percent() Percent { return Percent(p) }
-func (p Percent16) Int16() int16     { return int16(p) }
-func NewPercent24(n int32) Percent24 { return Percent24(n) }
-func (p Percent24) Percent() Percent { return Percent(p) }
-func (p Percent24) Int32() int32     { return int32(p) }
-
-// 范围： -327.68% ~ 32767%  即 -3.2768 ~ +3.2767
-func (p Percent) Int16() int16         { return int16(p) }
-func (p Percent) Percent16() Percent16 { return Percent16(p) }
-func (p Percent) Int32() int32         { return int32(p) }
-func (p Percent) Percent24() Percent24 { return Percent24(p) }
-func (p Percent) Int() int             { return int(p) }
-
-func (p Percent) Percent() float64  { return float64(p.Int()) / PercentAug }
-func (p Percent) Decimal() float64  { return float64(p.Int()) / DecimalAug }
-func (p Percent) Mul(d int64) int64 { return d * int64(p) }
-func (p Percent) Fmt() string       { return strconv.FormatFloat(p.Percent(), 'f', -1, 32) }
-func (p Percent) FmtAbs() string {
-	c := p.Percent()
-	if c < 0 {
-		c = -c
-	}
-	return strconv.FormatFloat(c, 'f', -1, 32)
-}
+// @param ratio 汇率
+func (a Money) ExchangeCoin(rate Rate) Coin { return Coin(a.MulRateFloor(rate)) }
 
 // 采用四舍五入
-func (a Money) MulPercent(p Percent) Money     { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
-func (a Money) MulPercentCeil(p Percent) Money { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
-func (a Money) MulPercentFloor(p Percent) Money {
-	return a.Mul(int64(p)).DivFloor(int64(DecimalAug))
-}
-func (a Money) MulPct(p float64) Money      { return a.MulPercent(ToPercent(p)) }
-func (a Money) MulPctCeil(p float64) Money  { return a.MulPercentCeil(ToPercent(p)) }
-func (a Money) MulPctFloor(p float64) Money { return a.MulPercentFloor(ToPercent(p)) }
+func (a Money) MulRate(p Rate) Money            { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
+func (a Money) MulRateCeil(p Rate) Money        { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
+func (a Money) MulRateFloor(p Rate) Money       { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
+func (a Money) MulPercent(p float64) Money      { return a.MulRate(ToPercent(p)) }
+func (a Money) MulPercentCeil(p float64) Money  { return a.MulRateCeil(ToPercent(p)) }
+func (a Money) MulPercentFloor(p float64) Money { return a.MulRateFloor(ToPercent(p)) }
 
 func NewSmallMoney(n uint) SmallMoney  { return SmallMoney(n) }
 func (a SmallMoney) Money() Money      { return Money(a) }
@@ -112,7 +71,7 @@ func decimalN(decimals ...uint16) uint16 {
 	}
 	return dec
 }
-func moneydelimiter(delimiter ...string) string {
+func moneyDelimiter(delimiter ...string) string {
 	sep := ","
 	if len(delimiter) > 0 {
 		sep = delimiter[0]
@@ -157,7 +116,7 @@ func fmtPrecision(s string, n int, delimiter string) string {
 // 类型：  1,000,000 这种
 func (a Money) FmtPrecision(n int, delimiters ...string) string {
 	s := strconv.FormatInt(int64(a), 10)
-	sep := moneydelimiter(delimiters...)
+	sep := moneyDelimiter(delimiters...)
 	return fmtPrecision(s, n, sep)
 }
 func (a Money) FmtScale(decimals ...uint16) string {
@@ -285,12 +244,12 @@ func (a Money) DivCeil(n int64) Money {
 }
 
 // 四舍五入
-func (a Money) Of(b Money) Percent {
-	return NewPercent(int(a.Mul(int64(DecimalAug)).Div(b.Int64())))
+func (a Money) Of(b Money) Rate {
+	return NewRate(int(a.Mul(int64(DecimalAug)).Div(b.Int64())))
 }
-func (a Money) OfFloor(b Money) Percent {
-	return NewPercent(int(a.Mul(int64(DecimalAug)).DivFloor(b.Int64())))
+func (a Money) OfFloor(b Money) Rate {
+	return NewRate(int(a.Mul(int64(DecimalAug)).DivFloor(b.Int64())))
 }
-func (a Money) OfCeil(b Money) Percent {
-	return NewPercent(int(a.Mul(int64(DecimalAug)).DivCeil(b.Int64())))
+func (a Money) OfCeil(b Money) Rate {
+	return NewRate(int(a.Mul(int64(DecimalAug)).DivCeil(b.Int64())))
 }
