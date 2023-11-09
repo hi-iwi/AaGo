@@ -130,6 +130,15 @@ func NewEthn(ethn uint8) (Ethn, bool) {
 	ok := (et > 0 && et < Zhuangzu) || et == OtherEthn
 	return et, ok
 }
+func ToEthn(s string) (Ethn, bool) {
+	for ethn, name := range EthnNames {
+		if s == name || s+"族" == name {
+			return ethn, true
+		}
+	}
+	return 0, false
+}
+
 func (s Ethn) Uint8() uint8    { return uint8(s) }
 func (s Ethn) String() string  { return strconv.Itoa(int(s)) }
 func (s Ethn) Is(x uint8) bool { return s.Uint8() == x }

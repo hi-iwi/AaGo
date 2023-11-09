@@ -49,12 +49,8 @@ func reqSex(method func(string, ...bool) (uint8, *ae.Error), p string, xargs ...
 	if e != nil {
 		return 0, e
 	}
-
-	status, ok := aenum.NewSex(sts)
-	if !ok {
-		return 0, ae.BadParam(p)
-	}
-	return status, nil
+	
+	return aenum.NewSex(sts), nil
 }
 func (r *Req) QuerySex(p string, xargs ...bool) (aenum.Sex, *ae.Error) {
 	return reqSex(r.QueryUint8, p, xargs...)

@@ -14,28 +14,30 @@ const (
 	OtherSex Sex = 255
 )
 
-func NewSex(s interface{}) (Sex, bool) {
-	var ss string
-	switch v := s.(type) {
-	case string:
-		ss = strings.ToUpper(v)
-	case uint8:
-		ss = strconv.FormatUint(uint64(v), 10)
-	}
-
-	switch ss {
-	case "0", "U", "UNKNOWN":
-		return NilSex, true
-	case "1", "M", "MALE", "男":
-		return Male, true
-	case "2", "F", "FEMALE", "女":
-		return Female, true
-	case "255":
-		return OtherSex, true
-	}
-	return NilSex, false
+func SexValidator(s uint8) bool {
+	x := Sex(s)
+	return x == Male || x == Female || x == OtherSex
 }
-
+func NewSex(s uint8) Sex {
+	if ok := SexValidator(s); ok {
+		return Sex(s)
+	}
+	return NilSex
+}
+func ToSex(s string) Sex {
+	s = strings.ToUpper(s)
+	switch s {
+	case "0", "U", "UNKNOWN":
+		return NilSex
+	case "1", "M", "MALE", "男":
+		return Male
+	case "2", "F", "FEMALE", "女":
+		return Female
+	case "255":
+		return OtherSex
+	}
+	return NilSex
+}
 func (x Sex) Uint8() uint8   { return uint8(x) }
 func (x Sex) String() string { return strconv.FormatUint(uint64(x), 10) }
 func (x Sex) Is(x2 Sex) bool { return x == x2 }
