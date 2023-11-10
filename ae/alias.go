@@ -35,6 +35,8 @@ var (
 	NotImplemented      = &Error{501, "not implemented"} // 服务器不支持当前请求所需要的某个功能。当服务器无法识别请求的方法，并且无法支持其对任何资源的请求。
 
 	ServerException = &Error{503, "server exception"} // 客户端自定义，表示未知服务端错误；最常见的就是，没有正确返回数据，或者返回 {code:0,msg:""} 等未协商的数据，导致客户端无法正常处理
+
+	StatusException = &Error{555, "server status exception"} // http 状态码出错，未达到程序阶段
 )
 
 func RetryWith(redirect string) *Error {
