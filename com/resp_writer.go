@@ -245,20 +245,20 @@ func (resp *RespStruct) WriteJointId(args ...interface{}) error {
 }
 
 func (resp *RespStruct) WriteE(e *ae.Error) error {
-	if e != nil {
-		return resp.WriteSafeE(*e)
+	if e == nil {
+		return resp.WriteCode(200)
 	}
-	return resp.WriteCode(200)
-}
-
-func (resp *RespStruct) WriteSafeE(e ae.Error) error {
 	cs := RespContentDTO{
 		Code: e.Code,
 		Msg:  e.Msg,
 	}
 	return resp.write(cs)
 }
+
 func (resp *RespStruct) WriteError(err error) error {
+	if err == nil {
+		return resp.WriteCode(200)
+	}
 	cs := RespContentDTO{
 		Code: 500,
 		Msg:  err.Error(),

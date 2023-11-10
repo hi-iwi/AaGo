@@ -7,7 +7,7 @@ import (
 func (resp *RespStruct) CatchErrors(es ...*ae.Error) (bool, *ae.Error) {
 	for i := 0; i < len(es); i++ {
 		if es[i] != nil {
-			resp.WriteSafeE(*es[i])
+			resp.WriteE(es[i])
 			return true, es[i]
 		}
 	}
