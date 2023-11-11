@@ -131,6 +131,10 @@ func (t FileType) Name() string {
 		return "3g2"
 	case Aiff:
 		return "aiff"
+	case AudioWebm:
+		return "webm"
+	case AudioWav:
+		return "wav"
 	case Avi:
 		return "avi"
 	case Mov:
