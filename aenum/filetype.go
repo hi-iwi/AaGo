@@ -24,6 +24,8 @@ const (
 	X3pg       FileType = 1001
 	X3pg2      FileType = 1002
 	Aiff       FileType = 1003
+	AudioWebm  FileType = 1004
+	AudioWav   FileType = 1005
 	OtherAudio FileType = 1999
 
 	// 视频范围：2000-2999
@@ -58,7 +60,7 @@ func NewImageType(mime string) (FileType, bool) {
 
 func NewAudioType(mime string) (FileType, bool) {
 	switch mime {
-	case "mp3", ".mp3", "audio/mpeg":
+	case "mp3", ".mp3", "audio/mpeg", "audio/mp3":
 		return Mp3, true
 	case "3gp", ".3gp", "audio/3gpp":
 		return X3pg, true
@@ -66,6 +68,10 @@ func NewAudioType(mime string) (FileType, bool) {
 		return X3pg2, true
 	case "aiff", ".aiff", "aif", ".aif", "aifc", ".aifc", "audio/x-aiff":
 		return Aiff, true
+	case "wav", ".wav", "audio/wav":
+		return AudioWav, true
+	case "webm", ".webm", "audio/webm":
+		return AudioWebm, true
 	}
 	return OtherAudio, false
 }
