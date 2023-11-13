@@ -11,15 +11,18 @@ import (
 
 type Env string
 
-func (env Env) String() string      { return string(env) }
-func (env Env) IsLocal() bool       { return env == "local" || env == "loc" }
-func (env Env) IsDevelopment() bool { return env == "development" || env == "dev" }
-func (env Env) IsIntegration() bool { return env == "integration" }
-func (env Env) IsTesting() bool     { return env == "testing" || env == "test" || env == "qc" }
-func (env Env) IsPreProduction() bool {
-	return env == "pre-production" || env == "pre" || env == "demo"
-}
-func (env Env) IsProduction() bool { return env == "production" || env == "pro" || env == "live" }
+func (env Env) String() string          { return string(env) }
+func (env Env) IsLocal() bool           { return env == "local" }
+func (env Env) IsDevelopment() bool     { return env == "development" }
+func (env Env) IsTesting() bool         { return env == "testing" }
+func (env Env) IsStaging() bool         { return env == "staging" }
+func (env Env) IsProduction() bool      { return env == "production" }
+func (env Env) BeforeDevelopment() bool { return env.IsDevelopment() || env.IsLocal() }
+func (env Env) BeforeTesting() bool     { return env.IsTesting() || env.BeforeDevelopment() }
+func (env Env) BeforeStaging() bool     { return env.IsStaging() || env.BeforeTesting() }
+func (env Env) AfterStaging() bool      { return env.IsStaging() || env.IsProduction() }
+func (env Env) AfterTesting() bool      { return env.IsTesting() || env.AfterStaging() }
+func (env Env) AfterDevelopment() bool  { return env.IsDevelopment() || env.AfterTesting() }
 
 type Configuration struct {
 	/*
