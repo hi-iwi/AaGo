@@ -12,8 +12,8 @@ const (
 	NotExists  Status = -114 // 数据不存在 --> 一般用于初始化一个字段，不常用
 	Deleted    Status = -100 // 用户已删除，谁都不可见
 	/********************* <=-100  属于需要删除的内容，方便分区删除整个分区 ************************/
-	Deleting Status = -90 // 删除中；冷静期后，才进入 Deleted
-
+	Supervised  Status = -90 // 系统检测到异常，自动锁定帐户。等待异常解除。
+	Deleting    Status = -89 // 删除中；冷静期后，才进入 Deleted
 	Suspend     Status = -80 // 暂停/暂时隐藏，由用户设置
 	Failed      Status = -20 // censor failed 审核失败，让用户可以修改，仅用户可见  --> 无论之前设置什么，这里统一一个失败状态，修改的时候再设置
 	Pending     Status = -10 // 审核中，用户保留修改权，可以重新提交审核

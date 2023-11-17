@@ -15,7 +15,7 @@ import (
 type SmallMoney uint // 统一转换为 Money 后使用
 type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
 
-type Coin Money // 1 coin = 1 money
+type Coin Money // 1 coin = 1 money    如 chatgpt 等消耗，单次消耗低于0.1分，因此需要更大的 coin比例
 
 const (
 	Cent    Money = 100           // 分
