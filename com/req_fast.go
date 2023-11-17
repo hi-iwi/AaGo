@@ -378,7 +378,7 @@ func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
 	if e != nil {
 		return "", e
 	}
-	if strings.IndexByte(s, ' ') > -1 || strings.IndexByte(s, '?') > -1 || strings.IndexByte(s, '=') > -1 {
+	if strings.LastIndexByte(s, '.') < 0 || strings.IndexByte(s, ' ') > -1 || strings.IndexByte(s, '?') > -1 || strings.IndexByte(s, '=') > -1 {
 		return "", ae.BadParam(p)
 	}
 
@@ -386,10 +386,22 @@ func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
 }
 func (r *Req) BodyAudio(p string, required ...bool) (atype.Audio, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
+	if e != nil {
+		return "", e
+	}
+	if strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1 {
+		return "", ae.BadParam(p)
+	}
 	return atype.NewAudio(x, true), e
 }
 func (r *Req) BodyVideo(p string, required ...bool) (atype.Video, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
+	if e != nil {
+		return "", e
+	}
+	if strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1 {
+		return "", ae.BadParam(p)
+	}
 	return atype.NewVideo(x, true), e
 }
 func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) {
@@ -399,7 +411,7 @@ func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) 
 	}
 	imgs := make([]atype.Image, len(x))
 	for i, s := range x {
-		if strings.IndexByte(s, ' ') > -1 || strings.IndexByte(s, '?') > -1 || strings.IndexByte(s, '=') > -1 {
+		if strings.LastIndexByte(s, '.') < 0 || strings.IndexByte(s, ' ') > -1 || strings.IndexByte(s, '?') > -1 || strings.IndexByte(s, '=') > -1 {
 			return nil, ae.BadParam(p)
 		}
 		imgs[i] = atype.NewImage(s, true)

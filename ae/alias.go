@@ -4,6 +4,9 @@ package ae
 自定义的：444 NoRows； 503
 */
 var (
+	// @warn 自定义。444 空数组返回这个错误，表示不可以再进行下一页查询了
+	// 若是 code:204, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
+	NoContent       = &Error{204, "no content"}
 	Unauthorized    = &Error{401, "unauthorized"}
 	PaymentRequired = &Error{402, "payment required"}
 	//403 Forbidden
@@ -20,8 +23,8 @@ var (
 	Gone         = &Error{410, "gone"}                   // 以前存在过，以后都不会再存在了，表示数据已经删除、过期、失效
 	BadMediaType = &Error{415, "unsupported media type"} // 上传的数据格式非法
 
-	// @warn 自定义。空数组返回这个错误，表示不可以再进行下一页查询了
-	// 若是 code:200, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
+	// @warn 自定义。444 空数组返回这个错误，表示不可以再进行下一页查询了
+	// 若是 code:204, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
 	NoRows = &Error{444, "no rows"}
 
 	//RetryWith = &Error{449, "locked"}
