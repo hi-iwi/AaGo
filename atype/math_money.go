@@ -40,8 +40,8 @@ func (c Coin) Offset(rate Rate) Money { return Money(c).MulRateFloor(rate) }
 func (c Coin) Off() Money             { return Money(c) }
 
 // 用于使用计算
-func (c Coin) Calc() Money     { return Money(c) }
-func (a Money) CalcCoin() Coin { return Coin(a) }
+func (c Coin) StartCalc() Money { return Money(c) }
+func (a Money) EndCalc() Coin   { return Coin(a) }
 
 // @param ratio 汇率
 func (a Money) ExchangeCoin(rate Rate) Coin { return Coin(a.MulRateFloor(rate)) }
