@@ -374,22 +374,22 @@ func (r *Req) QueryPaging(args ...uint) atype.Paging {
 	return atype.NewPaging(page, args...)
 }
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
-	s, e := r.BodyString(p, len(required) == 0 || required[0])
+	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	if e != nil {
 		return "", e
 	}
-	if strings.LastIndexByte(s, '.') < 0 || strings.IndexByte(s, ' ') > -1 || strings.IndexByte(s, '?') > -1 || strings.IndexByte(s, '=') > -1 {
+	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
 		return "", ae.BadParam(p)
 	}
 
-	return atype.NewImage(s, true), nil
+	return atype.NewImage(x, true), nil
 }
 func (r *Req) BodyAudio(p string, required ...bool) (atype.Audio, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	if e != nil {
 		return "", e
 	}
-	if strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1 {
+	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
 		return "", ae.BadParam(p)
 	}
 	return atype.NewAudio(x, true), e
@@ -399,22 +399,22 @@ func (r *Req) BodyVideo(p string, required ...bool) (atype.Video, *ae.Error) {
 	if e != nil {
 		return "", e
 	}
-	if strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1 {
+	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
 		return "", ae.BadParam(p)
 	}
 	return atype.NewVideo(x, true), e
 }
 func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) {
-	x, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
-	if e != nil || len(x) == 0 {
+	xx, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
+	if e != nil || len(xx) == 0 {
 		return nil, e
 	}
-	imgs := make([]atype.Image, len(x))
-	for i, s := range x {
-		if strings.LastIndexByte(s, '.') < 0 || strings.IndexByte(s, ' ') > -1 || strings.IndexByte(s, '?') > -1 || strings.IndexByte(s, '=') > -1 {
+	imgs := make([]atype.Image, len(xx))
+	for i, x := range xx {
+		if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
 			return nil, ae.BadParam(p)
 		}
-		imgs[i] = atype.NewImage(s, true)
+		imgs[i] = atype.NewImage(x, true)
 	}
 	return imgs, e
 }

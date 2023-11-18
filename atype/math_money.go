@@ -34,6 +34,11 @@ const (
 	UnitCoin = Coin(Yuan)
 )
 
+// 金币抵扣商品
+//  .Off()  ==  .Offset(100*Percent)
+func (c Coin) Off() Money             { return Money(c) }
+func (c Coin) Offset(rate Rate) Money { return Money(c).MulRateFloor(rate) }
+
 // @param ratio 汇率
 func (a Money) ExchangeCoin(rate Rate) Coin { return Coin(a.MulRateFloor(rate)) }
 
