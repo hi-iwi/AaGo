@@ -31,7 +31,7 @@ const (
 	MinMoney = -100 * YiYuan // -100亿
 	MaxMoney = 100 * YiYuan  // 100亿
 
-	UnitCoin = Coin(Yuan)
+	YuanCoin = Coin(Yuan)
 )
 
 // 金币抵扣商品
