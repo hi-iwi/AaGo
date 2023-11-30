@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-type ObjScan interface {
-	Scan(value interface{}) error
-}
+type NullUint64 sql.NullInt64
+type NullString sql.NullString
+
 type Location struct {
 	Valid     bool    `json:"-"`
 	Latitude  float64 `json:"lat"`
@@ -82,6 +82,40 @@ const (
 	MinDatetime Datetime = "0000-00-00 00:00:00"
 	MaxDatetime Datetime = "9999-12-31 23:59:59"
 )
+
+func NewNullUint64(value uint64) NullUint64 {
+	var v sql.NullInt64
+	if value > 0 {
+		v.Scan(value)
+	}
+	return NullUint64(v)
+}
+func (t NullUint64) Uint64() uint64 {
+	if !t.Valid {
+		return 0
+	}
+	return uint64(t.Int64)
+}
+func (t NullUint64) Equal(b uint64) bool {
+	if !t.Valid {
+		return false
+	}
+	return t.Uint64() == b
+}
+func NewNullString(value uint64) NullString {
+	var v sql.NullString
+	if value > 0 {
+		v.Scan(value)
+	}
+	return NullString(v)
+}
+
+func (t NullString) Equal(b string) bool {
+	if !t.Valid {
+		return false
+	}
+	return t.String == b
+}
 
 func delimiter(delimiters ...string) string {
 	if len(delimiters) == 0 || delimiters[0] == "" {

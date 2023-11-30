@@ -77,9 +77,6 @@ func (c *Cond) LimitN() uint {
 	if c.limit > 0 {
 		return c.limit
 	}
-	if c.offset == 0 {
-		return 20
-	}
 	return 10
 }
 
