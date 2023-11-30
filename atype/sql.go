@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-type NullUint64 sql.NullInt64
-type NullString sql.NullString
+type NullUint64 struct{ sql.NullInt64 }
+type NullString struct{ sql.NullString }
 
 type Location struct {
 	Valid     bool    `json:"-"`
@@ -84,11 +84,11 @@ const (
 )
 
 func NewNullUint64(value uint64) NullUint64 {
-	var v sql.NullInt64
+	var v NullUint64
 	if value > 0 {
 		v.Scan(value)
 	}
-	return NullUint64(v)
+	return v
 }
 func (t NullUint64) Uint64() uint64 {
 	if !t.Valid {
@@ -103,11 +103,11 @@ func (t NullUint64) Equal(b uint64) bool {
 	return t.Uint64() == b
 }
 func NewNullString(value uint64) NullString {
-	var v sql.NullString
+	var v NullString
 	if value > 0 {
 		v.Scan(value)
 	}
-	return NullString(v)
+	return v
 }
 
 func (t NullString) Equal(b string) bool {
