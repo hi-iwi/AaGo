@@ -18,6 +18,9 @@ type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
 type Coin Money // 1 coin = 1 money    如 chatgpt 等消耗，单次消耗低于0.1分，因此需要更大的 coin比例
 
 const (
+	// 1 元 = 100 分 = 1000 毫 = 10000 money
+	// 10 律币 = 100 律分 = 1000 律厘  = 1000 律毫 = 10000 coin
+
 	Cent    Money = 100           // 分
 	Dime          = 10 * Cent     // 角
 	Yuan          = 10 * Dime     // 元
@@ -31,7 +34,10 @@ const (
 	MinMoney = -100 * YiYuan // -100亿
 	MaxMoney = 100 * YiYuan  // 100亿
 
-	YuanCoin = Coin(Yuan)
+	CentCoin = Coin(Cent) // 1 律分
+	DimeCoin = Coin(Dime) // 1 律币(角)
+	YuanCoin = Coin(Yuan) // 1 律元
+
 )
 
 // 金币抵扣商品

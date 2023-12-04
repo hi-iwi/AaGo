@@ -100,15 +100,15 @@ func (r *Req) QueryString(p string, params ...interface{}) (string, *ae.Error) {
 	x, e := r.Query(p, params...)
 	return x.String(), e
 }
-func (r *Req) QueryBool(p string, required ...interface{}) (bool, *ae.Error) {
-	x, e := r.Query(p, required...)
+func (r *Req) QueryBool(p string) (bool, *ae.Error) {
+	x, e := r.Query(p, false)
 	if e != nil {
 		return false, e
 	}
 	return x.DefaultBool(false), nil
 }
-func (r *Req) QueryBooln(p string, required ...interface{}) (atype.Booln, *ae.Error) {
-	b, e := r.QueryBool(p, required...)
+func (r *Req) QueryBooln(p string) (atype.Booln, *ae.Error) {
+	b, e := r.QueryBool(p)
 	if e != nil {
 		return 0, e
 	}
@@ -229,15 +229,15 @@ func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Er
 	x, e := r.Body(p, required...)
 	return template.HTML(x.String()), e
 }
-func (r *Req) BodyBool(p string, required ...interface{}) (bool, *ae.Error) {
-	x, e := r.Body(p, required...)
+func (r *Req) BodyBool(p string) (bool, *ae.Error) {
+	x, e := r.Body(p, false)
 	if e != nil {
 		return false, e
 	}
 	return x.DefaultBool(false), e
 }
-func (r *Req) BodyBooln(p string, required ...interface{}) (atype.Booln, *ae.Error) {
-	b, e := r.BodyBool(p, required...)
+func (r *Req) BodyBooln(p string) (atype.Booln, *ae.Error) {
+	b, e := r.BodyBool(p)
 	if e != nil {
 		return 0, e
 	}

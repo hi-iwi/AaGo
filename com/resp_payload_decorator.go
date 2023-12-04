@@ -8,7 +8,7 @@ import (
 
 // ?_stringify=1  weak language, turn int64/uint64 fields into string
 func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
-	stringify, _ := resp.req.QueryBool(ParamStringify, false)
+	stringify, _ := resp.req.QueryBool(ParamStringify)
 	if stringify {
 		return StringifyPayloadFields(payload, tagname)
 	}
