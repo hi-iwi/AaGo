@@ -9,6 +9,10 @@
 * aservice 可以调用 rservice, 所有 model/entity
 * mservice 可以调用 rservice, aservice, 所有 model/entity
 * sdk 临时mservice之间调用，未来方便修改成RPC调用
+* cns.Service 可以调用 ss.Service/bs.Service
+* cns.Model 可以调用 ss.Model/bs.Model
+* ss.Service 可以调用 bs.Service
+* ss.Model 可以调用 bs.Model
 
 > service 是不能调用 DTO 的，只有 controller 可以调用
 > aservice, service, 都是 service，只是调用关系不同。 与 iris, model 关系紧密的，优先用 aservice；否则尽量用 service

@@ -56,9 +56,9 @@ func (a Money) ExchangeCoin(rate Rate) Coin { return Coin(a.MulRateFloor(rate)) 
 func (a Money) MulRate(p Rate) Money            { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
 func (a Money) MulRateCeil(p Rate) Money        { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
 func (a Money) MulRateFloor(p Rate) Money       { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
-func (a Money) MulPercent(p float64) Money      { return a.MulRate(ToPercent(p)) }
-func (a Money) MulPercentCeil(p float64) Money  { return a.MulRateCeil(ToPercent(p)) }
-func (a Money) MulPercentFloor(p float64) Money { return a.MulRateFloor(ToPercent(p)) }
+func (a Money) MulPercent(p float32) Money      { return a.MulRate(ToPercent(p)) }
+func (a Money) MulPercentCeil(p float32) Money  { return a.MulRateCeil(ToPercent(p)) }
+func (a Money) MulPercentFloor(p float32) Money { return a.MulRateFloor(ToPercent(p)) }
 
 func NewSmallMoney(n uint) SmallMoney  { return SmallMoney(n) }
 func (a SmallMoney) Money() Money      { return Money(a) }

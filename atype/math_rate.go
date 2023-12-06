@@ -9,30 +9,30 @@ type Rate int     // 范围： -21474836.48% - 21474836.47%
 const (
 	Thousandth     Rate = 10              // 千分比
 	Percent             = 10 * Thousandth // 百分比
-	PercentFloat64      = 100.0
+	PercentFloat32      = float32(100.0)
 	DecimalAug          = 10000.0 // 小数转百分比扩大100倍
 
 )
 
-// @param n 本身就是转换后的值，如10000，即表示为 100*PercentFloat64，即 100%
+// @param n 本身就是转换后的值，如10000，即表示为 100*PercentFloat32，即 100%
 func NewRate(n int) Rate { return Rate(n) }
 
 // ToPercent(80.01) 表示 80.01%
 // 若是整数，则直接使用  80*Percent 即可
-func ToPercent(n float64) Rate { return NewRate(int(n * PercentFloat64)) }
+func ToPercent(n float32) Rate { return NewRate(int(n * PercentFloat32)) }
 
 // 范围： -327.68% ~ 32767%  即 -3.2768 ~ +3.2767
 func (p Rate) Int() int         { return int(p) }
-func (p Rate) Percent() float64 { return float64(p) / PercentFloat64 }
-func (p Rate) Decimal() float64 { return float64(p) / DecimalAug }
+func (p Rate) Percent() float32 { return float32(p) / PercentFloat32 }
+func (p Rate) Float32() float32 { return float32(p) / DecimalAug }
 func (p Rate) Mul(d int) int    { return d * int(p) }
-func (p Rate) Fmt() string      { return strconv.FormatFloat(p.Percent(), 'f', -1, 32) }
+func (p Rate) Fmt() string      { return strconv.FormatFloat(float64(p.Percent()), 'f', -1, 32) }
 func (p Rate) FmtAbs() string {
 	c := p.Percent()
 	if c < 0 {
 		c = -c
 	}
-	return strconv.FormatFloat(c, 'f', -1, 32)
+	return strconv.FormatFloat(float64(c), 'f', -1, 32)
 }
 
 func NewRate16(n int16) Rate16 { return Rate16(n) }
