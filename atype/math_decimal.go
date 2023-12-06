@@ -35,7 +35,7 @@ func (p Decimal64) Scale() uint16 { return uint16(int64(math.Abs(float64(p))) % 
 
 // 类型：  1,000,000 这种
 func (p Decimal64) FmtPrecision(n int, delimiter string) string {
-	s := strconv.FormatInt(int64(p), 10)
+	s := strconv.FormatInt(p.Precision(), 10)
 	return fmtPrecision(s, n, delimiter)
 }
 func (p Decimal64) FmtScale(decimals ...uint16) string {

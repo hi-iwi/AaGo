@@ -83,7 +83,7 @@ func (a Money) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int6
 
 // 类型：  1,000,000 这种
 func (a Money) FmtPrecision(n int, delimiter string) string {
-	s := strconv.FormatInt(int64(a), 10)
+	s := strconv.FormatInt(a.Precision(), 10)
 	return fmtPrecision(s, n, delimiter)
 }
 func (a Money) FmtScale(decimals ...uint16) string {
