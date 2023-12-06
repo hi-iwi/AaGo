@@ -19,28 +19,25 @@ const (
 	PercentRate               = float32(100.0)
 )
 
-func NewDecimal64(n int) Decimal64         { return Decimal64(n) }
-func ToDecimal64(n float64) Decimal64      { return Decimal64(n * DecimalAug) }
-func (p Decimal64) Int() int               { return int(p) }
-func (p Decimal64) Percentage() Percentage { return Percentage(p) }
-func (p Decimal64) Value() float64         { return float64(p) / DecimalAug }
+func NewDecimal64(n int) Decimal64    { return Decimal64(n) }
+func ToDecimal64(n float64) Decimal64 { return Decimal64(n * DecimalAug) }
+func (p Decimal64) Int() int          { return int(p) }
+func (p Decimal64) Decimal() float64  { return float64(p) / DecimalAug }
 
-func NewDecimal(n int) Decimal           { return Decimal(n) }
-func ToDecimal(n float64) Decimal        { return Decimal(n * DecimalAug) }
-func (p Decimal) Int() int               { return int(p) }
-func (p Decimal) Percentage() Percentage { return Percentage(p) }
-func (p Decimal) Value() float64         { return float64(p) / DecimalAug }
+func NewDecimal(n int) Decimal     { return Decimal(n) }
+func ToDecimal(n float64) Decimal  { return Decimal(n * DecimalAug) }
+func (p Decimal) Int() int         { return int(p) }
+func (p Decimal) Decimal() float64 { return float64(p) / DecimalAug }
 
-func NewDecimal16(n int16) Decimal16       { return Decimal16(n) }
-func ToDecimal16(n float32) Decimal16      { return Decimal16(n * DecimalAug) }
-func (p Decimal16) Int16() int16           { return int16(p) }
-func (p Decimal16) Percentage() Percentage { return Percentage(p) }
-func (p Decimal16) Value() float32         { return float32(p) / DecimalAug }
-func NewDecimal24(n int32) Decimal24       { return Decimal24(n) }
-func ToDecimal24(n float32) Decimal24      { return Decimal24(n * DecimalAug) }
-func (p Decimal24) Int32() int32           { return int32(p) }
-func (p Decimal24) Percentage() Percentage { return Percentage(p) }
-func (p Decimal24) Value() float32         { return float32(p) / DecimalAug }
+func NewDecimal16(n int16) Decimal16  { return Decimal16(n) }
+func ToDecimal16(n float32) Decimal16 { return Decimal16(n * DecimalAug) }
+func (p Decimal16) Int16() int16      { return int16(p) }
+func (p Decimal16) Decimal() float32  { return float32(p) / DecimalAug }
+
+func NewDecimal24(n int32) Decimal24  { return Decimal24(n) }
+func ToDecimal24(n float32) Decimal24 { return Decimal24(n * DecimalAug) }
+func (p Decimal24) Int32() int32      { return int32(p) }
+func (p Decimal24) Decimal() float32  { return float32(p) / DecimalAug }
 
 func NewPercentage(n int) Percentage { return Percentage(n) }
 func ConvertPercent(n float32) Percentage {
