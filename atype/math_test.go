@@ -23,8 +23,8 @@ func TestMoney(t *testing.T) {
 	if m.Format() != "188.80" {
 		t.Errorf("atype.ToMoney(1888000).FmtPercent() : %s != 188.80", m.Format())
 	}
-	p := atype.ToPercent(0.7)
-	s := atype.ToMoney(2360).MulRate(p).Fmt()
+	p := 7 * atype.Thousandth
+	s := atype.ToMoney(2360).MulDecimal(p.Decimal()).Fmt()
 	if s != "16.52" {
 		t.Errorf("2360*0.7%% : %s != 16.52", s)
 	}

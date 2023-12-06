@@ -42,23 +42,29 @@ const (
 
 // 金币抵扣商品
 //  .Off()  ==  .Offset(100*Percent)
-func (c Coin) Offset(rate Rate) Money { return Money(c).MulRateFloor(rate) }
-func (c Coin) Off() Money             { return Money(c) }
+func (c Coin) Offset(rate Decimal) Money { return Money(c).MulDecimalFloor(rate) }
+func (c Coin) Off() Money                { return Money(c) }
 
 // 用于使用计算
 func (c Coin) StartCalc() Money { return Money(c) }
 func (a Money) EndCalc() Coin   { return Coin(a) }
 
 // @param ratio 汇率
-func (a Money) ExchangeCoin(rate Rate) Coin { return Coin(a.MulRateFloor(rate)) }
+func (a Money) ExchangeCoin(rate Decimal) Coin { return Coin(a.MulDecimalFloor(rate)) }
 
 // 采用四舍五入
-func (a Money) MulRate(p Rate) Money            { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
-func (a Money) MulRateCeil(p Rate) Money        { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
-func (a Money) MulRateFloor(p Rate) Money       { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
-func (a Money) MulPercent(p float32) Money      { return a.MulRate(ToPercent(p)) }
-func (a Money) MulPercentCeil(p float32) Money  { return a.MulRateCeil(ToPercent(p)) }
-func (a Money) MulPercentFloor(p float32) Money { return a.MulRateFloor(ToPercent(p)) }
+func (a Money) MulDecimal(p Decimal) Money      { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
+func (a Money) MulDecimalCeil(p Decimal) Money  { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
+func (a Money) MulDecimalFloor(p Decimal) Money { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
+func (a Money) MulPercent(p float32) Money {
+	return a.Mul(int64(ConvertPercent(p))).Div(int64(DecimalAug))
+}
+func (a Money) MulPercentCeil(p float32) Money {
+	return a.Mul(int64(ConvertPercent(p))).DivCeil(int64(DecimalAug))
+}
+func (a Money) MulPercentFloor(p float32) Money {
+	return a.Mul(int64(ConvertPercent(p))).DivFloor(int64(DecimalAug))
+}
 
 func NewSmallMoney(n uint) SmallMoney  { return SmallMoney(n) }
 func (a SmallMoney) Money() Money      { return Money(a) }
@@ -259,12 +265,12 @@ func (a Money) DivCeil(n int64) Money {
 }
 
 // 四舍五入
-func (a Money) Of(b Money) Rate {
-	return NewRate(int(a.Mul(int64(DecimalAug)).Div(b.Int64())))
+func (a Money) Of(b Money) Decimal {
+	return NewDecimal(int(a.Mul(int64(DecimalAug)).Div(b.Int64())))
 }
-func (a Money) OfFloor(b Money) Rate {
-	return NewRate(int(a.Mul(int64(DecimalAug)).DivFloor(b.Int64())))
+func (a Money) OfFloor(b Money) Decimal {
+	return NewDecimal(int(a.Mul(int64(DecimalAug)).DivFloor(b.Int64())))
 }
-func (a Money) OfCeil(b Money) Rate {
-	return NewRate(int(a.Mul(int64(DecimalAug)).DivCeil(b.Int64())))
+func (a Money) OfCeil(b Money) Decimal {
+	return NewDecimal(int(a.Mul(int64(DecimalAug)).DivCeil(b.Int64())))
 }

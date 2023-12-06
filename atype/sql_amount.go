@@ -8,7 +8,7 @@ import (
 type SepPercents string
 type SepMoneys string
 
-func ToSepPercents(elems []Rate) SepPercents {
+func ToSepPercents(elems []Decimal) SepPercents {
 	// strings.Concat 类同
 	switch len(elems) {
 	case 0:
@@ -29,16 +29,16 @@ func ToSepPercents(elems []Rate) SepPercents {
 	return SepPercents(b.String())
 }
 
-func (t SepPercents) Percents() []Rate {
+func (t SepPercents) Percents() []Decimal {
 	if t == "" {
 		return nil
 	}
 	arr := strings.Split(string(t), ",")
-	v := make([]Rate, len(arr))
+	v := make([]Decimal, len(arr))
 	for i, a := range arr {
 		p, err := strconv.ParseInt(a, 10, 32)
 		if err == nil {
-			v[i] = NewRate(int(p))
+			v[i] = NewDecimal(int(p))
 		}
 	}
 	return v

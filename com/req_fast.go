@@ -187,18 +187,18 @@ func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
 	return atype.Money(x.DefaultInt64(0)), e
 }
-func (r *Req) QueryRate16(p string, required ...bool) (atype.Rate16, *ae.Error) {
+func (r *Req) QueryRate16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewRate16(x.DefaultInt16(0)), e
+	return atype.NewDecimal16(x.DefaultInt16(0)), e
 }
-func (r *Req) QueryRate24(p string, required ...bool) (atype.Rate24, *ae.Error) {
+func (r *Req) QueryRate24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewRate24(x.DefaultInt32(0)), e
+	return atype.NewDecimal24(x.DefaultInt32(0)), e
 }
 
-func (r *Req) QueryRate(p string, required ...bool) (atype.Rate, *ae.Error) {
+func (r *Req) QueryRate(p string, required ...bool) (atype.Decimal, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewRate(x.DefaultInt(0)), e
+	return atype.NewDecimal(x.DefaultInt(0)), e
 }
 
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
@@ -319,17 +319,17 @@ func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.Money(x.DefaultInt64(0)), e
 }
-func (r *Req) BodyRate16(p string, required ...bool) (atype.Rate16, *ae.Error) {
+func (r *Req) BodyRate16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewRate16(x.DefaultInt16(0)), e
+	return atype.NewDecimal16(x.DefaultInt16(0)), e
 }
-func (r *Req) BodyRate24(p string, required ...bool) (atype.Rate24, *ae.Error) {
+func (r *Req) BodyRate24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewRate24(x.DefaultInt32(0)), e
+	return atype.NewDecimal24(x.DefaultInt32(0)), e
 }
-func (r *Req) BodyRate(p string, required ...bool) (atype.Rate, *ae.Error) {
+func (r *Req) BodyRate(p string, required ...bool) (atype.Decimal, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewRate(x.DefaultInt(0)), e
+	return atype.NewDecimal(x.DefaultInt(0)), e
 }
 
 func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {

@@ -24,9 +24,9 @@ func S2Distri(s string, base int) Distri {
 	n, _ := strconv.ParseInt(s, base, 24)
 	return Distri(n)
 }
-func S2Percent(s string, base int) Rate {
+func S2Percent(s string, base int) Decimal {
 	n, _ := strconv.ParseUint(s, base, 16)
-	return Rate(n)
+	return Decimal(n)
 }
 
 func S2Money(s string, base int) Money {
