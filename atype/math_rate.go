@@ -22,12 +22,12 @@ func NewRate(n int) Rate { return Rate(n) }
 func ToPercent(n float32) Rate { return NewRate(int(n * PercentFloat32)) }
 
 // 范围： -327.68% ~ 32767%  即 -3.2768 ~ +3.2767
-func (p Rate) Int() int         { return int(p) }
-func (p Rate) Percent() float32 { return float32(p) / PercentFloat32 }
-func (p Rate) Float32() float32 { return float32(p) / DecimalAug }
-func (p Rate) Mul(d int) int    { return d * int(p) }
-func (p Rate) Fmt() string      { return strconv.FormatFloat(float64(p.Percent()), 'f', -1, 32) }
-func (p Rate) FmtAbs() string {
+func (p Rate) Int() int           { return int(p) }
+func (p Rate) Percent() float32   { return float32(p) / PercentFloat32 }
+func (p Rate) Float32() float32   { return float32(p) / DecimalAug }
+func (p Rate) Mul(d int) int      { return d * int(p) }
+func (p Rate) FmtPercent() string { return strconv.FormatFloat(float64(p.Percent()), 'f', -1, 32) }
+func (p Rate) FmtPercentAbs() string {
 	c := p.Percent()
 	if c < 0 {
 		c = -c

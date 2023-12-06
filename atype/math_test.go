@@ -18,10 +18,10 @@ func TestPercent(t *testing.T) {
 func TestMoney(t *testing.T) {
 	m := atype.ToMoney(188.8)
 	if m.Fmt() != "188.8" {
-		t.Errorf("atype.ToMoney(1888000).Fmt() : %s != 188.8", m.Fmt())
+		t.Errorf("atype.ToMoney(1888000).FmtPercent() : %s != 188.8", m.Fmt())
 	}
 	if m.Format() != "188.80" {
-		t.Errorf("atype.ToMoney(1888000).Fmt() : %s != 188.80", m.Format())
+		t.Errorf("atype.ToMoney(1888000).FmtPercent() : %s != 188.80", m.Format())
 	}
 	p := atype.ToPercent(0.7)
 	s := atype.ToMoney(2360).MulRate(p).Fmt()
@@ -53,22 +53,22 @@ func TestMoney(t *testing.T) {
 	b = atype.NewMoney(-234242342340503)
 
 	if b.Fmt(0) != "-23424234234" {
-		t.Errorf("money (%d).Fmt(0) ==> string(%s)", b, b.Fmt(0))
+		t.Errorf("money (%d).FmtPercent(0) ==> string(%s)", b, b.Fmt(0))
 	}
 	if b.Fmt(1) != "-23424234234" {
-		t.Errorf("money (%d).Fmt(1) ==> string(%s)", b, b.Fmt(1))
+		t.Errorf("money (%d).FmtPercent(1) ==> string(%s)", b, b.Fmt(1))
 	}
 	if b.Fmt(2) != "-23424234234.05" {
-		t.Errorf("money (%d).Fmt(2) ==> string(%s)", b, b.Fmt(2))
+		t.Errorf("money (%d).FmtPercent(2) ==> string(%s)", b, b.Fmt(2))
 	}
 	if b.Fmt(3) != "-23424234234.05" {
-		t.Errorf("money (%d).Fmt(3) ==> string(%s)", b, b.Fmt(3))
+		t.Errorf("money (%d).FmtPercent(3) ==> string(%s)", b, b.Fmt(3))
 	}
 	if b.Fmt(4) != "-23424234234.0503" {
-		t.Errorf("money (%d).Fmt(4) ==> string(%s)", b, b.Fmt(4))
+		t.Errorf("money (%d).FmtPercent(4) ==> string(%s)", b, b.Fmt(4))
 	}
 	if b.Fmt(10) != "-23424234234.0503" {
-		t.Errorf("money (%d).Fmt(10) ==> string(%s)", b, b.Fmt(4))
+		t.Errorf("money (%d).FmtPercent(10) ==> string(%s)", b, b.Fmt(4))
 	}
 
 }
