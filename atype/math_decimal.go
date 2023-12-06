@@ -22,7 +22,7 @@ const (
 	PercentRate               = float32(100.0)
 )
 
-func NewDecimal64(n int) Decimal64    { return Decimal64(n) }
+func NewDecimal64(n int64) Decimal64  { return Decimal64(n) }
 func ToDecimal64(n float64) Decimal64 { return Decimal64(n * DecimalAug) }
 func (p Decimal64) Int() int          { return int(p) }
 func (p Decimal64) Decimal() float64  { return float64(p) / DecimalAug }

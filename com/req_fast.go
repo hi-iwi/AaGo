@@ -5,7 +5,6 @@ import (
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
 	"html/template"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -96,126 +95,11 @@ func (r *Req) QueryDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.
 func (r *Req) BodyDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	return reqDigit(r.Body, p, positive, xargs...)
 }
+
 func (r *Req) QueryString(p string, params ...interface{}) (string, *ae.Error) {
 	x, e := r.Query(p, params...)
 	return x.String(), e
 }
-func (r *Req) QueryBool(p string) (bool, *ae.Error) {
-	x, e := r.Query(p, false)
-	if e != nil {
-		return false, e
-	}
-	return x.DefaultBool(false), nil
-}
-func (r *Req) QueryBooln(p string) (atype.Booln, *ae.Error) {
-	b, e := r.QueryBool(p)
-	if e != nil {
-		return 0, e
-	}
-	return atype.ToBooln(b), nil
-}
-
-// 允许0  --> 直接用  x.Int8() 就可以了
-func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return x.DefaultInt8(0), e
-}
-func (r *Req) QueryInt16(p string, required ...bool) (int16, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return x.DefaultInt16(0), e
-}
-func (r *Req) QueryInt32(p string, required ...bool) (int32, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return x.DefaultInt32(0), e
-}
-func (r *Req) QueryInt(p string, required ...bool) (int, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return x.DefaultInt(0), e
-}
-func (r *Req) QueryInt64(p string, required ...bool) (int64, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return x.DefaultInt64(0), e
-}
-func (r *Req) QueryUint8(p string, required ...bool) (uint8, *ae.Error) {
-	x, e := r.QueryDigit(p, true, required...)
-	return x.DefaultUint8(0), e
-}
-func (r *Req) QueryUint16(p string, required ...bool) (uint16, *ae.Error) {
-	x, e := r.QueryDigit(p, true, required...)
-	return x.DefaultUint16(0), e
-}
-func (r *Req) QueryUint24(p string, required ...bool) (atype.Uint24, *ae.Error) {
-	x, e := r.QueryDigit(p, true, required...)
-	return x.DefaultUint24(0), e
-}
-func (r *Req) QueryUint32(p string, required ...bool) (uint32, *ae.Error) {
-	x, e := r.QueryDigit(p, true, required...)
-	return x.DefaultUint32(0), e
-}
-func (r *Req) QueryUint(p string, required ...bool) (uint, *ae.Error) {
-	x, e := r.QueryDigit(p, true, required...)
-	return x.DefaultUint(0), e
-}
-func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
-	x, e := r.QueryDigit(p, true, required...)
-	return x.DefaultUint64(0), e
-}
-func (r *Req) QueryProvince(p string, required ...bool) (atype.Province, *ae.Error) {
-	distri, e := r.QueryDistri(p, required...)
-	if e != nil {
-		return 0, e
-	}
-	return distri.Province(), nil
-}
-func (r *Req) QueryDist(p string, required ...bool) (atype.Dist, *ae.Error) {
-	distri, e := r.QueryDistri(p, required...)
-	if e != nil {
-		return 0, e
-	}
-	return distri.Dist(), nil
-}
-func (r *Req) QueryDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDistri(x.DefaultUint24(0)), e
-}
-
-func (r *Req) QuerySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.SmallMoney(x.DefaultUint(0)), e
-}
-func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Money(x.DefaultInt64(0)), e
-}
-func (r *Req) QueryRate16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal16(x.DefaultInt16(0)), e
-}
-func (r *Req) QueryRate24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal24(x.DefaultInt32(0)), e
-}
-
-func (r *Req) QueryRate(p string, required ...bool) (atype.Decimal, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal(x.DefaultInt(0)), e
-}
-
-func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
-	x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])
-	if e != nil {
-		return "", ae.NewError(400, "invalid date ("+p+"): "+x.String())
-	}
-	return atype.NewDate(x.String(), loc), nil
-}
-func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
-	x, e := r.Query(p, `^`+aenum.DatetimeRegExp+`$`, len(required) == 0 || required[0])
-	if e != nil {
-		return "", ae.NewError(400, "invalid datetime ("+p+"): "+x.String())
-	}
-	return atype.NewDatetime(x.String(), loc), nil
-}
-
 func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) {
 	x, e := r.Body(p, required...)
 	return x.String(), e
@@ -229,12 +113,28 @@ func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Er
 	x, e := r.Body(p, required...)
 	return template.HTML(x.String()), e
 }
+
+func (r *Req) QueryBool(p string) (bool, *ae.Error) {
+	x, e := r.Query(p, false)
+	if e != nil {
+		return false, e
+	}
+	return x.DefaultBool(false), nil
+}
+
 func (r *Req) BodyBool(p string) (bool, *ae.Error) {
 	x, e := r.Body(p, false)
 	if e != nil {
 		return false, e
 	}
 	return x.DefaultBool(false), e
+}
+func (r *Req) QueryBooln(p string) (atype.Booln, *ae.Error) {
+	b, e := r.QueryBool(p)
+	if e != nil {
+		return 0, e
+	}
+	return atype.ToBooln(b), nil
 }
 func (r *Req) BodyBooln(p string) (atype.Booln, *ae.Error) {
 	b, e := r.BodyBool(p)
@@ -244,60 +144,127 @@ func (r *Req) BodyBooln(p string) (atype.Booln, *ae.Error) {
 	return atype.ToBooln(b), nil
 }
 
+// 允许0  --> 直接用  x.Int8() 就可以了
+func (r *Req) QueryInt8(p string, required ...bool) (int8, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return x.DefaultInt8(0), e
+}
 func (r *Req) BodyInt8(p string, required ...bool) (int8, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return x.DefaultInt8(0), e
+}
+func (r *Req) QueryInt16(p string, required ...bool) (int16, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return x.DefaultInt16(0), e
 }
 func (r *Req) BodyInt16(p string, required ...bool) (int16, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return x.DefaultInt16(0), e
 }
+func (r *Req) QueryInt24(p string, required ...bool) (atype.Int24, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.Int24(x.DefaultInt32(0)), e
+}
 func (r *Req) BodyInt24(p string, required ...bool) (atype.Int24, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.Int24(x.DefaultInt32(0)), e
 }
-func (r *Req) BodyInt32(p string, required ...bool) (int32, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return x.DefaultInt32(0), e
+
+func (r *Req) QueryInt(p string, required ...bool) (int, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return x.DefaultInt(0), e
 }
 func (r *Req) BodyInt(p string, required ...bool) (int, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return x.DefaultInt(0), e
 }
+func (r *Req) QueryInt64(p string, required ...bool) (int64, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return x.DefaultInt64(0), e
+}
 func (r *Req) BodyInt64(p string, required ...bool) (int64, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return x.DefaultInt64(0), e
+}
+func (r *Req) QueryUint8(p string, required ...bool) (uint8, *ae.Error) {
+	x, e := r.QueryDigit(p, true, required...)
+	return x.DefaultUint8(0), e
 }
 func (r *Req) BodyUint8(p string, required ...bool) (uint8, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return x.DefaultUint8(0), e
 }
+func (r *Req) QueryUint16(p string, required ...bool) (uint16, *ae.Error) {
+	x, e := r.QueryDigit(p, true, required...)
+	return x.DefaultUint16(0), e
+}
 func (r *Req) BodyUint16(p string, required ...bool) (uint16, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return x.DefaultUint16(0), e
+}
+func (r *Req) QueryUint24(p string, required ...bool) (atype.Uint24, *ae.Error) {
+	x, e := r.QueryDigit(p, true, required...)
+	return x.DefaultUint24(0), e
 }
 func (r *Req) BodyUint24(p string, required ...bool) (atype.Uint24, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return atype.Uint24(x.DefaultUint32(0)), e
 }
+func (r *Req) QueryUint32(p string, required ...bool) (uint32, *ae.Error) {
+	x, e := r.QueryDigit(p, true, required...)
+	return x.DefaultUint32(0), e
+}
+
 func (r *Req) BodyUint32(p string, required ...bool) (uint32, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return x.DefaultUint32(0), e
 }
+func (r *Req) QueryUint(p string, required ...bool) (uint, *ae.Error) {
+	x, e := r.QueryDigit(p, true, required...)
+	return x.DefaultUint(0), e
+}
+
 func (r *Req) BodyUint(p string, required ...bool) (uint, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return x.DefaultUint(0), e
+}
+func (r *Req) QueryUint64(p string, required ...bool) (uint64, *ae.Error) {
+	x, e := r.QueryDigit(p, true, required...)
+	return x.DefaultUint64(0), e
 }
 func (r *Req) BodyUint64(p string, required ...bool) (uint64, *ae.Error) {
 	x, e := r.BodyDigit(p, true, required...)
 	return x.DefaultUint64(0), e
 }
+func (r *Req) QueryDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewDistri(x.DefaultUint24(0)), e
+}
+func (r *Req) BodyDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewDistri(x.DefaultUint24(0)), e
+}
+func (r *Req) QueryProvince(p string, required ...bool) (atype.Province, *ae.Error) {
+	distri, e := r.QueryDistri(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return distri.Province(), nil
+}
+
 func (r *Req) BodyProvince(p string, required ...bool) (atype.Province, *ae.Error) {
 	distri, e := r.BodyDistri(p, required...)
 	if e != nil {
 		return 0, e
 	}
 	return distri.Province(), nil
+}
+func (r *Req) QueryDist(p string, required ...bool) (atype.Dist, *ae.Error) {
+	distri, e := r.QueryDistri(p, required...)
+	if e != nil {
+		return 0, e
+	}
+	return distri.Dist(), nil
 }
 func (r *Req) BodyDist(p string, required ...bool) (atype.Dist, *ae.Error) {
 	distri, e := r.BodyDistri(p, required...)
@@ -306,32 +273,83 @@ func (r *Req) BodyDist(p string, required ...bool) (atype.Dist, *ae.Error) {
 	}
 	return distri.Dist(), nil
 }
-func (r *Req) BodyDistri(p string, required ...bool) (atype.Distri, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewDistri(x.DefaultUint24(0)), e
-}
 
+func (r *Req) QuerySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.SmallMoney(x.DefaultUint(0)), e
+}
 func (r *Req) BodySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.SmallMoney(x.DefaultUint(0)), e
+}
+func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.Money(x.DefaultInt64(0)), e
 }
 func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.Money(x.DefaultInt64(0)), e
 }
-func (r *Req) BodyRate16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
+func (r *Req) QueryDecimal16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewDecimal16(x.DefaultInt16(0)), e
+}
+
+func (r *Req) BodyDecimal16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.NewDecimal16(x.DefaultInt16(0)), e
 }
-func (r *Req) BodyRate24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
+func (r *Req) QueryDecimal24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewDecimal24(x.DefaultInt32(0)), e
+}
+func (r *Req) BodyDecimal24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
 	return atype.NewDecimal24(x.DefaultInt32(0)), e
 }
-func (r *Req) BodyRate(p string, required ...bool) (atype.Decimal, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
+
+func (r *Req) QueryDecimal(p string, required ...bool) (atype.Decimal, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
 	return atype.NewDecimal(x.DefaultInt(0)), e
 }
 
+func (r *Req) BodyDecimal(p string, required ...bool) (atype.Decimal, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewDecimal(x.DefaultInt(0)), e
+}
+func (r *Req) QueryDecimal64(p string, required ...bool) (atype.Decimal64, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewDecimal64(x.DefaultInt64(0)), e
+}
+func (r *Req) BodyDecimal64(p string, required ...bool) (atype.Decimal64, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewDecimal64(x.DefaultInt64(0)), e
+}
+func (r *Req) QueryPercentage16(p string, required ...bool) (atype.Percentage16, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewPercentage16(x.DefaultUint16(0)), e
+}
+
+func (r *Req) BodyPercentage16(p string, required ...bool) (atype.Percentage16, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewPercentage16(x.DefaultUint16(0)), e
+}
+func (r *Req) QueryPercentage(p string, required ...bool) (atype.Percentage, *ae.Error) {
+	x, e := r.QueryDigit(p, false, required...)
+	return atype.NewPercentage(x.DefaultInt(0)), e
+}
+
+func (r *Req) BodyPercentage(p string, required ...bool) (atype.Percentage, *ae.Error) {
+	x, e := r.BodyDigit(p, false, required...)
+	return atype.NewPercentage(x.DefaultInt(0)), e
+}
+func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
+	x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])
+	if e != nil {
+		return "", ae.NewError(400, "invalid date ("+p+"): "+x.String())
+	}
+	return atype.NewDate(x.String(), loc), nil
+}
 func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
 	x, e := r.Body(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {
@@ -339,148 +357,17 @@ func (r *Req) BodyDate(p string, loc *time.Location, required ...bool) (atype.Da
 	}
 	return atype.NewDate(x.String(), loc), nil
 }
+func (r *Req) QueryDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
+	x, e := r.Query(p, `^`+aenum.DatetimeRegExp+`$`, len(required) == 0 || required[0])
+	if e != nil {
+		return "", ae.NewError(400, "invalid datetime ("+p+"): "+x.String())
+	}
+	return atype.NewDatetime(x.String(), loc), nil
+}
 func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atype.Datetime, *ae.Error) {
 	x, e := r.Body(p, `^`+aenum.DatetimeRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", ae.NewError(400, "invalid datetime ("+p+"): "+x.String())
 	}
 	return atype.NewDatetime(x.String(), loc), nil
-}
-
-// {id:uint64}  or {sid:string}
-func (r *Req) QueryId(p string, params ...interface{}) (sid string, id uint64, e *ae.Error) {
-	var x *ReqProp
-	if x, e = r.Query(p, params...); e != nil {
-		return
-	}
-	sid = x.String()
-	if sid == "" || sid == "0" {
-		return
-	}
-	for _, s := range sid {
-		if s < '0' || s > '9' {
-			return
-		}
-	}
-	id, _ = strconv.ParseUint(sid, 10, 64)
-	return
-}
-
-// 不可再指定offset/limit了，单一原则，通过page分页
-// @param firstPageLimit 首页行数
-// @param limitMax 其他页行数
-func (r *Req) QueryPaging(args ...uint) atype.Paging {
-	page, _ := r.QueryUint(ParamPage, false)
-	return atype.NewPaging(page, args...)
-}
-func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	if e != nil {
-		return "", e
-	}
-	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-		return "", ae.BadParam(p)
-	}
-
-	return atype.NewImage(x, true), nil
-}
-func (r *Req) BodyAudio(p string, required ...bool) (atype.Audio, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	if e != nil {
-		return "", e
-	}
-	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-		return "", ae.BadParam(p)
-	}
-	return atype.NewAudio(x, true), e
-}
-func (r *Req) BodyVideo(p string, required ...bool) (atype.Video, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
-	if e != nil {
-		return "", e
-	}
-	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-		return "", ae.BadParam(p)
-	}
-	return atype.NewVideo(x, true), e
-}
-func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) {
-	xx, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
-	if e != nil || len(xx) == 0 {
-		return nil, e
-	}
-	imgs := make([]atype.Image, len(xx))
-	for i, x := range xx {
-		if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-			return nil, ae.BadParam(p)
-		}
-		imgs[i] = atype.NewImage(x, true)
-	}
-	return imgs, e
-}
-
-// 下面很少使用，就不要封装了。以后使用的时候，业务层直接组装就行
-//func (r *Req) BodyAudios(p string, required, allowEmptyString, filenameOnly bool) (atype.Audios, *ae.Error) {
-//	x, e := r.BodyStrings(p, required, allowEmptyString)
-//	return atype.ToAudios(x, filenameOnly), e
-//}
-//func (r *Req) BodyVideos(p string, required, allowEmptyString, filenameOnly bool) (atype.Videos, *ae.Error) {
-//	x, e := r.BodyStrings(p, required, allowEmptyString)
-//	return atype.ToVideos(x, filenameOnly), e
-//}
-func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae.Error) {
-	x, e := r.BodyFloat64Map(p, required...)
-	if e != nil || x == nil {
-		return nil, e
-	}
-	lat, ok := x["lat"]
-	if !ok {
-		return nil, ae.BadParam(p)
-	}
-	lng, ok := x["lng"]
-	if !ok {
-		return nil, ae.BadParam(p)
-	}
-	height, _ := x["height"]
-	coord := atype.Coordinate{
-		Latitude:  lat,
-		Longitude: lng,
-		Height:    height,
-	}
-	return &coord, nil
-}
-
-func (r *Req) BodyLocation(p string, required ...bool) (atype.Location, *ae.Error) {
-	x, e := r.BodyInterfaceMap(p, required...)
-	if e != nil || x == nil {
-		return atype.Location{}, e
-	}
-	var loc atype.Location
-	lat, ok := x["lat"]
-	if !ok {
-		e = ae.BadParam(p)
-		return atype.Location{}, e
-	}
-
-	if loc.Latitude, ok = lat.(float64); !ok {
-		e = ae.BadParam(p)
-		return atype.Location{}, e
-	}
-	lng, ok := x["lng"]
-	if !ok {
-		e = ae.BadParam(p)
-		return atype.Location{}, e
-	}
-
-	if loc.Longitude, ok = lng.(float64); !ok {
-		e = ae.BadParam(p)
-		return atype.Location{}, e
-	}
-	if ht, ok := x["height"]; ok {
-		loc.Height, _ = ht.(float64)
-	}
-	loc.Valid = true
-	loc.Name = atype.String(x["name"])
-	loc.Address = atype.String(x["address"])
-	return loc, nil
 }
