@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 )
 
 // 汇率一般保留4位小数，所以这里金额 * 10000
@@ -67,7 +66,7 @@ func (a Money) MulPercentFloor(p float32) Money {
 }
 
 func NewSmallMoney(n uint) SmallMoney  { return SmallMoney(n) }
-func (a SmallMoney) Money() Money      { return Money(a) }
+func (a SmallMoney) P() Money          { return Money(a) } // prototype
 func (a SmallMoney) Uint() uint        { return uint(a) }
 func NewMoney(m int64) Money           { return Money(m) }
 func ToMoney(y float64) Money          { return Money(y * float64(Yuan)) }
@@ -81,64 +80,11 @@ func (a Money) ToCent() int64    { return int64(a) / int64(Cent) }
 
 // 小数部分
 func (a Money) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
-func decimalN(decimals ...uint16) uint16 {
-	const d uint16 = 4 //  4位小数
-	dec := uint16(2)   // 保留2位小数
-	if len(decimals) > 0 {
-		dec = decimals[0]
-	}
-	if dec > d {
-		return d
-	}
-	return dec
-}
-func moneyDelimiter(delimiter ...string) string {
-	sep := ","
-	if len(delimiter) > 0 {
-		sep = delimiter[0]
-	}
-	return sep
-}
-
-func formatScale(scale, decimal uint16, trim bool) string {
-	const n uint16 = 4 //  4位小数
-	if decimal == 0 || (trim && scale == 0) {
-		return ""
-	}
-
-	x := math.Pow10(int(n - decimal))
-	y := int(math.Floor(float64(scale) / x)) // 四舍五入是违法的，只能舍弃
-	d := fmt.Sprintf("%0*d", decimal, y)
-	if trim {
-		d = strings.TrimRight(d, "0")
-		if d == "" {
-			return ""
-		}
-	}
-	return "." + d
-}
-
-func fmtPrecision(s string, n int, delimiter string) string {
-	if n == 0 || len(s) < n {
-		return s
-	}
-	var s2 string
-	j := 0
-	for i := len(s) - 1; i > -1; i-- {
-		if j > 0 && j%n == 0 {
-			s2 = delimiter + s2
-		}
-		s2 = string(s[i]) + s2
-		j++
-	}
-	return s2
-}
 
 // 类型：  1,000,000 这种
-func (a Money) FmtPrecision(n int, delimiters ...string) string {
+func (a Money) FmtPrecision(n int, delimiter string) string {
 	s := strconv.FormatInt(int64(a), 10)
-	sep := moneyDelimiter(delimiters...)
-	return fmtPrecision(s, n, sep)
+	return fmtPrecision(s, n, delimiter)
 }
 func (a Money) FmtScale(decimals ...uint16) string {
 	return formatScale(a.Scale(), decimalN(decimals...), true)
