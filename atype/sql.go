@@ -102,9 +102,9 @@ func (t NullUint64) Equal(b uint64) bool {
 	}
 	return t.Uint64() == b
 }
-func NewNullString(value uint64) NullString {
+func NewNullString(value string) NullString {
 	var v NullString
-	if value > 0 {
+	if value != "" {
 		v.Scan(value)
 	}
 	return v
