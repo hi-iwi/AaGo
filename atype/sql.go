@@ -310,7 +310,9 @@ func (b Booln) Uint8() uint8 {
 	}
 	return 0
 }
-func (b Booln) Bool() bool { return b > 0 }
+func (b Booln) Bool() bool    { return b > 0 }
+func (b Booln) IsFalse() bool { return b == 0 }
+func (b Booln) IsTrue() bool  { return b > 0 }
 func ToYearMonth(year int, month time.Month) YearMonth {
 	if year < 0 {
 		return 0
