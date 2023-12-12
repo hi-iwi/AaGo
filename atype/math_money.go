@@ -2,7 +2,6 @@ package atype
 
 import "C"
 import (
-	"fmt"
 	"math"
 	"strconv"
 )
@@ -52,17 +51,22 @@ func (a Money) EndCalc() Coin   { return Coin(a) }
 func (a Money) ExchangeCoin(rate Decimal) Coin { return Coin(a.MulDecimalFloor(rate)) }
 
 // 采用四舍五入
-func (a Money) MulDecimal(p Decimal) Money      { return a.Mul(int64(p)).Div(int64(DecimalAug)) }
-func (a Money) MulDecimalCeil(p Decimal) Money  { return a.Mul(int64(p)).DivCeil(int64(DecimalAug)) }
-func (a Money) MulDecimalFloor(p Decimal) Money { return a.Mul(int64(p)).DivFloor(int64(DecimalAug)) }
-func (a Money) MulPercent(p float32) Money {
-	return a.Mul(int64(ConvertPercent(p))).Div(int64(DecimalAug))
+func (a Money) MulDecimal(p Decimal) Money {
+	return Money(math.Round(float64(a*Money(p)) / unitDecimalFloat64))
 }
-func (a Money) MulPercentCeil(p float32) Money {
-	return a.Mul(int64(ConvertPercent(p))).DivCeil(int64(DecimalAug))
+func (a Money) MulDecimalCeil(p Decimal) Money {
+	return Money(math.Ceil(float64(a*Money(p)) / unitDecimalFloat64))
 }
-func (a Money) MulPercentFloor(p float32) Money {
-	return a.Mul(int64(ConvertPercent(p))).DivFloor(int64(DecimalAug))
+func (a Money) MulDecimalFloor(p Decimal) Money { return a * Money(p) / Money(unitDecimalInt64) }
+
+func (a Money) MulPercent(p float64) Money {
+	return Money(math.Round(float64(a*Money(ConvertPercent(p))) / unitDecimalFloat64))
+}
+func (a Money) MulPercentCeil(p float64) Money {
+	return Money(math.Ceil(float64(a*Money(ConvertPercent(p))) / unitDecimalFloat64))
+}
+func (a Money) MulPercentFloor(p float64) Money {
+	return a * Money(ConvertPercent(p)) / Money(unitDecimalInt64)
 }
 
 func NewSmallMoney(n uint) SmallMoney  { return SmallMoney(n) }
@@ -101,122 +105,10 @@ func (a Money) Format(decimals ...uint16) string {
 	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
 
-func (a Money) add(b Money) Money {
-	// b 必须≥0， a可大于、等于、小于0
-	if a < 0 || b < 0 || a > MaxMoney-b {
-		panic(fmt.Sprintf("overflow money %d.add(%d)", a, b))
-		return 0
-	}
-	return a + b
-}
-
-func (a Money) sub(b Money) Money {
-	// b 必须≥0， a可大于、等于、小于0
-	if a < 0 || b < 0 {
-		panic(fmt.Sprintf("overflow money %d.sub(%d)", a, b))
-		return 0
-	}
-	c := a - b
-	if c < MinMoney || c > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.sub(%d)", a, b))
-		return 0
-	}
-	return c
-}
-
-func (a Money) Add(b Money) Money {
-	if b < 0 {
-		if a < 0 {
-			return -(-a).add(-b) // a<0&&b<0 ==> -((-a)+(-b))
-		}
-		return a.sub(-b) // a>=0 && b<0  ==>  a-(-b)
-	} else if a < 0 {
-		return b.sub(-a) // a<0 && b>=0 ==>  b-(-a)
-	}
-	return a.add(b) // a>=0 && b >=0
-
-}
-func (a Money) Sub(b Money) Money {
-	if b < 0 {
-		if a < 0 {
-			return (-b).sub(-a) // a<0&&b<0 ==> (-b)-(-a)
-		}
-		return a.add(-b) // a>=0&&b<0  ==> a+(-b)
-	} else if a < 0 {
-		return b.add(-a) // a<0 && b>=0 ==> -((-a)+b)
-	}
-	return a.sub(b)
-}
-
-// 必须大于0
-func (a Money) AddN(b Money) Money {
-	if a < -b {
-		panic(fmt.Sprintf("overflow money %d.AddN(%d)", a, b))
-		return 0
-	}
-	return a.Add(b)
-}
-func (a Money) SubN(b Money) Money {
-	if a < b {
-		panic(fmt.Sprintf("overflow money %d.SubN(%d)", a, b))
-		return 0
-	}
-	return a.Sub(b)
-}
-func (a Money) Mul(n int64) Money {
-	b := NewMoney(a.Int64() * n)
-	if b < MinMoney || b > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.Mul(%d)", a, n))
-		return 0
-	}
-	return b
-}
-
-// 四舍五入
-func (a Money) Div(n int64) Money {
-	x := a.Int64()
-	i := x / n
-	m := a.Int64() % n
-	if m > 0 && math.Round(float64(m)/float64(n)) == 1 {
-		i++
-	}
-	b := NewMoney(i)
-	if b < MinMoney || b > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.Div(%d)", a, n))
-		return 0
-	}
-	return b
-}
-func (a Money) DivFloor(n int64) Money {
-	b := NewMoney(a.Int64() / n)
-	if b < MinMoney || b > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.DivFloor(%d)", a, n))
-		return 0
-	}
-	return b
-}
-func (a Money) DivCeil(n int64) Money {
-	x := a.Int64()
-	i := x / n
-	m := a.Int64() % n
-	if m > 0 {
-		i++
-	}
-	b := NewMoney(i)
-	if b < MinMoney || b > MaxMoney {
-		panic(fmt.Sprintf("overflow money %d.DivCeil(%d)", a, n))
-		return 0
-	}
-	return b
-}
-
-// 四舍五入
-func (a Money) Of(b Money) Decimal {
-	return NewDecimal(int(a.Mul(int64(DecimalAug)).Div(b.Int64())))
-}
-func (a Money) OfFloor(b Money) Decimal {
-	return NewDecimal(int(a.Mul(int64(DecimalAug)).DivFloor(b.Int64())))
-}
-func (a Money) OfCeil(b Money) Decimal {
-	return NewDecimal(int(a.Mul(int64(DecimalAug)).DivCeil(b.Int64())))
-}
+func (a Money) Mul(n int64) Money        { return a * Money(n) }
+func (a Money) Div(n float64) Money      { return Money(math.Round(float64(a) / n)) }
+func (a Money) DivFloor(n float64) Money { return Money(math.Floor(float64(a) / n)) }
+func (a Money) DivCeil(n float64) Money  { return Money(math.Ceil(float64(a) / n)) }
+func (a Money) Of(b Money) Decimal       { return Decimal(a.Mul(unitDecimalInt64).Div(float64(b))) }
+func (a Money) OfFloor(b Money) Decimal  { return Decimal(a.Mul(unitDecimalInt64).DivFloor(float64(b))) }
+func (a Money) OfCeil(b Money) Decimal   { return Decimal(a.Mul(unitDecimalInt64).DivCeil(float64(b))) }

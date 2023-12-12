@@ -2,7 +2,8 @@ package atype_test
 
 import (
 	"github.com/hi-iwi/AaGo/atype"
-	"runtime"
+	"math"
+	"math/rand"
 	"testing"
 )
 
@@ -14,6 +15,21 @@ func TestPercent(t *testing.T) {
 	if m.MulPercent(30) != atype.ToMoney(300) {
 		t.Errorf("atype.ToMoney(1000).MulPercent(30) != atype.ToMoney(300)")
 	}
+}
+func TestDecimal(t *testing.T) {
+	const n = 100
+	for i := 0; i < n; i++ {
+		a := math.Floor(rand.Float64()*10000*10000) / 10000 // 保留4位小数
+		b := math.Floor(rand.Float64()*n*10000) / 10000     // 保留4位小数
+		c := a * b
+		x := atype.ToDecimal64(a).Mul(atype.ToDecimal64(b))
+		if x != atype.ToDecimal64(c) {
+			t.Errorf("%f*%f=%f   %d", a, 10000.0, a*10000.0, int(a*10000.0))
+			t.Errorf("%f*%f=%f   %d", b, 10000.0, b*10000.0, int(b*10000.0))
+			t.Errorf("atype.Decimal %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Decimal(), atype.ToDecimal(a), atype.ToDecimal(b), x)
+		}
+	}
+
 }
 func TestMoney(t *testing.T) {
 	m := atype.ToMoney(188.8)
@@ -70,35 +86,5 @@ func TestMoney(t *testing.T) {
 	if b.Fmt(10) != "-23424234234.0503" {
 		t.Errorf("money (%d).FmtPercent(10) ==> string(%s)", b, b.Fmt(4))
 	}
-
-}
-func TestMoneyCalc(t *testing.T) {
-	a := atype.ToMoney(500)
-	b := atype.ToMoney(300)
-	if (a.Add(b)) != atype.ToMoney(800) {
-		t.Errorf("money 500+300 !=800")
-	}
-	if (a.Sub(b)) != atype.ToMoney(200) {
-		t.Errorf("money 500-300 !=200")
-	}
-	if (a.Add(-b)) != atype.ToMoney(200) {
-		t.Errorf("money 500-300 !=200")
-	}
-	if (a.Sub(-b)) != atype.ToMoney(800) {
-		t.Errorf("money 500-300 !=200")
-	}
-}
-func TestMoneyPanic(t *testing.T) {
-	defer func() {
-		err := recover()
-		switch err.(type) {
-		case runtime.Error:
-			t.Errorf("unknown panic %s", err)
-		default:
-			// well
-		}
-	}()
-	m := atype.ToMoney(188.8)
-	m.Sub(atype.MinMoney) // overflow
 
 }

@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/google/uuid v1.4.0
+	github.com/google/uuid v1.5.0
 	github.com/kataras/iris/v12 v12.2.8
 	gopkg.in/ini.v1 v1.67.0
 )
