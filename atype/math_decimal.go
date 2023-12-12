@@ -25,12 +25,12 @@ const (
 	UnitDecimal        = Decimal64(unitDecimalInt64)
 )
 
-func NewDecimal64(n int64) Decimal64 { return Decimal64(n) }
-
 // 不要直接 int(float) 转换，否则容易出错。比如 int(60135.0000) == 60134
-func ToDecimal64(n float64) Decimal64 { return Decimal64(math.Round(n * unitDecimalFloat64)) }
-func (p Decimal64) Int64() int64      { return int64(p) }
-func (p Decimal64) Decimal() float64  { return float64(p) / unitDecimalFloat64 }
+func Decimal64Unit(n float64) Decimal64 { return Decimal64(math.Round(n * unitDecimalFloat64)) }
+func Decimal64UnitN(n int) Decimal64    { return Decimal64(n) * UnitDecimal }
+
+func (p Decimal64) Int64() int64     { return int64(p) }
+func (p Decimal64) Decimal() float64 { return float64(p) / unitDecimalFloat64 }
 
 // 整数部分
 func (p Decimal64) Precision() int64 { return int64(p) / unitDecimalInt64 }
@@ -78,27 +78,22 @@ func (p Decimal64) DivCeil(b Decimal64) Decimal64 {
 }
 func (p Decimal64) DivFloor(b Decimal64) Decimal64 { return p * UnitDecimal / b }
 
-func NewDecimal(n int) Decimal { return Decimal(n) }
+func DecimalUnit(n float64) Decimal { return Decimal(math.Round(n * unitDecimalFloat64)) }
+func (p Decimal) Int() int          { return int(p) }
+func (p Decimal) Decimal() float64  { return float64(p) / unitDecimalFloat64 }
+func (p Decimal) P() Decimal64      { return Decimal64(p) } // prototype
 
-func ToDecimal(n float64) Decimal  { return Decimal(math.Round(n * unitDecimalFloat64)) }
-func (p Decimal) Int() int         { return int(p) }
-func (p Decimal) Decimal() float64 { return float64(p) / unitDecimalFloat64 }
-func (p Decimal) P() Decimal64     { return Decimal64(p) } // prototype
+func Decimal24Unit(n float64) Decimal24 { return Decimal24(math.Round(n * unitDecimalFloat64)) }
+func (p Decimal24) Int32() int32        { return int32(p) }
+func (p Decimal24) Decimal() float64    { return float64(p) / unitDecimalFloat64 }
+func (p Decimal24) P() Decimal64        { return Decimal64(p) } // prototype
 
-func NewDecimal24(n int32) Decimal24  { return Decimal24(n) }
-func ToDecimal24(n float64) Decimal24 { return Decimal24(math.Round(n * unitDecimalFloat64)) }
-func (p Decimal24) Int32() int32      { return int32(p) }
-func (p Decimal24) Decimal() float64  { return float64(p) / unitDecimalFloat64 }
-func (p Decimal24) P() Decimal64      { return Decimal64(p) } // prototype
+func Decimal16Unit(n float64) Decimal16 { return Decimal16(math.Round(n * unitDecimalFloat64)) }
+func (p Decimal16) Int16() int16        { return int16(p) }
+func (p Decimal16) Decimal() float64    { return float64(p) / unitDecimalFloat64 }
+func (p Decimal16) P() Decimal64        { return Decimal64(p) } // prototype
 
-func NewDecimal16(n int16) Decimal16  { return Decimal16(n) }
-func ToDecimal16(n float64) Decimal16 { return Decimal16(math.Round(n * unitDecimalFloat64)) }
-func (p Decimal16) Int16() int16      { return int16(p) }
-func (p Decimal16) Decimal() float64  { return float64(p) / unitDecimalFloat64 }
-func (p Decimal16) P() Decimal64      { return Decimal64(p) } // prototype
-
-func NewPercentage(n int) Percentage      { return Percentage(n) }
-func ConvertPercent(n float64) Percentage { return Percentage(math.Round(n * PercentRate)) }
+func HundredPercent(n float64) Percentage { return Percentage(math.Round(n * PercentRate)) }
 func (p Percentage) Decimal() Decimal     { return Decimal(p) }
 func (p Percentage) Int() int             { return int(p) }
 func (p Percentage) Percent() float64     { return float64(p) / PercentRate }
@@ -111,9 +106,8 @@ func (p Percentage) FmtAbs() string {
 	return strconv.FormatFloat(float64(c), 'f', -1, 32)
 }
 
-// e.g. NewPercentage(100*atype.Percent)
-func NewPercentage16(n uint16) Percentage16   { return Percentage16(n) }
-func ConvertPercent16(n float64) Percentage16 { return Percentage16(math.Round(n * PercentRate)) }
+// e.g. 100*atype.Percent
+func HundredPercent16(n float64) Percentage16 { return Percentage16(math.Round(n * PercentRate)) }
 func (p Percentage16) Decimal() Decimal24     { return Decimal24(p) }
 func (p Percentage16) Uint16() uint16         { return uint16(p) }
 func (p Percentage16) Percent() float64       { return float64(p) / PercentRate }

@@ -38,7 +38,7 @@ func (t SepPercents) Percents() []Decimal {
 	for i, a := range arr {
 		p, err := strconv.ParseInt(a, 10, 32)
 		if err == nil {
-			v[i] = NewDecimal(int(p))
+			v[i] = Decimal(p)
 		}
 	}
 	return v
@@ -73,7 +73,7 @@ func (t SepMoneys) Moneys() []Money {
 	for i, a := range arr {
 		p, err := strconv.ParseInt(a, 10, 64)
 		if err == nil {
-			v[i] = NewMoney(p)
+			v[i] = Money(p)
 		}
 	}
 	return v

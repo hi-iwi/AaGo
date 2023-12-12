@@ -292,56 +292,56 @@ func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
 }
 func (r *Req) QueryDecimal16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal16(x.DefaultInt16(0)), e
+	return atype.Decimal16(x.DefaultInt16(0)), e
 }
 
 func (r *Req) BodyDecimal16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewDecimal16(x.DefaultInt16(0)), e
+	return atype.Decimal16(x.DefaultInt16(0)), e
 }
 func (r *Req) QueryDecimal24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal24(x.DefaultInt32(0)), e
+	return atype.Decimal24(x.DefaultInt32(0)), e
 }
 func (r *Req) BodyDecimal24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewDecimal24(x.DefaultInt32(0)), e
+	return atype.Decimal24(x.DefaultInt32(0)), e
 }
 
 func (r *Req) QueryDecimal(p string, required ...bool) (atype.Decimal, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal(x.DefaultInt(0)), e
+	return atype.Decimal(x.DefaultInt(0)), e
 }
 
 func (r *Req) BodyDecimal(p string, required ...bool) (atype.Decimal, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewDecimal(x.DefaultInt(0)), e
+	return atype.Decimal(x.DefaultInt(0)), e
 }
 func (r *Req) QueryDecimal64(p string, required ...bool) (atype.Decimal64, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewDecimal64(x.DefaultInt64(0)), e
+	return atype.Decimal64(x.DefaultInt64(0)), e
 }
 func (r *Req) BodyDecimal64(p string, required ...bool) (atype.Decimal64, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewDecimal64(x.DefaultInt64(0)), e
+	return atype.Decimal64(x.DefaultInt64(0)), e
 }
 func (r *Req) QueryPercentage16(p string, required ...bool) (atype.Percentage16, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewPercentage16(x.DefaultUint16(0)), e
+	return atype.Percentage16(x.DefaultUint16(0)), e
 }
 
 func (r *Req) BodyPercentage16(p string, required ...bool) (atype.Percentage16, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewPercentage16(x.DefaultUint16(0)), e
+	return atype.Percentage16(x.DefaultUint16(0)), e
 }
 func (r *Req) QueryPercentage(p string, required ...bool) (atype.Percentage, *ae.Error) {
 	x, e := r.QueryDigit(p, false, required...)
-	return atype.NewPercentage(x.DefaultInt(0)), e
+	return atype.Percentage(x.DefaultInt(0)), e
 }
 
 func (r *Req) BodyPercentage(p string, required ...bool) (atype.Percentage, *ae.Error) {
 	x, e := r.BodyDigit(p, false, required...)
-	return atype.NewPercentage(x.DefaultInt(0)), e
+	return atype.Percentage(x.DefaultInt(0)), e
 }
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
 	x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])

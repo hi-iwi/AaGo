@@ -8,12 +8,12 @@ import (
 )
 
 func TestPercent(t *testing.T) {
-	m := atype.ToMoney(1000.0)
-	if m.MulPercent(0.6) != atype.ToMoney(6) {
-		t.Errorf("atype.ToMoney(1000).MulPercent(0.6) != atype.ToMoney(6)")
+	m := atype.MoneyYuan(1000.0)
+	if m.MulPercent(0.6) != atype.MoneyYuan(6) {
+		t.Errorf("atype.MoneyYuan(1000).MulPercent(0.6) != atype.MoneyYuan(6)")
 	}
-	if m.MulPercent(30) != atype.ToMoney(300) {
-		t.Errorf("atype.ToMoney(1000).MulPercent(30) != atype.ToMoney(300)")
+	if m.MulPercent(30) != atype.MoneyYuan(300) {
+		t.Errorf("atype.MoneyYuan(1000).MulPercent(30) != atype.MoneyYuan(300)")
 	}
 }
 func TestDecimal(t *testing.T) {
@@ -22,30 +22,30 @@ func TestDecimal(t *testing.T) {
 		a := math.Floor(rand.Float64()*10000*10000) / 10000 // 保留4位小数
 		b := math.Floor(rand.Float64()*n*10000) / 10000     // 保留4位小数
 		c := a * b
-		x := atype.ToDecimal64(a).Mul(atype.ToDecimal64(b))
-		if x != atype.ToDecimal64(c) {
+		x := atype.Decimal64Unit(a).Mul(atype.Decimal64Unit(b))
+		if x != atype.Decimal64Unit(c) {
 			t.Errorf("%f*%f=%f   %d", a, 10000.0, a*10000.0, int(a*10000.0))
 			t.Errorf("%f*%f=%f   %d", b, 10000.0, b*10000.0, int(b*10000.0))
-			t.Errorf("atype.Decimal %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Decimal(), atype.ToDecimal(a), atype.ToDecimal(b), x)
+			t.Errorf("atype.Decimal %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Decimal(), atype.DecimalUnit(a), atype.DecimalUnit(b), x)
 		}
 	}
 
 }
 func TestMoney(t *testing.T) {
-	m := atype.ToMoney(188.8)
+	m := atype.MoneyYuan(188.8)
 	if m.Fmt() != "188.8" {
-		t.Errorf("atype.ToMoney(1888000).FmtPercent() : %s != 188.8", m.Fmt())
+		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.8", m.Fmt())
 	}
 	if m.Format() != "188.80" {
-		t.Errorf("atype.ToMoney(1888000).FmtPercent() : %s != 188.80", m.Format())
+		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.80", m.Format())
 	}
 	p := 7 * atype.Thousandth
-	s := atype.ToMoney(2360).MulDecimal(p.Decimal()).Fmt()
+	s := atype.MoneyYuan(2360).MulDecimal(p.Decimal()).Fmt()
 	if s != "16.52" {
 		t.Errorf("2360*0.7%% : %s != 16.52", s)
 	}
 
-	b := atype.NewMoney(234242342340503)
+	b := atype.Money(234242342340503)
 
 	if b.Format(0) != "23424234234" {
 		t.Errorf("money (%d).Format(0) ==> string(%s)", b, b.Format(0))
@@ -66,7 +66,7 @@ func TestMoney(t *testing.T) {
 		t.Errorf("money (%d).Format(10) ==> string(%s)", b, b.Format(4))
 	}
 
-	b = atype.NewMoney(-234242342340503)
+	b = atype.Money(-234242342340503)
 
 	if b.Fmt(0) != "-23424234234" {
 		t.Errorf("money (%d).FmtPercent(0) ==> string(%s)", b, b.Fmt(0))
