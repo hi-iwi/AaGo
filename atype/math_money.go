@@ -13,8 +13,6 @@ import (
 type SmallMoney uint // 统一转换为 Money 后使用
 type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
 
-type Coin Money // 1 coin = 1 money    如 chatgpt 等消耗，单次消耗低于0.1分，因此需要更大的 coin比例
-
 const (
 	// 1 元 = 100 分 = 1000 毫 = 10000 money
 	// 10 律币 = 100 律分 = 1000 律厘  = 1000 律毫 = 10000 coin
@@ -37,22 +35,16 @@ const (
 	MaxMoney = 100 * YiiYuan  // 100亿
 
 	UnitSmallMoney = SmallMoney(UnitMoney)
-
-	CentCoin        Coin = 100  // 1 律分
-	DimeCoin        Coin = 1000 // 1 律币(角)
-	UnitCoin        Coin = 10000
-	unitCoinFloat64      = 10000.0
 )
 
 func MoneyUnit(n float64) Money { return Money(math.Round(n * unitMoneyFloat64)) }
 func MoneyUnitN(n int) Money    { return Money(n) * UnitMoney }
-func Yuans(n float64) Money     { return MoneyUnit(n) }
+func YuanX(n float64) Money     { return MoneyUnit(n) }
 func YuanN(n int) Money         { return MoneyUnitN(n) }
-func Dollars(n float64) Money   { return MoneyUnit(n) }
+func DollarX(n float64) Money   { return MoneyUnit(n) }
 func DollarN(n int) Money       { return MoneyUnitN(n) }
 
 func (a Money) Int64() int64      { return int64(a) }
-func (a Money) Uint() uint        { return uint(a) }
 func (a Money) Small() SmallMoney { return SmallMoney(a) }
 
 // 整数部分
@@ -111,18 +103,3 @@ func (a Money) OfCeil(b Money) Decimal   { return Decimal(a.Mul(unitDecimalInt64
 
 func (a SmallMoney) P() Money   { return Money(a) } // prototype
 func (a SmallMoney) Uint() uint { return uint(a) }
-
-func CoinUnit(n float64) Coin { return Coin(math.Round(n * unitCoinFloat64)) }
-func CoinUnitN(n int) Coin    { return Coin(n) * UnitCoin }
-
-// 金币抵扣商品
-//  .Off()  ==  .Offset(100*Percent)
-func (c Coin) Offset(rate Decimal) Money { return Money(c).MulDecimalFloor(rate) }
-func (c Coin) Off() Money                { return Money(c) }
-
-// 用于使用计算
-func (c Coin) StartCalc() Money { return Money(c) }
-func (a Money) EndCalc() Coin   { return Coin(a) }
-
-// @param ratio 汇率
-func (a Money) ExchangeCoin(rate Decimal) Coin { return Coin(a.MulDecimalFloor(rate)) }

@@ -8,12 +8,12 @@ import (
 )
 
 func TestPercent(t *testing.T) {
-	m := atype.MoneyYuan(1000.0)
-	if m.MulPercent(0.6) != atype.MoneyYuan(6) {
-		t.Errorf("atype.MoneyYuan(1000).MulPercent(0.6) != atype.MoneyYuan(6)")
+	m := atype.YuanX(1000.0)
+	if m.MulPercent(0.6) != atype.YuanX(6) {
+		t.Errorf("atype.MoneyYuan(1000).MulPercent(0.6) != atype.YuanX(6)")
 	}
-	if m.MulPercent(30) != atype.MoneyYuan(300) {
-		t.Errorf("atype.MoneyYuan(1000).MulPercent(30) != atype.MoneyYuan(300)")
+	if m.MulPercent(30) != atype.YuanX(300) {
+		t.Errorf("atype.MoneyYuan(1000).MulPercent(30) != atype.YuanX(300)")
 	}
 }
 func TestDecimal(t *testing.T) {
@@ -32,7 +32,7 @@ func TestDecimal(t *testing.T) {
 
 }
 func TestMoney(t *testing.T) {
-	m := atype.MoneyYuan(188.8)
+	m := atype.YuanX(188.8)
 	if m.Fmt() != "188.8" {
 		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.8", m.Fmt())
 	}
@@ -40,7 +40,7 @@ func TestMoney(t *testing.T) {
 		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.80", m.Format())
 	}
 	p := 7 * atype.Thousandth
-	s := atype.MoneyYuan(2360).MulDecimal(p.Decimal()).Fmt()
+	s := atype.YuanX(2360).MulDecimal(p.Decimal()).Fmt()
 	if s != "16.52" {
 		t.Errorf("2360*0.7%% : %s != 16.52", s)
 	}
