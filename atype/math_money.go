@@ -30,9 +30,9 @@ const (
 	MiDollar = 1000 * KiDollar // 百万元    中文的话，就不要用百万、千万
 	BiDollar = 1000 * MiDollar // 十亿元
 
-	MinMoney = -100 * YiiYuan // -100亿
-	MaxMoney = 100 * YiiYuan  // 100亿
-
+	MaxMoneyU32 Money = 1<<32 - 1
+	MinMoney    Money = -1 << 63
+	MaxMoney    Money = 1<<63 - 1
 )
 
 func MoneyUnit(n float64) Money { return Money(math.Round(n * unitMoneyFloat64)) }

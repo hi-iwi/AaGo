@@ -9,8 +9,9 @@ const (
 	UnitCoin        Coin = 10000
 	unitCoinFloat64      = 10000.0
 
-	MinCoin = Coin(MinMoney) // -100亿
-	MaxCoin = Coin(MaxMoney) // 100亿
+	MaxCoinU32 Coin = 1<<32 - 1
+	MinCoin    Coin = -1 << 63
+	MaxCoin    Coin = 1<<63 - 1
 )
 
 func CoinUnit(n float64) Coin { return Coin(math.Round(n * unitCoinFloat64)) }

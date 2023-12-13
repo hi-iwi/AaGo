@@ -20,8 +20,17 @@ const (
 	unitDecimalFloat64 = float64(unitDecimalInt64)
 	UnitDecimal        = Decimal(unitDecimalInt64)
 
-	MinDecimal = -10000000000 * UnitDecimal // -100亿
-	MaxDecimal = 10000000000 * UnitDecimal  // 100亿
+	MinDecimal16  Decimal = -1 << 15
+	MaxDecimal16  Decimal = 1<<15 - 1
+	MaxDecimalU16 Decimal = 1<<16 - 1
+	MinDecimal24  Decimal = -1 << 23
+	MaxDecimal24  Decimal = 1<<23 - 1
+	MaxDecimalU24 Decimal = 1<<24 - 1
+	MinDecimal32  Decimal = -1 << 31
+	MaxDecimal32  Decimal = 1<<31 - 1
+	MaxDecimalU32 Decimal = 1<<32 - 1
+	MinDecimal    Decimal = -1 << 63
+	MaxDecimal    Decimal = 1<<63 - 1
 )
 
 // 不要直接 int(float) 转换，否则容易出错。比如 int(60135.0000) == 60134
