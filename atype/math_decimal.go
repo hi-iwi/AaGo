@@ -19,6 +19,9 @@ const (
 	unitDecimalInt64   = int64(10000)
 	unitDecimalFloat64 = float64(unitDecimalInt64)
 	UnitDecimal        = Decimal(unitDecimalInt64)
+
+	MinDecimal = -10000000000 * UnitDecimal // -100亿
+	MaxDecimal = 10000000000 * UnitDecimal  // 100亿
 )
 
 // 不要直接 int(float) 转换，否则容易出错。比如 int(60135.0000) == 60134

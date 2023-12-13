@@ -8,6 +8,9 @@ const (
 	DimeCoin        Coin = 1000 // 1 律币(角)
 	UnitCoin        Coin = 10000
 	unitCoinFloat64      = 10000.0
+
+	MinCoin = Coin(MinMoney) // -100亿
+	MaxCoin = Coin(MaxMoney) // 100亿
 )
 
 func CoinUnit(n float64) Coin { return Coin(math.Round(n * unitCoinFloat64)) }
