@@ -2,6 +2,7 @@ package com
 
 import (
 	"errors"
+	"fmt"
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/dict"
 	"github.com/hi-iwi/AaGo/util"
@@ -266,10 +267,10 @@ func (resp *RespStruct) WriteError(err error) error {
 	return resp.write(cs)
 }
 
-func (resp *RespStruct) WriteErr(code int, msg string) error {
+func (resp *RespStruct) WriteErr(code int, msg string, args ...interface{}) error {
 	cs := RespContentDTO{
 		Code: code,
-		Msg:  msg,
+		Msg:  fmt.Sprintf(msg, args...),
 	}
 	return resp.write(cs)
 }
@@ -281,10 +282,10 @@ func (resp *RespStruct) WriteCode(code int) error {
 	return resp.write(cs)
 }
 
-func (resp *RespStruct) WriteErrMsg(msg string) error {
+func (resp *RespStruct) WriteErrMsg(msg string, args ...interface{}) error {
 	cs := RespContentDTO{
 		Code: 500,
-		Msg:  msg,
+		Msg:  fmt.Sprintf(msg, args...),
 	}
 	return resp.write(cs)
 }
