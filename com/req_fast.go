@@ -274,75 +274,39 @@ func (r *Req) BodyDist(p string, required ...bool) (atype.Dist, *ae.Error) {
 	return distri.Dist(), nil
 }
 
-func (r *Req) QuerySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.SmallMoney(x.DefaultUint(0)), e
+func (r *Req) QueryMoney(p string, min, max atype.Money) (atype.Money, *ae.Error) {
+	x, e := r.QueryDigit(p, false, false)
+	n := atype.Money(x.DefaultInt64(0))
+	if n < min || n > max {
+		return 0, ae.BadParam(p)
+	}
+	return n, e
 }
-func (r *Req) BodySmallMoney(p string, required ...bool) (atype.SmallMoney, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.SmallMoney(x.DefaultUint(0)), e
+func (r *Req) BodyMoney(p string, min, max atype.Money) (atype.Money, *ae.Error) {
+	x, e := r.BodyDigit(p, false, false)
+	n := atype.Money(x.DefaultInt64(0))
+	if n < min || n > max {
+		return 0, ae.BadParam(p)
+	}
+	return n, e
 }
-func (r *Req) QueryMoney(p string, required ...bool) (atype.Money, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Money(x.DefaultInt64(0)), e
+func (r *Req) QueryDecimal(p string, min, max atype.Decimal) (atype.Decimal, *ae.Error) {
+	x, e := r.QueryDigit(p, false, false)
+	n := atype.Decimal(x.DefaultInt64(0))
+	if n < min || n > max {
+		return 0, ae.BadParam(p)
+	}
+	return n, e
 }
-func (r *Req) BodyMoney(p string, required ...bool) (atype.Money, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Money(x.DefaultInt64(0)), e
-}
-func (r *Req) QueryDecimal16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Decimal16(x.DefaultInt16(0)), e
-}
-
-func (r *Req) BodyDecimal16(p string, required ...bool) (atype.Decimal16, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Decimal16(x.DefaultInt16(0)), e
-}
-func (r *Req) QueryDecimal24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Decimal24(x.DefaultInt32(0)), e
-}
-func (r *Req) BodyDecimal24(p string, required ...bool) (atype.Decimal24, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Decimal24(x.DefaultInt32(0)), e
-}
-
-func (r *Req) QueryDecimal(p string, required ...bool) (atype.Decimal, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Decimal(x.DefaultInt(0)), e
+func (r *Req) BodyDecimal(p string, min, max atype.Decimal) (atype.Decimal, *ae.Error) {
+	x, e := r.BodyDigit(p, false, false)
+	n := atype.Decimal(x.DefaultInt64(0))
+	if n < min || n > max {
+		return 0, ae.BadParam(p)
+	}
+	return n, e
 }
 
-func (r *Req) BodyDecimal(p string, required ...bool) (atype.Decimal, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Decimal(x.DefaultInt(0)), e
-}
-func (r *Req) QueryDecimal64(p string, required ...bool) (atype.Decimal64, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Decimal64(x.DefaultInt64(0)), e
-}
-func (r *Req) BodyDecimal64(p string, required ...bool) (atype.Decimal64, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Decimal64(x.DefaultInt64(0)), e
-}
-func (r *Req) QueryPercentage16(p string, required ...bool) (atype.Percentage16, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Percentage16(x.DefaultUint16(0)), e
-}
-
-func (r *Req) BodyPercentage16(p string, required ...bool) (atype.Percentage16, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Percentage16(x.DefaultUint16(0)), e
-}
-func (r *Req) QueryPercentage(p string, required ...bool) (atype.Percentage, *ae.Error) {
-	x, e := r.QueryDigit(p, false, required...)
-	return atype.Percentage(x.DefaultInt(0)), e
-}
-
-func (r *Req) BodyPercentage(p string, required ...bool) (atype.Percentage, *ae.Error) {
-	x, e := r.BodyDigit(p, false, required...)
-	return atype.Percentage(x.DefaultInt(0)), e
-}
 func (r *Req) QueryDate(p string, loc *time.Location, required ...bool) (atype.Date, *ae.Error) {
 	x, e := r.Query(p, `^`+aenum.DateRegExp+`$`, len(required) == 0 || required[0])
 	if e != nil {

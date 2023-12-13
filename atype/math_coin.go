@@ -17,12 +17,12 @@ func (c Coin) Int64() int64 { return int64(c) }
 
 // 金币抵扣商品
 //  .Off()  ==  .Offset(100*Percent)
-func (c Coin) Offset(rate Decimal) Money { return Money(c).MulDecimalFloor(rate) }
+func (c Coin) Offset(rate Decimal) Money { return Money(c).MulFloor(rate) }
 func (c Coin) Off() Money                { return Money(c) }
 
 // 用于使用计算
 func (c Coin) P() Money { return Money(c) }
 
 // @param ratio 汇率
-func (a Money) ExchangeCoin(rate Decimal) Coin { return Coin(a.MulDecimalFloor(rate)) }
+func (a Money) ExchangeCoin(rate Decimal) Coin { return Coin(a.MulFloor(rate)) }
 func (a Money) Coin() Coin                     { return Coin(a) }

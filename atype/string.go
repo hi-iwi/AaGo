@@ -24,7 +24,7 @@ func S2Distri(s string, base int) Distri {
 	n, _ := strconv.ParseInt(s, base, 24)
 	return Distri(n)
 }
-func S2Percent(s string, base int) Decimal {
+func S2Decimal(s string, base int) Decimal {
 	n, _ := strconv.ParseUint(s, base, 16)
 	return Decimal(n)
 }

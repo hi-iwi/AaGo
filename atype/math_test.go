@@ -9,10 +9,10 @@ import (
 
 func TestPercent(t *testing.T) {
 	m := atype.YuanX(1000.0)
-	if m.MulPercent(0.6) != atype.YuanX(6) {
+	if m.Mul(atype.HundredPercent(0.6)) != atype.YuanX(6) {
 		t.Errorf("atype.MoneyYuan(1000).MulPercent(0.6) != atype.YuanX(6)")
 	}
-	if m.MulPercent(30) != atype.YuanX(300) {
+	if m.Mul(atype.HundredPercent(30)) != atype.YuanX(300) {
 		t.Errorf("atype.MoneyYuan(1000).MulPercent(30) != atype.YuanX(300)")
 	}
 }
@@ -22,11 +22,11 @@ func TestDecimal(t *testing.T) {
 		a := math.Floor(rand.Float64()*10000*10000) / 10000 // 保留4位小数
 		b := math.Floor(rand.Float64()*n*10000) / 10000     // 保留4位小数
 		c := a * b
-		x := atype.Decimal64Unit(a).Mul(atype.Decimal64Unit(b))
-		if x != atype.Decimal64Unit(c) {
+		x := atype.DecimalUnit(a).Mul(atype.DecimalUnit(b))
+		if x != atype.DecimalUnit(c) {
 			t.Errorf("%f*%f=%f   %d", a, 10000.0, a*10000.0, int(a*10000.0))
 			t.Errorf("%f*%f=%f   %d", b, 10000.0, b*10000.0, int(b*10000.0))
-			t.Errorf("atype.Decimal %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Decimal(), atype.DecimalUnit(a), atype.DecimalUnit(b), x)
+			t.Errorf("atype.Real %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Real(), atype.DecimalUnit(a), atype.DecimalUnit(b), x)
 		}
 	}
 
@@ -40,7 +40,7 @@ func TestMoney(t *testing.T) {
 		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.80", m.Format())
 	}
 	p := 7 * atype.Thousandth
-	s := atype.YuanX(2360).MulDecimal(p.Decimal()).Fmt()
+	s := atype.YuanX(2360).Mul(p).Fmt()
 	if s != "16.52" {
 		t.Errorf("2360*0.7%% : %s != 16.52", s)
 	}

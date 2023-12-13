@@ -10,8 +10,7 @@ import (
 // 数据库有 money() 函数 money 支持正负；
 // SmallMoney:  UNSIGNED INT 范围：42万元左右；
 // Money:      BIGINT 范围：正负100亿元；
-type SmallMoney uint // 统一转换为 Money 后使用
-type Money int64     // 有效范围：正负100亿元；  ±100 0000亿
+type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
 
 const (
 	// 1 元 = 100 分 = 1000 毫 = 10000 money
@@ -34,7 +33,6 @@ const (
 	MinMoney = -100 * YiiYuan // -100亿
 	MaxMoney = 100 * YiiYuan  // 100亿
 
-	UnitSmallMoney = SmallMoney(UnitMoney)
 )
 
 func MoneyUnit(n float64) Money { return Money(math.Round(n * unitMoneyFloat64)) }
@@ -44,8 +42,50 @@ func YuanN(n int) Money         { return MoneyUnitN(n) }
 func DollarX(n float64) Money   { return MoneyUnit(n) }
 func DollarN(n int) Money       { return MoneyUnitN(n) }
 
-func (a Money) Int64() int64      { return int64(a) }
-func (a Money) Small() SmallMoney { return SmallMoney(a) }
+func (a Money) Int64() int64 { return int64(a) }
+
+func (a Money) MulN(n int64) Money { return a * Money(n) }
+func (a Money) MulF(p float64) Money {
+	return Money(math.Round(float64(a) * p / unitDecimalFloat64))
+}
+func (a Money) MulCeilF(p float64) Money {
+	return Money(math.Ceil(float64(a) * p / unitDecimalFloat64))
+}
+func (a Money) MulFloorF(p float64) Money {
+	return Money(math.Floor(float64(a) * p / unitDecimalFloat64))
+}
+func (a Money) Mul(p Decimal) Money {
+	return Money(math.Round(float64(a*Money(p)) / unitDecimalFloat64))
+}
+func (a Money) MulCeil(p Decimal) Money {
+	return Money(math.Ceil(float64(a*Money(p)) / unitDecimalFloat64))
+}
+func (a Money) MulFloor(p Decimal) Money { return a * Money(p) / Money(unitDecimalInt64) }
+
+func (a Money) Div(p Decimal) Money {
+	return Money(math.Round(float64(a.Int64()*unitDecimalInt64) / float64(p)))
+}
+func (a Money) DivCeil(p Decimal) Money {
+	return Money(math.Ceil(float64(a.Int64()*unitDecimalInt64) / float64(p)))
+}
+func (a Money) DivFloor(p Decimal) Money { return a * Money(unitDecimalInt64) / Money(p) }
+
+func (a Money) Of(b Money) Decimal {
+	return Decimal(math.Round(float64(a.Int64()*unitDecimalInt64) / float64(b)))
+}
+func (a Money) OfCeil(b Money) Decimal {
+	return Decimal(math.Ceil(float64(a.Int64()*unitDecimalInt64) / float64(b)))
+}
+func (a Money) OfFloor(b Money) Decimal {
+	return Decimal(Decimal(a) * UnitDecimal / Decimal(b))
+}
+
+func (a Money) Sign() string {
+	if a > 0 {
+		return "-"
+	}
+	return ""
+}
 
 // 整数部分
 func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
@@ -73,33 +113,3 @@ func (a Money) Format(decimals ...uint16) string {
 	ys := strconv.FormatInt(a.Precision(), 10)
 	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
 }
-
-func (a Money) Mul(n int64) Money { return a * Money(n) }
-
-// 采用四舍五入
-func (a Money) MulDecimal(p Decimal) Money {
-	return Money(math.Round(float64(a*Money(p)) / unitDecimalFloat64))
-}
-func (a Money) MulDecimalCeil(p Decimal) Money {
-	return Money(math.Ceil(float64(a*Money(p)) / unitDecimalFloat64))
-}
-func (a Money) MulDecimalFloor(p Decimal) Money { return a * Money(p) / Money(unitDecimalInt64) }
-
-func (a Money) MulPercent(p float64) Money {
-	return Money(math.Round(float64(a*Money(HundredPercent(p))) / unitDecimalFloat64))
-}
-func (a Money) MulPercentCeil(p float64) Money {
-	return Money(math.Ceil(float64(a*Money(HundredPercent(p))) / unitDecimalFloat64))
-}
-func (a Money) MulPercentFloor(p float64) Money {
-	return a * Money(HundredPercent(p)) / Money(unitDecimalInt64)
-}
-func (a Money) Div(n float64) Money      { return Money(math.Round(float64(a) / n)) }
-func (a Money) DivFloor(n float64) Money { return Money(math.Floor(float64(a) / n)) }
-func (a Money) DivCeil(n float64) Money  { return Money(math.Ceil(float64(a) / n)) }
-func (a Money) Of(b Money) Decimal       { return Decimal(a.Mul(unitDecimalInt64).Div(float64(b))) }
-func (a Money) OfFloor(b Money) Decimal  { return Decimal(a.Mul(unitDecimalInt64).DivFloor(float64(b))) }
-func (a Money) OfCeil(b Money) Decimal   { return Decimal(a.Mul(unitDecimalInt64).DivCeil(float64(b))) }
-
-func (a SmallMoney) P() Money   { return Money(a) } // prototype
-func (a SmallMoney) Uint() uint { return uint(a) }
