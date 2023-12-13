@@ -15,7 +15,7 @@ const (
 )
 
 func CoinUnit(n float64) Coin { return Coin(math.Round(n * unitCoinFloat64)) }
-func CoinUnitN(n int) Coin    { return Coin(n) * UnitCoin }
+func CoinUnitN(n uint) Coin   { return Coin(n) * UnitCoin }
 
 func (c Coin) Int64() int64 { return int64(c) }
 

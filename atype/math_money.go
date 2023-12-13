@@ -36,15 +36,16 @@ const (
 )
 
 func MoneyUnit(n float64) Money { return Money(math.Round(n * unitMoneyFloat64)) }
-func MoneyUnitN(n int) Money    { return Money(n) * UnitMoney }
+func MoneyUnitN(n int64) Money  { return Money(n) * UnitMoney }
 func YuanX(n float64) Money     { return MoneyUnit(n) }
-func YuanN(n int) Money         { return MoneyUnitN(n) }
+func YuanN(n int64) Money       { return MoneyUnitN(n) }
 func DollarX(n float64) Money   { return MoneyUnit(n) }
-func DollarN(n int) Money       { return MoneyUnitN(n) }
+func DollarN(n int64) Money     { return MoneyUnitN(n) }
 
 func (a Money) Int64() int64 { return int64(a) }
 
-func (a Money) MulN(n int64) Money { return a * Money(n) }
+func (a Money) MulN(n uint) Money { return a * Money(n) }
+
 func (a Money) MulF(p float64) Money {
 	return Money(math.Round(float64(a) * p / unitDecimalFloat64))
 }
@@ -61,6 +62,10 @@ func (a Money) MulCeil(p Decimal) Money {
 	return Money(math.Ceil(float64(a*Money(p)) / unitDecimalFloat64))
 }
 func (a Money) MulFloor(p Decimal) Money { return a * Money(p) / Money(unitDecimalInt64) }
+
+func (a Money) DivN(n uint) Money      { return a.Div(Decimal64UnitN(int64(n))) }
+func (a Money) DivCeilN(n uint) Money  { return a.DivCeil(Decimal64UnitN(int64(n))) }
+func (a Money) DivFloorN(n uint) Money { return a.DivFloor(Decimal64UnitN(int64(n))) }
 
 func (a Money) Div(p Decimal) Money {
 	return Money(math.Round(float64(a.Int64()*unitDecimalInt64) / float64(p)))

@@ -34,8 +34,8 @@ const (
 )
 
 // 不要直接 int(float) 转换，否则容易出错。比如 int(60135.0000) == 60134
-func DecimalUnit(n float64) Decimal { return Decimal(math.Round(n * unitDecimalFloat64)) }
-func Decimal64UnitN(n int) Decimal  { return Decimal(n) * UnitDecimal }
+func DecimalUnit(n float64) Decimal  { return Decimal(math.Round(n * unitDecimalFloat64)) }
+func Decimal64UnitN(n int64) Decimal { return Decimal(n) * UnitDecimal }
 
 // 如果是整数，直接  100 * Percent 即可
 func HundredPercent(n float64) Decimal { return Decimal(math.Round(n * 100.0)) }
