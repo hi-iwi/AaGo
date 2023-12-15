@@ -42,8 +42,12 @@ func YuanN(n int64) Money       { return MoneyUnitN(n) }
 func DollarX(n float64) Money   { return MoneyUnit(n) }
 func DollarN(n int64) Money     { return MoneyUnitN(n) }
 
-func (a Money) Int64() int64      { return int64(a) }
-func (a Money) Real() float64     { return float64(a) / unitMoneyFloat64 }
+func (a Money) Int64() int64  { return int64(a) }
+func (a Money) Real() float64 { return float64(a) / unitMoneyFloat64 }
+
+func (a Money) ExchangeQty(exchangeRate Decimal) uint {
+	return uint(math.Ceil(a.DivCeil(exchangeRate).Real()))
+}
 func (a Money) MulN(n uint) Money { return a * Money(n) }
 
 func (a Money) MulF(p float64) Money {
