@@ -42,26 +42,20 @@ func YuanN(n int64) Money       { return MoneyUnitN(n) }
 func DollarX(n float64) Money   { return MoneyUnit(n) }
 func DollarN(n int64) Money     { return MoneyUnitN(n) }
 
-func (a Money) Int64() int64  { return int64(a) }
+func (a Money) Int64() int64 { return int64(a) }
+
+// 实数形式
 func (a Money) Real() float64 { return float64(a) / unitMoneyFloat64 }
 
-func (a Money) ExchangeQtyCeil(exchangeRate Decimal) uint {
-	return uint(math.Ceil(a.DivCeil(exchangeRate).Real()))
-}
-func (a Money) ExchangeQtyFloor(exchangeRate Decimal) uint {
-	return uint(math.Floor(a.DivFloor(exchangeRate).Real()))
-}
+// 计算总价
 func (a Money) MulN(n uint) Money { return a * Money(n) }
 
-func (a Money) MulF(p float64) Money {
-	return Money(math.Round(float64(a) * p / unitDecimalFloat64))
-}
-func (a Money) MulCeilF(p float64) Money {
-	return Money(math.Ceil(float64(a) * p / unitDecimalFloat64))
-}
-func (a Money) MulFloorF(p float64) Money {
-	return Money(math.Floor(float64(a) * p / unitDecimalFloat64))
-}
+// 计算折扣价
+func (a Money) MulF(p float64) Money      { return Money(math.Round(float64(a) * p)) }
+func (a Money) MulCeilF(p float64) Money  { return Money(math.Ceil(float64(a) * p)) }
+func (a Money) MulFloorF(p float64) Money { return Money(math.Floor(float64(a) * p)) }
+
+// 计算折扣价
 func (a Money) Mul(p Decimal) Money {
 	return Money(math.Round(float64(a*Money(p)) / unitDecimalFloat64))
 }
@@ -70,10 +64,12 @@ func (a Money) MulCeil(p Decimal) Money {
 }
 func (a Money) MulFloor(p Decimal) Money { return a * Money(p) / Money(unitDecimalInt64) }
 
+// 计算单价
 func (a Money) DivN(n uint) Money      { return a.Div(Decimal64UnitN(int64(n))) }
 func (a Money) DivCeilN(n uint) Money  { return a.DivCeil(Decimal64UnitN(int64(n))) }
 func (a Money) DivFloorN(n uint) Money { return a.DivFloor(Decimal64UnitN(int64(n))) }
 
+// 计算折扣前价格
 func (a Money) Div(p Decimal) Money {
 	return Money(math.Round(float64(a.Int64()*unitDecimalInt64) / float64(p)))
 }
@@ -82,16 +78,16 @@ func (a Money) DivCeil(p Decimal) Money {
 }
 func (a Money) DivFloor(p Decimal) Money { return a * Money(unitDecimalInt64) / Money(p) }
 
+// 某个费用占总费用的比例
 func (a Money) Of(b Money) Decimal {
 	return Decimal(math.Round(float64(a.Int64()*unitDecimalInt64) / float64(b)))
 }
 func (a Money) OfCeil(b Money) Decimal {
 	return Decimal(math.Ceil(float64(a.Int64()*unitDecimalInt64) / float64(b)))
 }
-func (a Money) OfFloor(b Money) Decimal {
-	return Decimal(Decimal(a) * UnitDecimal / Decimal(b))
-}
+func (a Money) OfFloor(b Money) Decimal { return Decimal(a) * UnitDecimal / Decimal(b) }
 
+// 符号
 func (a Money) Sign() string {
 	if a > 0 {
 		return "-"

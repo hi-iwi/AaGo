@@ -44,6 +44,10 @@ func (p Decimal) Int64() int64     { return int64(p) }
 func (p Decimal) Real() float64    { return float64(p) / unitDecimalFloat64 }
 func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
 
+func (p Decimal) MulN(n int64) Decimal {
+	return p * Decimal(n)
+}
+
 //  0.8 * 0.8 = 0.64 (6400)   =====>   8000 * 8000  =  6400 [0000]
 // 1.6 * 0.8 = 1.28 (12800)    =====>  16000 * 8000 = 12800 [0000]
 // 0.009 * 0.04 =0.0003[6] (3)   -->   90 * 400  = 3[6000]     舍去最后一位
@@ -54,6 +58,17 @@ func (p Decimal) MulCeil(b Decimal) Decimal {
 	return Decimal(math.Ceil(float64(p*b) / unitDecimalFloat64))
 }
 func (p Decimal) MulFloor(b Decimal) Decimal { return p * b / UnitDecimal }
+
+func (p Decimal) DivN(n int64) Decimal {
+	return Decimal(math.Round(float64(p) / float64(n)))
+}
+func (p Decimal) DivCeilN(n int64) Decimal {
+	return Decimal(math.Ceil(float64(p) / float64(n)))
+}
+func (p Decimal) DivFloorN(n int64) Decimal {
+	return p / Decimal(n)
+}
+
 func (p Decimal) Div(b Decimal) Decimal {
 	return Decimal(math.Round(float64(p) * unitDecimalFloat64 / float64(b)))
 }
