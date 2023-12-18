@@ -37,7 +37,7 @@ func (c Coin) P() Money { return Money(c) }
 // 总兑换数量 total_coin = unit_coin * qty
 // qty = total_coin / unit_coin = (total_coin * UnitDecimal) / (exchange_rate * UnitCoin)
 func ExchangeCoin(exchangeRate Decimal, qty uint) Coin {
-	return Coin(exchangeRate.Int64() * int64(qty) * unitCoinInt64)
+	return Coin(exchangeRate.Int64() * int64(qty) * unitCoinInt64 / unitDecimalInt64)
 }
 func (c Coin) ExchangeQtyCeil(exchangeRate Decimal) uint {
 	return uint(math.Ceil(float64(c.Int64()*unitDecimalInt64) / float64(exchangeRate.Int64()*unitCoinInt64)))
