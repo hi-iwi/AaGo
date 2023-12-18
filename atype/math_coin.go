@@ -20,6 +20,9 @@ func CoinUnitN(n uint) Coin   { return Coin(n) * UnitCoin }
 
 func (c Coin) Int64() int64 { return int64(c) }
 
+// 实数形式
+func (c Coin) Real() float64 { return float64(c) / unitCoinFloat64 }
+
 // 金币抵扣商品
 //  .Off()  ==  .Offset(100*Percent)
 func (c Coin) Offset(rate Decimal) Money { return Money(c).MulFloor(rate) }
@@ -33,6 +36,9 @@ func (c Coin) P() Money { return Money(c) }
 // 单件商品可兑换金币 unit_coin<Coin> = exchange_rate.Real * UnitCoin = exchange_rate * UnitCoin / UnitDecimal
 // 总兑换数量 total_coin = unit_coin * qty
 // qty = total_coin / unit_coin = (total_coin * UnitDecimal) / (exchange_rate * UnitCoin)
+func ExchangeCoin(exchangeRate Decimal, qty uint) Coin {
+	return Coin(exchangeRate.Int64() * int64(qty) * unitCoinInt64)
+}
 func (c Coin) ExchangeQtyCeil(exchangeRate Decimal) uint {
 	return uint(math.Ceil(float64(c.Int64()*unitDecimalInt64) / float64(exchangeRate.Int64()*unitCoinInt64)))
 }
