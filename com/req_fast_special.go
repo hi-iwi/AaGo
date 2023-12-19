@@ -34,7 +34,7 @@ func (r *Req) QueryPaging(perPageLimit uint) atype.Paging {
 	pageEnd, _ := r.QueryUint(ParamPageEnd, false)
 	return atype.NewPaging(perPageLimit, page, pageEnd)
 }
- 
+
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	if e != nil {

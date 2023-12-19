@@ -18,7 +18,7 @@ func NewPaging(perPageLimit, page, pageEnd uint) Paging {
 	if page <= 1 {
 		page = 1
 	}
-	if pageEnd == 0 {
+	if pageEnd < page {
 		pageEnd = page
 	}
 	next := pageEnd + 1
