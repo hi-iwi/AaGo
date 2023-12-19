@@ -42,6 +42,6 @@ func NewPaging(perPageLimit, page, pageEnd, firstPageEnd uint) Paging {
 	}
 }
 
-func NewPaging2(perPageLimit, page, pageEnd uint) Paging {
-	return NewPaging(perPageLimit, page, pageEnd, pageEnd)
+func NewPage(page, pageEnd uint) Paging {
+	return NewPaging(10, page, pageEnd, pageEnd)
 }
