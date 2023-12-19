@@ -1,11 +1,12 @@
 package atype
 
 type Paging struct {
-	Page   uint `json:"page"`
-	Offset uint `json:"offset"`
-	Limit  uint `json:"limit"`
-	Prev   uint `json:"prev"`
-	Next   uint `json:"next"`
+	Page    uint `json:"page"`
+	PageEnd uint `json:"page_end"`
+	Offset  uint `json:"offset"`
+	Limit   uint `json:"limit"`
+	Prev    uint `json:"prev"`
+	Next    uint `json:"next"`
 }
 
 // @param perPageLimit 每页行数
@@ -27,11 +28,12 @@ func NewPaging(perPageLimit, page, pageEnd uint) Paging {
 	prev = page - 1
 
 	return Paging{
-		Page:   page,
-		Offset: offset,
-		Limit:  limit,
-		Prev:   prev,
-		Next:   next,
+		Page:    page,
+		PageEnd: pageEnd,
+		Offset:  offset,
+		Limit:   limit,
+		Prev:    prev,
+		Next:    next,
 	}
 
 }
