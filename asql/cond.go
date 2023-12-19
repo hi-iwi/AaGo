@@ -66,10 +66,10 @@ func (c *Cond) Try(orderBy string, offset, limit uint) *Cond {
 	if c.orderby == "" {
 		c.orderby = orderBy
 	}
-
-	c.offset = offset
-	c.limit = limit
-
+	if c.limit == 0 {
+		c.offset = offset
+		c.limit = limit
+	}
 	return c
 }
 
