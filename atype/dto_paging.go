@@ -8,32 +8,30 @@ type Paging struct {
 	Next   uint `json:"next"`
 }
 
-// @param args[0] firstPageLimit 首页行数
-// @param args[1] limitMax 其他页行数
-func NewPaging(page uint, args ...uint) Paging {
-	limit := uint(10)
-	firstPageLimit := limit
-	if len(args) > 0 {
-		firstPageLimit = args[0]
-		if len(args) > 1 {
-			limit = args[1]
-		}
-	}
+// @param perPageLimit 每页行数
+// @param page 起始页数
+// @param pageEnd 截止页数
+func NewPaging(perPageLimit, page, pageEnd uint) Paging {
+
 	var offset uint
 	var prev uint
 	if page <= 1 {
 		page = 1
-		limit = firstPageLimit
-	} else {
-		offset = firstPageLimit + (page-2)*limit
-		prev = page - 1
 	}
+	if pageEnd == 0 {
+		pageEnd = page
+	}
+	next := pageEnd + 1
+	limit := perPageLimit * (next - page)
+	offset = (page - 1) * perPageLimit
+	prev = page - 1
+
 	return Paging{
 		Page:   page,
 		Offset: offset,
 		Limit:  limit,
 		Prev:   prev,
-		Next:   page + 1,
+		Next:   next,
 	}
 
 }

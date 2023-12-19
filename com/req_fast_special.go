@@ -29,11 +29,12 @@ func (r *Req) QueryId(p string, params ...interface{}) (sid string, id uint64, e
 // 不可再指定offset/limit了，单一原则，通过page分页
 // @param firstPageLimit 首页行数
 // @param limitMax 其他页行数
-func (r *Req) QueryPaging(args ...uint) atype.Paging {
+func (r *Req) QueryPaging(perPageLimit uint) atype.Paging {
 	page, _ := r.QueryUint(ParamPage, false)
-	return atype.NewPaging(page, args...)
+	pageEnd, _ := r.QueryUint(ParamPageEnd, false)
+	return atype.NewPaging(perPageLimit, page, pageEnd)
 }
-
+ 
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
 	x, e := r.BodyString(p, len(required) == 0 || required[0])
 	if e != nil {

@@ -3,9 +3,10 @@ package com
 type ContentTypes string
 
 const (
-	ErrCodeKey = "com.error.code"
-	ErrMsgKey  = "com.error.msg"
-	ParamPage  = "page"
+	ErrCodeKey   = "com.error.code"
+	ErrMsgKey    = "com.error.msg"
+	ParamPage    = "page"
+	ParamPageEnd = "page_end"
 	//ParamLimit = "limit"
 	//ParamOffset    = "offset"
 	ParamStringify = "_stringify"
