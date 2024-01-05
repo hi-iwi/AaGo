@@ -39,10 +39,13 @@ func (c Coin) P() Money { return Money(c) }
 func ExchangeCoin(exchangeRate Decimal, qty uint) Coin {
 	return Coin(exchangeRate.Int64() * int64(qty) * unitCoinInt64 / unitDecimalInt64)
 }
+func (c Coin) ExchangeQty(exchangeRate Decimal, intHandler func(float64) float64) uint {
+	return uint(intHandler(float64(c.Int64()*unitDecimalInt64) / float64(exchangeRate.Int64()*unitCoinInt64)))
+}
 func (c Coin) ExchangeQtyCeil(exchangeRate Decimal) uint {
-	return uint(math.Ceil(float64(c.Int64()*unitDecimalInt64) / float64(exchangeRate.Int64()*unitCoinInt64)))
+	return c.ExchangeQty(exchangeRate, math.Ceil)
 }
 func (c Coin) ExchangeQtyFloor(exchangeRate Decimal) uint {
-	return uint(math.Floor(float64(c.Int64()*unitDecimalInt64) / float64(exchangeRate.Int64()*unitCoinInt64)))
+	return c.ExchangeQty(exchangeRate, math.Floor)
 }
 func (a Money) Coin() Coin { return Coin(a) }

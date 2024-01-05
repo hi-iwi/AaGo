@@ -51,30 +51,25 @@ func (p Decimal) MulN(n int64) Decimal {
 //  0.8 * 0.8 = 0.64 (6400)   =====>   8000 * 8000  =  6400 [0000]
 // 1.6 * 0.8 = 1.28 (12800)    =====>  16000 * 8000 = 12800 [0000]
 // 0.009 * 0.04 =0.0003[6] (3)   -->   90 * 400  = 3[6000]     舍去最后一位
-func (p Decimal) Mul(b Decimal) Decimal {
-	return Decimal(math.Round(float64(p*b) / unitDecimalFloat64))
+func (p Decimal) Mul(b Decimal, intHandler func(float64) float64) Decimal {
+	return Decimal(intHandler(float64(p*b) / unitDecimalFloat64))
 }
-func (p Decimal) MulCeil(b Decimal) Decimal {
-	return Decimal(math.Ceil(float64(p*b) / unitDecimalFloat64))
-}
+func (p Decimal) MulRound(b Decimal) Decimal { return p.Mul(b, math.Round) }
+func (p Decimal) MulCeil(b Decimal) Decimal  { return p.Mul(b, math.Ceil) }
 func (p Decimal) MulFloor(b Decimal) Decimal { return p * b / UnitDecimal }
 
-func (p Decimal) DivN(n int64) Decimal {
-	return Decimal(math.Round(float64(p) / float64(n)))
+func (p Decimal) DivN(n int64, intHandler func(float64) float64) Decimal {
+	return Decimal(intHandler(float64(p) / float64(n)))
 }
-func (p Decimal) DivCeilN(n int64) Decimal {
-	return Decimal(math.Ceil(float64(p) / float64(n)))
-}
-func (p Decimal) DivFloorN(n int64) Decimal {
-	return p / Decimal(n)
-}
+func (p Decimal) DivRoundN(n int64) Decimal { return p.DivN(n, math.Round) }
+func (p Decimal) DivCeilN(n int64) Decimal  { return p.DivN(n, math.Ceil) }
+func (p Decimal) DivFloorN(n int64) Decimal { return p / Decimal(n) }
 
-func (p Decimal) Div(b Decimal) Decimal {
-	return Decimal(math.Round(float64(p) * unitDecimalFloat64 / float64(b)))
+func (p Decimal) Div(b Decimal, intHandler func(float64) float64) Decimal {
+	return Decimal(intHandler(float64(p) * unitDecimalFloat64 / float64(b)))
 }
-func (p Decimal) DivCeil(b Decimal) Decimal {
-	return Decimal(math.Ceil(float64(p) * unitDecimalFloat64 / float64(b)))
-}
+func (p Decimal) DivRound(b Decimal) Decimal { return p.Div(b, math.Round) }
+func (p Decimal) DivCeil(b Decimal) Decimal  { return p.Div(b, math.Ceil) }
 func (p Decimal) DivFloor(b Decimal) Decimal { return p * UnitDecimal / b }
 func (p Decimal) Sign() string {
 	if p > 0 {
