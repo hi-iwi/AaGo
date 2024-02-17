@@ -34,21 +34,20 @@ func Caller(skip int) string {
 		} else if l > 1 {
 			f = seps[l-2] + "/" + seps[l-1]
 		}
-
-		if f == "aa/aa.go" || f == "aa/log.go" || f == "aa/log_default.go" {
-			continue
+		for _, sep := range seps {
+			// AaGo 框架上移到业务代码
+			if sep == "AaGo" {
+				msg = " [" + f + "]" + msg
+				continue
+			}
 		}
-
-		if fn == "context canceled" {
-			msg += "[" + f + ":" + strconv.Itoa(line) + fn + "]"
-			continue
-		} else if fn == "func1" {
+		if fn == "func1" {
 			fn = ""
 		} else {
 			fn = " " + fn
 		}
 
-		msg += "[" + f + ":" + strconv.Itoa(line) + fn + "] "
+		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]" + msg
 
 		return msg
 	}
