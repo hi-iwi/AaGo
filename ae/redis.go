@@ -9,7 +9,7 @@ func NewRedisError(err error) *Error {
 	case nil:
 		return nil
 	default:
-		pos := Caller(1)
-		return NewError(500, pos+" redis: "+err.Error())
+		msg, pos := CallerMsg(err.Error(), 1)
+		return NewError(500, pos+" redis: "+msg)
 	}
 }

@@ -6,21 +6,26 @@ import (
 	"strings"
 )
 
+func CallerMsg(errmsg string, skip int) (string, string) {
+	caller := Caller(skip)
+
+	if errmsg == "context canceled" {
+		skip++
+	}
+	caller = Caller(skip) + "->" + caller
+	return caller, errmsg
+}
 func Caller(skip int) string {
+	var msg string
 	for {
 		skip++ // 跳出Caller当前函数
 		pc, file, line, ok := runtime.Caller(skip)
 		if !ok {
-			return ""
+			return msg
 		}
 		pcs := runtime.FuncForPC(pc).Name() // 函数名
 		pi := strings.LastIndexByte(pcs, '.') + 1
 		fn := pcs[pi:]
-		if fn == "func1" {
-			fn = ""
-		} else {
-			fn = " " + fn
-		}
 		var f string
 		seps := strings.Split(file, "/")
 		l := len(seps)
@@ -33,6 +38,18 @@ func Caller(skip int) string {
 		if f == "aa/aa.go" || f == "aa/log.go" || f == "aa/log_default.go" {
 			continue
 		}
-		return "[" + f + ":" + strconv.Itoa(line) + fn + "]"
+
+		if fn == "context canceled" {
+			msg += "[" + f + ":" + strconv.Itoa(line) + fn + "]"
+			continue
+		} else if fn == "func1" {
+			fn = ""
+		} else {
+			fn = " " + fn
+		}
+
+		msg += "[" + f + ":" + strconv.Itoa(line) + fn + "] "
+
+		return msg
 	}
 }

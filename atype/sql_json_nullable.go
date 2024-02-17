@@ -14,7 +14,7 @@ type NullInts struct{ sql.NullString }          // int json array
 type NullUints struct{ sql.NullString }         // uint json array
 type NullUint64s struct{ sql.NullString }       // uint64 json array
 type NullStrings struct{ sql.NullString }       // string json array
-type StringMap struct{ sql.NullString }         // map[string]string
+type StringMap struct{ sql.NullString }         // map[string]string   // JSON 规范，key 必须为字符串
 type StringMapsMap struct{ sql.NullString }     // map[string][]map[string]string
 type StringsMap struct{ sql.NullString }        // map[string][]string
 type ComplexStringMap struct{ sql.NullString }  // map[string]map[string]string

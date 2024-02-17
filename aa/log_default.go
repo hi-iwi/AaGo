@@ -42,7 +42,8 @@ func xprintf(ctx context.Context, level ErrorLevel, msg string, args ...interfac
 	if errlevel != AllError && errlevel&level == 0 {
 		return
 	}
-	head := xlogHeader(ctx, ae.Caller(1), level)
+	_, caller := ae.CallerMsg(msg, 1)
+	head := xlogHeader(ctx, caller, level)
 	msg = head + msg
 	if len(args) == 0 {
 		log.Println(msg)
