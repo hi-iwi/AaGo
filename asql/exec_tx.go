@@ -4,11 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"github.com/hi-iwi/AaGo/ae"
+	"log"
 )
 
+type txResult uint8
 type Tx struct {
-	Tx *sql.Tx
+	result txResult
+	Tx     *sql.Tx
 }
+
+const (
+	rollback txResult = 1
+	commit   txResult = 2
+)
 
 func (d *DB) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, *ae.Error) {
 	tx, err := d.DB.BeginTx(ctx, opts)
@@ -20,10 +28,12 @@ func (d *DB) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, *ae.Error) {
 }
 
 func (t *Tx) Rollback() *ae.Error {
+	t.result = rollback
 	return ae.NewSqlError(t.Tx.Rollback())
 }
 
 func (t *Tx) Commit() *ae.Error {
+	t.result = commit
 	return ae.NewSqlError(t.Tx.Commit())
 }
 
@@ -32,6 +42,10 @@ func (t *Tx) Recover() func() {
 	return func() {
 		if p := recover(); p != nil {
 			t.Tx.Rollback()
+		}
+		if t.result == 0 {
+			log.Println("[waring] tx not commit")
+			t.Tx.Commit()
 		}
 	}
 }
