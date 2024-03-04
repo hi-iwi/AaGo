@@ -41,7 +41,7 @@ loop:
 			// AaGo 框架上移到业务代码
 			s := strings.ToLower(sep)
 			if strings.Index(s, "!aa!go@") == 0 {
-				msg = " [" + f + "]" + msg
+				msg = " [" + f + "]"
 				continue loop
 			}
 		}
