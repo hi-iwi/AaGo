@@ -1,3 +1,6 @@
+//go:build !windows && !arm && !arm64
+// +build !windows,!arm,!arm64
+
 package util
 
 import (
