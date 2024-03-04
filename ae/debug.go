@@ -1,7 +1,6 @@
 package ae
 
 import (
-	"log"
 	"runtime"
 	"strconv"
 	"strings"
@@ -20,6 +19,7 @@ func CallerMsg(errmsg string, skip int) (string, string) {
 }
 func Caller(skip int) string {
 	var msg string
+loop:
 	for {
 		skip++ // 跳出Caller当前函数
 		pc, file, line, ok := runtime.Caller(skip)
@@ -40,11 +40,9 @@ func Caller(skip int) string {
 		for _, sep := range seps {
 			// AaGo 框架上移到业务代码
 			s := strings.ToLower(sep)
-			aaGo := "!aa!go@"
-			log.Println(s, strings.Index(s, aaGo))
-			if strings.Index(s, aaGo) == 0 {
+			if strings.Index(s, "!aa!go@") == 0 {
 				msg = " [" + f + "]" + msg
-				continue
+				continue loop
 			}
 		}
 		if fn == "func1" {
@@ -52,9 +50,7 @@ func Caller(skip int) string {
 		} else {
 			fn = " " + fn
 		}
-
-		msg = "[" + file + ":" + strconv.Itoa(line) + fn + "]" + msg
-
+		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]" + msg
 		return msg
 	}
 }
