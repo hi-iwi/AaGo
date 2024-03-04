@@ -34,7 +34,7 @@ type Point struct {
 }
 
 /*
- 一般point 需要建 spatial 索引，就需要单独到一个表里，不应该放在一起
+一般point 需要建 spatial 索引，就需要单独到一个表里，不应该放在一起
 */
 type Position struct{ sql.NullString } // []byte // postion, coordinate or point
 type Ip struct{ sql.NullString }       //  固定16位长度 net.IP               // IP Address
@@ -275,7 +275,7 @@ func (n Uint24) Uint32() uint32 { return uint32(n) }
 func (b BitPos) Uint8() uint8        { return uint8(b) }
 func (b BitPosition) Uint16() uint16 { return uint16(b) }
 
-//  SET x=x|v
+// SET x=x|v
 func (b Bitwise) SetStmt(fieldName string) string {
 	if b.BitValue {
 		bv := 1 << b.BitPos
@@ -379,6 +379,12 @@ func (d Date) OrMax() Date {
 	}
 	return d
 }
+func (d Date) OrNow() Date {
+	if !d.Valid() {
+		return ToDate(time.Now())
+	}
+	return d
+}
 
 func (d Date) Ymd() Ymd {
 	s := strings.ReplaceAll(d.String(), "-", "")
@@ -428,6 +434,12 @@ func (d Datetime) OrMin() Datetime {
 func (d Datetime) OrMax() Datetime {
 	if !d.Valid() {
 		return MaxDatetime
+	}
+	return d
+}
+func (d Datetime) OrNow() Datetime {
+	if !d.Valid() {
+		return ToDatetime(time.Now())
 	}
 	return d
 }
