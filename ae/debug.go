@@ -1,6 +1,7 @@
 package ae
 
 import (
+	"log"
 	"runtime"
 	"strconv"
 	"strings"
@@ -40,6 +41,7 @@ func Caller(skip int) string {
 			// AaGo 框架上移到业务代码
 			s := strings.ToLower(sep)
 			aaGo := "!aa!go@"
+			log.Println(s, strings.Index(s, aaGo))
 			if strings.Index(s, aaGo) == 0 {
 				msg = " [" + f + "]" + msg
 				continue
@@ -51,7 +53,7 @@ func Caller(skip int) string {
 			fn = " " + fn
 		}
 
-		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]" + msg
+		msg = "[" + file + ":" + strconv.Itoa(line) + fn + "]" + msg
 
 		return msg
 	}
