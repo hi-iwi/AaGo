@@ -38,7 +38,9 @@ func Caller(skip int) string {
 		}
 		for _, sep := range seps {
 			// AaGo 框架上移到业务代码
-			if strings.ToLower(sep) == strings.ToLower("AaGo") {
+			s := strings.ToLower(sep)
+			aaGo := "!aa!go@"
+			if strings.Index(s, aaGo) == 0 {
 				msg = " [" + f + "]" + msg
 				continue
 			}
@@ -49,7 +51,7 @@ func Caller(skip int) string {
 			fn = " " + fn
 		}
 
-		msg = "[" + file + ":" + strconv.Itoa(line) + fn + "]" + msg
+		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]" + msg
 
 		return msg
 	}
