@@ -13,7 +13,7 @@ func CallerMsg(errmsg string, skip int) (string, string) {
 		skip++
 	}
 	caller = Caller(skip) + "->" + caller
-	return caller, errmsg
+	return errmsg, caller
 }
 func Caller(skip int) string {
 	var msg string
