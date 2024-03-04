@@ -8,11 +8,13 @@ import (
 
 func CallerMsg(errmsg string, skip int) (string, string) {
 	caller := Caller(skip)
-
 	if errmsg == "context canceled" {
 		skip++
+		caller2 := Caller(skip)
+		if caller2 != caller {
+			caller = Caller(skip) + "->" + caller
+		}
 	}
-	caller = Caller(skip) + "->" + caller
 	return errmsg, caller
 }
 func Caller(skip int) string {
@@ -36,7 +38,7 @@ func Caller(skip int) string {
 		}
 		for _, sep := range seps {
 			// AaGo 框架上移到业务代码
-			if sep == "AaGo" {
+			if strings.ToLower(sep) == strings.ToLower("AaGo") {
 				msg = " [" + f + "]" + msg
 				continue
 			}
@@ -47,7 +49,7 @@ func Caller(skip int) string {
 			fn = " " + fn
 		}
 
-		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]" + msg
+		msg = "[" + file + ":" + strconv.Itoa(line) + fn + "]" + msg
 
 		return msg
 	}
