@@ -19,7 +19,6 @@ func CallerMsg(errmsg string, skip int) (string, string) {
 }
 func Caller(skip int) string {
 	var msg string
-loop:
 	for {
 		skip++ // 跳出Caller当前函数
 		pc, file, line, ok := runtime.Caller(skip)
@@ -37,20 +36,12 @@ loop:
 		} else if l > 1 {
 			f = seps[l-2] + "/" + seps[l-1]
 		}
-		for _, sep := range seps {
-			// AaGo 框架上移到业务代码
-			s := strings.ToLower(sep)
-			if strings.Index(s, "!aa!go@") == 0 {
-				msg = " [" + f + "]"
-				continue loop
-			}
-		}
 		if fn == "func1" {
 			fn = ""
 		} else {
 			fn = " " + fn
 		}
-		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]" + msg
+		msg = "[" + f + ":" + strconv.Itoa(line) + fn + "]"
 		return msg
 	}
 }
