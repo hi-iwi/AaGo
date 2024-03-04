@@ -2,10 +2,9 @@ package com
 
 import (
 	"github.com/hi-iwi/AaGo/aa"
+	"github.com/hi-iwi/AaGo/ae"
 	"github.com/kataras/iris/v12"
 	"net/http"
-	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -39,9 +38,8 @@ func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 	if cs.Code >= 500 {
 		msg := cs.Msg
 		ctx := aa.Context(ictx)
-		_, file, line, _ := runtime.Caller(2)
-		a := strings.Split(file, "/")
-		Log.Error(ctx, "file: %s, code: %d, msg: %s", a[len(a)-1]+":"+strconv.Itoa(line)+" ", cs.Code, msg)
+		m := ae.Caller(1) + " " + msg
+		Log.Error(ctx, m)
 
 		// hide errmsg
 		cs.Msg = dict.Code2Msg(cs.Code)
