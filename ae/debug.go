@@ -34,8 +34,10 @@ loop:
 		l := len(seps)
 		if l == 1 {
 			f = seps[0]
-		} else if l > 1 {
-			f = seps[l-2] + "/" + seps[l-1]
+		} else if l == 2 {
+			f = seps[0] + "/" + seps[1]
+		} else {
+			f = seps[l-3] + "/" + seps[l-2] + "/" + seps[l-1]
 		}
 		for _, sep := range seps {
 			// AaGo 框架上移到业务代码
