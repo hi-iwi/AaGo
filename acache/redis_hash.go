@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
+func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...any) *ae.Error {
 	_, err := rdb.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		err1 := pipe.HSet(ctx, k, values...).Err()
 		err2 := pipe.Expire(ctx, k, expires).Err()
@@ -20,7 +20,7 @@ func HSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k strin
 	return ae.NewRedisError(err)
 }
 
-func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...interface{}) *ae.Error {
+func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k string, values ...any) *ae.Error {
 	keys := make(map[string]struct{}, len(values)/2)
 	for i := 0; i < len(values); i += 2 {
 		f := fmt.Sprintf("%v", values[i])
@@ -41,7 +41,7 @@ func HMSet(ctx context.Context, rdb *redis.Client, expires time.Duration, k stri
 	return ae.NewRedisError(err)
 }
 
-func HScan(ctx context.Context, rdb *redis.Client, dest interface{}, k string, fields ...string) *ae.Error {
+func HScan(ctx context.Context, rdb *redis.Client, dest any, k string, fields ...string) *ae.Error {
 	c := rdb.HMGet(ctx, k, fields...)
 	v, err := c.Result()
 	if err != nil {
@@ -59,7 +59,7 @@ func HScan(ctx context.Context, rdb *redis.Client, dest interface{}, k string, f
 	return e
 }
 
-func HGetAll(ctx context.Context, rdb *redis.Client, k string, dest interface{}) *ae.Error {
+func HGetAll(ctx context.Context, rdb *redis.Client, k string, dest any) *ae.Error {
 	c := rdb.HGetAll(ctx, k)
 	result, err := c.Result()
 	if err != nil {
@@ -97,7 +97,7 @@ func HGetAllInt(ctx context.Context, rdb *redis.Client, k string, restrict bool)
 }
 
 // 只要存在一个，就不报错；全是nil，返回 ae.NotFound
-func TryHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]interface{}, bool, *ae.Error) {
+func TryHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]any, bool, *ae.Error) {
 	v, err := rdb.HMGet(ctx, k, fields...).Result()
 	if err != nil {
 		return nil, false, ae.NewRedisError(err)
@@ -307,7 +307,7 @@ func TryHMGetInt8(ctx context.Context, rdb *redis.Client, k string, fields []str
 }
 
 // 不能有一个是nil
-func MustHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]interface{}, *ae.Error) {
+func MustHMGet(ctx context.Context, rdb *redis.Client, k string, fields ...string) ([]any, *ae.Error) {
 	v, err := rdb.HMGet(ctx, k, fields...).Result()
 	if err != nil {
 		return nil, ae.NewRedisError(err)

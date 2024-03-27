@@ -174,7 +174,7 @@ func (p Position) Bytes() []byte {
 func (p Position) Ok() bool {
 	return p.Valid && len(p.String) == 25
 }
-func binaryRead(r io.Reader, littleEndian bool, data interface{}) error {
+func binaryRead(r io.Reader, littleEndian bool, data any) error {
 	if littleEndian {
 		return binary.Read(r, binary.LittleEndian, data)
 	}

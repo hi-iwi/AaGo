@@ -8,7 +8,7 @@ import (
 )
 
 // {id:uint64}  or {sid:string}
-func (r *Req) QueryId(p string, params ...interface{}) (sid string, id uint64, e *ae.Error) {
+func (r *Req) QueryId(p string, params ...any) (sid string, id uint64, e *ae.Error) {
 	var x *ReqProp
 	if x, e = r.Query(p, params...); e != nil {
 		return

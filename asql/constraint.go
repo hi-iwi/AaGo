@@ -16,7 +16,7 @@ func byAlias(fields ...string) bool {
 	return !(char >= 'A' && char <= 'Z')
 }
 
-func Comma(u interface{}, fields ...string) (s string) {
+func Comma(u any, fields ...string) (s string) {
 	if byAlias(fields...) {
 		s = atype.JoinByNames(u, atype.JoinMySQL, ", ", fields...)
 	} else {
@@ -25,7 +25,7 @@ func Comma(u interface{}, fields ...string) (s string) {
 	return strings.Trim(defenseInjection(s), " ")
 }
 
-func CommaWithEnd(u interface{}, fields ...string) string {
+func CommaWithEnd(u any, fields ...string) string {
 	s := Comma(u, fields...)
 	if len(s) == 0 {
 		return s
@@ -33,7 +33,7 @@ func CommaWithEnd(u interface{}, fields ...string) string {
 	return s + ", "
 }
 
-func CommaWithHead(u interface{}, fields ...string) string {
+func CommaWithHead(u any, fields ...string) string {
 	s := Comma(u, fields...)
 	if len(s) == 0 {
 		return s
@@ -41,7 +41,7 @@ func CommaWithHead(u interface{}, fields ...string) string {
 	return "," + s
 }
 
-func And(u interface{}, fields ...string) (s string) {
+func And(u any, fields ...string) (s string) {
 	if byAlias(fields...) {
 		s = atype.JoinByNames(u, atype.JoinMySQL, " AND ", fields...)
 	} else {
@@ -51,7 +51,7 @@ func And(u interface{}, fields ...string) (s string) {
 	return strings.Trim(defenseInjection(s), " ")
 }
 
-func Or(u interface{}, fields ...string) (s string) {
+func Or(u any, fields ...string) (s string) {
 	if byAlias(fields...) {
 		s = atype.JoinByNames(u, atype.JoinMySQL, " OR ", fields...)
 	} else {
@@ -60,7 +60,7 @@ func Or(u interface{}, fields ...string) (s string) {
 	return strings.Trim(s, " ")
 }
 
-func Like(u interface{}, fields ...string) (s string) {
+func Like(u any, fields ...string) (s string) {
 	if byAlias(fields...) {
 		s = atype.JoinByNames(u, atype.JoinMySqlFullLike, " OR ", fields...)
 	} else {
@@ -69,7 +69,7 @@ func Like(u interface{}, fields ...string) (s string) {
 	return strings.Trim(defenseInjection(s), " ")
 }
 
-func AndWithWhere(u interface{}, fields ...string) string {
+func AndWithWhere(u any, fields ...string) string {
 	s := And(u, fields...)
 	if len(s) > 0 {
 		s = " WHERE " + s + " "
@@ -77,7 +77,7 @@ func AndWithWhere(u interface{}, fields ...string) string {
 	return s
 }
 
-func OrWithWhere(u interface{}, fields ...string) string {
+func OrWithWhere(u any, fields ...string) string {
 	s := Or(u, fields...)
 	if len(s) > 0 {
 		s = " WHERE " + s + " "

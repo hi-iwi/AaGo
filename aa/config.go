@@ -18,7 +18,7 @@ type Config interface {
 	MustGetString(key string) (string, error)
 	GetString(key string, defaultValue ...string) string
 	MustGet(key string) (*atype.Atype, error)
-	Get(key string, defaultValue ...interface{}) *atype.Atype
+	Get(key string, defaultValue ...any) *atype.Atype
 }
 
 func parseToDuration(d string) time.Duration {

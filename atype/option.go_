@@ -8,8 +8,8 @@ import (
 
 type Option struct {
 	Key   uint        `json:"key"` // <option key value>text</option>
-	Value interface{} `json:"value"`
-	Pid   interface{} `json:"pid"`
+	Value any `json:"value"`
+	Pid   any `json:"pid"`
 	Text  string      `json:"text"`
 
 	Inherit Booln  `json:"inherit"` // 如果为true，下级会增加一个选项
@@ -20,8 +20,8 @@ type Option struct {
 }
 
 // 这个用到映射，尽量仅用于初始化阶段
-// @param names map[interface{}]string   {value:text}
-func ToOptions(names interface{}) ([]Option, error) {
+// @param names map[any]string   {value:text}
+func ToOptions(names any) ([]Option, error) {
 	t := reflect.TypeOf(names)
 	v := reflect.ValueOf(names)
 	k := t.Kind()
@@ -39,7 +39,7 @@ func ToOptions(names interface{}) ([]Option, error) {
 	}
 	return opts, nil
 }
-func ToOptionsJson(names interface{}) ([]byte, error) {
+func ToOptionsJson(names any) ([]byte, error) {
 	opts, err := ToOptions(names)
 	if err != nil {
 		return nil, err

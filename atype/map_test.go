@@ -6,11 +6,11 @@ import (
 )
 
 func TestAtypeMap(t *testing.T) {
-	arr := map[interface{}]interface{}{
+	arr := map[any]any{
 		1:      100,
 		"name": "Iwi",
 		"1":    "999",
-		"test": map[string]interface{}{
+		"test": map[string]any{
 			"nation": "China",
 			"city":   "Shenzhen",
 		},

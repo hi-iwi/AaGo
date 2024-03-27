@@ -7,18 +7,18 @@ import (
 )
 
 // ?_stringify=1  weak language, turn int64/uint64 fields into string
-func (resp *RespStruct) decoratePayload(payload interface{}, tagname string) (interface{}, *ae.Error) {
+func (resp *RespStruct) decoratePayload(payload any, tagname string) (any, *ae.Error) {
 	stringify, _ := resp.req.QueryBool(ParamStringify)
 	if stringify {
 		return StringifyPayloadFields(payload, tagname)
 	}
 	return payload, nil
 }
-func stringifySlice(v reflect.Value, tagname string) (interface{}, *ae.Error) {
+func stringifySlice(v reflect.Value, tagname string) (any, *ae.Error) {
 	if v.Len() == 0 {
 		return nil, nil
 	}
-	p := make([]interface{}, v.Len())
+	p := make([]any, v.Len())
 	var e *ae.Error
 	for i := 0; i < v.Len(); i++ {
 		if !v.Index(i).CanInterface() {
@@ -31,13 +31,13 @@ func stringifySlice(v reflect.Value, tagname string) (interface{}, *ae.Error) {
 	}
 	return p, nil
 }
-func stringifyStruct(t reflect.Type, v reflect.Value, tagname string) (interface{}, *ae.Error) {
+func stringifyStruct(t reflect.Type, v reflect.Value, tagname string) (any, *ae.Error) {
 	// v 有可能是一个nil指针
 	if t.NumField() == 0 {
 		return nil, nil
 	}
 
-	p := make(map[string]interface{}, 0)
+	p := make(map[string]any, 0)
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		ks := f.Tag.Get(tagname)
@@ -56,7 +56,7 @@ func stringifyStruct(t reflect.Type, v reflect.Value, tagname string) (interface
 
 		//   struct in struct
 		if ks == "" {
-			m, ok := w.(map[string]interface{})
+			m, ok := w.(map[string]any)
 			if !ok {
 				//p[t.Name()] = w  // 忽略 json/xml tag不存在或为空
 				continue
@@ -73,12 +73,12 @@ func stringifyStruct(t reflect.Type, v reflect.Value, tagname string) (interface
 	}
 	return p, nil
 }
-func stringifyMap(t reflect.Type, v reflect.Value, tagname string) (interface{}, *ae.Error) {
+func stringifyMap(t reflect.Type, v reflect.Value, tagname string) (any, *ae.Error) {
 	// v 有可能是一个nil指针
 	if len(v.MapKeys()) == 0 {
 		return nil, nil
 	}
-	p := make(map[string]interface{}, v.Len())
+	p := make(map[string]any, v.Len())
 	for _, key := range v.MapKeys() {
 		ks := key.String()
 		// 忽略json/xml 里面的  -
@@ -92,7 +92,7 @@ func stringifyMap(t reflect.Type, v reflect.Value, tagname string) (interface{},
 
 		//   struct in struct
 		if ks == "" {
-			m, ok := w.(map[string]interface{})
+			m, ok := w.(map[string]any)
 			if !ok {
 				p[t.Name()] = w
 			} else {
@@ -108,7 +108,7 @@ func stringifyMap(t reflect.Type, v reflect.Value, tagname string) (interface{},
 }
 
 // 2.0 版本，仅针对初级原始类型为 int64/uint64 字段转为 string
-func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *ae.Error) {
+func StringifyPayloadFields(payload any, tagname string) (any, *ae.Error) {
 	if payload == nil {
 		return nil, nil
 	}
@@ -151,7 +151,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 }
 
 // 1.0 版本，针对所有字段全部替换
-//func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *ae.Error) {
+//func StringifyPayloadFields(payload any, tagname string) (any, *ae.Error) {
 //	if payload == nil {
 //		return nil, nil
 //	}
@@ -174,7 +174,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 //		if v.Len() == 0 {
 //			return nil, nil
 //		}
-//		p := make([]interface{}, v.Len())
+//		p := make([]any, v.Len())
 //		for i := 0; i < v.Len(); i++ {
 //			p[i], e = StringifyPayloadFields(v.Index(i).Interface(), tagname)
 //			if e != nil {
@@ -188,7 +188,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 //			return nil, nil
 //		}
 //
-//		p := make(map[string]interface{}, 0)
+//		p := make(map[string]any, 0)
 //		for i := 0; i < t.NumField(); i++ {
 //			f := t.Field(i)
 //			ks := f.Tag.Get(tagname)
@@ -203,7 +203,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 //
 //			//   struct in struct
 //			if ks == "" {
-//				m, ok := w.(map[string]interface{})
+//				m, ok := w.(map[string]any)
 //				if !ok {
 //					return nil, ae.NewErr("unsolved json stringify struct `%v`, maybe tag `json:` not defined", w)
 //				}
@@ -221,7 +221,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 //		if v.Kind() == reflect.Invalid || len(v.MapKeys()) == 0 {
 //			return nil, nil
 //		}
-//		p := make(map[string]interface{}, v.Len())
+//		p := make(map[string]any, v.Len())
 //		for _, key := range v.MapKeys() {
 //			ks := key.String()
 //			// 忽略json/xml 里面的  -
@@ -235,7 +235,7 @@ func StringifyPayloadFields(payload interface{}, tagname string) (interface{}, *
 //
 //			//   struct in struct
 //			if ks == "" {
-//				m, ok := w.(map[string]interface{})
+//				m, ok := w.(map[string]any)
 //				if !ok {
 //					return nil, ae.NewErr("unsolved json stringify map `%v`, maybe tag `json:` not defined", w)
 //				}

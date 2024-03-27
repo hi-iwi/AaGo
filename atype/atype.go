@@ -9,27 +9,27 @@ type Abyte byte
 
 // fastjson 命名就是 autotype
 type Atype struct {
-	raw interface{}
+	raw any
 }
 
-func New(data interface{}) *Atype {
+func New(data any) *Atype {
 	return &Atype{
 		raw: data,
 	}
 }
 
-func (p *Atype) Raw() interface{} {
+func (p *Atype) Raw() any {
 	return p.raw
 }
-func (p *Atype) Reload(v interface{}) {
+func (p *Atype) Reload(v any) {
 	p.raw = v
 }
 
-// Get get key from a map[string]interface{}
+// Get get key from a map[string]any
 // p.Get("users.1.name") is short for p.Get("user", "1", "name")
 // @warn p.Get("user", "1", "name") is diffirent with p.Get("user", 1, "name")
 
-func (p *Atype) Get(keys ...interface{}) (*Atype, error) {
+func (p *Atype) Get(keys ...any) (*Atype, error) {
 	v, err := NewMap(p.raw).Get(keys[0], keys[1:]...)
 	return New(v), err
 }
@@ -67,11 +67,11 @@ func (p *Atype) DefaultBool(defaultValue bool) bool {
 	return v
 }
 
-func (p *Atype) Slice() ([]interface{}, error) {
+func (p *Atype) Slice() ([]any, error) {
 	return Slice(p.raw)
 }
 
-func (p *Atype) DefaultSlice(defaultValue []interface{}) []interface{} {
+func (p *Atype) DefaultSlice(defaultValue []any) []any {
 	v, err := p.Slice()
 	if err != nil {
 		return defaultValue

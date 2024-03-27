@@ -8,11 +8,11 @@ import (
 
 func TestConvStrings(t *testing.T) {
 	s := `{"k":["a","b"]}`
-	var x map[string]interface{}
+	var x map[string]any
 	if err := json.Unmarshal([]byte(s), &x); err != nil {
 		t.Error(err.Error())
 	}
-	b, ok := x["k"].([]interface{})
+	b, ok := x["k"].([]any)
 	if !ok {
 		t.Error("parse strings fail")
 	}
@@ -29,22 +29,22 @@ func TestConvStrings(t *testing.T) {
 }
 func TestConvStringMap(t *testing.T) {
 	s := `{"k":{"a":"100","b":"200"}}`
-	var x map[string]interface{}
+	var x map[string]any
 	if err := json.Unmarshal([]byte(s), &x); err != nil {
 		t.Error(err.Error())
 	}
-	_, ok := x["k"].(map[string]interface{})
+	_, ok := x["k"].(map[string]any)
 	if !ok {
 		t.Error("parse string map fail")
 	}
 }
 func TestConvComplexStringMap(t *testing.T) {
 	s := `{"k":{"a":{"b":"100"}}}`
-	var x map[string]interface{}
+	var x map[string]any
 	if err := json.Unmarshal([]byte(s), &x); err != nil {
 		t.Error(err.Error())
 	}
-	b, ok := x["k"].(map[string]interface{})
+	b, ok := x["k"].(map[string]any)
 	if !ok {
 		t.Error("parse complex string map fail")
 	}
@@ -55,11 +55,11 @@ func TestConvComplexStringMap(t *testing.T) {
 }
 func TestConvStringsMap(t *testing.T) {
 	s := `{"k":{"a":["100","200"]}}`
-	var x map[string]interface{}
+	var x map[string]any
 	if err := json.Unmarshal([]byte(s), &x); err != nil {
 		t.Error(err.Error())
 	}
-	b, ok := x["k"].(map[string]interface{})
+	b, ok := x["k"].(map[string]any)
 	if !ok {
 		t.Error("parse complex string map fail")
 	}
@@ -70,11 +70,11 @@ func TestConvStringsMap(t *testing.T) {
 }
 func TestConvComplexStringsMap(t *testing.T) {
 	s := `{"k":{"a":[["100","200"],["300","400","500"]]}}`
-	var x map[string]interface{}
+	var x map[string]any
 	if err := json.Unmarshal([]byte(s), &x); err != nil {
 		t.Error(err.Error())
 	}
-	b, ok := x["k"].(map[string]interface{})
+	b, ok := x["k"].(map[string]any)
 	if !ok {
 		t.Error("parse complex string map fail")
 	}
@@ -85,11 +85,11 @@ func TestConvComplexStringsMap(t *testing.T) {
 }
 func TestConvStringMaps(t *testing.T) {
 	s := `{"k":[{"a":"100"},{"b":"300","C":"400"}]}`
-	var x map[string]interface{}
+	var x map[string]any
 	if err := json.Unmarshal([]byte(s), &x); err != nil {
 		t.Error(err.Error())
 	}
-	b, ok := x["k"].([]interface{})
+	b, ok := x["k"].([]any)
 	if !ok {
 		t.Error("parse complex string map fail")
 	}
@@ -105,12 +105,12 @@ func TestConvComplexMaps(t *testing.T) {
 		`{"a":100,"b":[{"_TIP":"","得到": [{"士大夫": "算法撒旦", "_TIP":"注释"}, {"士大夫士大夫": "撒旦发射点"}]}]}`,
 	}
 	for _, s := range ss {
-		var x map[string]interface{}
+		var x map[string]any
 		if err := json.Unmarshal([]byte(s), &x); err != nil {
 			t.Error(err.Error())
 		}
 
-		b, ok := x["b"].([]interface{})
+		b, ok := x["b"].([]any)
 		if !ok {
 			t.Error("parse json `b` fail " + s)
 		}

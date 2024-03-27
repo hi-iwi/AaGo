@@ -3,8 +3,19 @@ package ae
 import (
 	"database/sql"
 	"database/sql/driver"
+	"fmt"
 	"regexp"
+	"strings"
 )
+
+func NewScanError(err error) *Error {
+	if err == nil {
+		return nil
+	}
+	msg, pos := CallerMsg(err.Error(), 1)
+
+	return NewError(500, pos+": "+msg)
+}
 
 func NewSqlError(err error) *Error {
 	if err == nil {
@@ -14,20 +25,20 @@ func NewSqlError(err error) *Error {
 
 	switch err {
 	case driver.ErrBadConn:
-		NewError(500, pos+" sql bad conn: "+msg)
+		return NewError(500, pos+" sql bad conn: "+msg)
 	case driver.ErrSkip:
 		// ErrSkip may be returned by some optional interfaces' methods to
 		// indicate at runtime that the fast path is unavailable and the sql
 		// package should continue as if the optional interface was not
 		// implemented. ErrSkip is only supported where explicitly
 		// documented.
-		NewError(500, pos+" sql skip: "+msg)
+		return NewError(500, pos+" sql skip: "+msg)
 	case driver.ErrRemoveArgument:
-		NewError(500, pos+" sql remove argument: "+msg)
+		return NewError(500, pos+" sql remove argument: "+msg)
 	case sql.ErrConnDone:
 		// ErrConnDone is returned by any operation that is performed on a connection
 		// that has already been returned to the connection pool.
-		NewError(500, pos+" sql conn done: "+msg)
+		return NewError(500, pos+" sql conn done: "+msg)
 	case sql.ErrTxDone:
 		return NewError(500, pos+" sql tx done: "+msg)
 	case sql.ErrNoRows:
@@ -42,4 +53,17 @@ func NewSqlError(err error) *Error {
 	}
 
 	return NewError(500, pos+" sql error: "+msg)
+}
+func NewSqlE(err error, query string, args ...any) *Error {
+	e := NewSqlError(err)
+	if e == nil || query == "" {
+		return e
+	}
+
+	if len(args) > 0 {
+		query = "`" + fmt.Sprintf(strings.ReplaceAll(query, "?", "%v"), args...) + "`"
+	}
+
+	e.Msg += " " + query
+	return e
 }

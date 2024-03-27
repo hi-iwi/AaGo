@@ -115,7 +115,7 @@ func (c *Ini) MustGet(key string) (*atype.Atype, error) {
 
 // Get(key) or Get(key, defaultValue)
 // 先从 ini 文件读取，找不到再去从其他 provider （如数据库拉下来的配置）里面找
-func (c *Ini) Get(key string, defaultValue ...interface{}) *atype.Atype {
+func (c *Ini) Get(key string, defaultValue ...any) *atype.Atype {
 	v, _ := c.MustGetString(key)
 	if v != "" {
 		return atype.New(v)

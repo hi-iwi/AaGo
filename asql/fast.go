@@ -84,16 +84,16 @@ func InValues(field string, ids map[string]struct{}) string {
 
 type ArgStmt struct {
 	Field   string
-	Value   interface{}
+	Value   any
 	Valid   bool
 	Ignores []string // 忽略部分不同步的字段
 }
 
 /*
-  组合sql语句，用于修改符合valid条件的字段
-  @return ["a=?","b=?"], [$a,$b, $condId?]
+组合sql语句，用于修改符合valid条件的字段
+@return ["a=?","b=?"], [$a,$b, $condId?]
 */
-func ArgPairs(condId interface{}, args []ArgStmt) (string, []interface{}, bool) {
+func ArgPairs(condId any, args []ArgStmt) (string, []any, bool) {
 	var n int
 loop1:
 	for i, arg := range args {
@@ -119,7 +119,7 @@ loop1:
 	}
 	var fs strings.Builder
 	//fs.Grow()
-	fas := make([]interface{}, n2)
+	fas := make([]any, n2)
 	var i int
 	for _, arg := range args {
 		if !arg.Valid {

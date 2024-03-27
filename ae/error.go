@@ -22,7 +22,7 @@ func NewE(code int) *Error {
 	return NewError(code, dict.Code2Msg(code))
 }
 
-func NewErr(msg string, args ...interface{}) *Error {
+func NewErr(msg string, args ...any) *Error {
 	return NewError(500, fmt.Sprintf(msg, args...))
 }
 
@@ -38,6 +38,17 @@ func NewOk(ok bool) *Error {
 	}
 	return NewE(500)
 }
+func E(e *Error, format string, a ...any) *Error {
+	if e == nil || format == "" {
+		return nil
+	}
+	if len(a) > 0 {
+		format = fmt.Sprintf(format, a...)
+	}
+	e.Msg += " " + format
+	return e
+}
+
 func Text(e *Error) string {
 	if e == nil {
 		return "nil"

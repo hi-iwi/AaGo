@@ -47,42 +47,42 @@ func (d *DB) Close() {
 // Prepared statements take up server resources and should be closed after use.
 func (d *DB) Prepare(ctx context.Context, query string) (*sql.Stmt, *ae.Error) {
 	if d.err != nil {
-		return nil, ae.NewSqlError(d.err)
+		return nil, ae.NewSqlE(d.err, query)
 	}
 	stmt, err := d.DB.PrepareContext(ctx, query)
-	return stmt, ae.NewSqlError(err)
+	return stmt, ae.NewSqlE(err, query)
 }
 
 /*
-  stmt close 必须要等到相关都执行完（包括  res.LastInsertId()  ,  row.Scan()
+stmt close 必须要等到相关都执行完（包括  res.LastInsertId()  ,  row.Scan()
 */
-func (d *DB) Execute(ctx context.Context, query string, args ...interface{}) (sql.Result, *ae.Error) {
+func (d *DB) Execute(ctx context.Context, query string, args ...any) (sql.Result, *ae.Error) {
 	res, err := d.DB.ExecContext(ctx, query, args...)
-	return res, ae.NewSqlError(err)
+	return res, ae.NewSqlE(err, query, args...)
 }
 
-func (d *DB) Exec(ctx context.Context, query string, args ...interface{}) *ae.Error {
+func (d *DB) Exec(ctx context.Context, query string, args ...any) *ae.Error {
 	_, e := d.Execute(ctx, query, args...)
 	return e
 }
-func (d *DB) Insert(ctx context.Context, query string, args ...interface{}) (uint, *ae.Error) {
+func (d *DB) Insert(ctx context.Context, query string, args ...any) (uint, *ae.Error) {
 	res, e := d.Execute(ctx, query, args...)
 	if e != nil {
 		return 0, e
 	}
 	// 由于事务是先执行，后回滚或提交，所以可以先获取插入的ID，后commit()
 	id, err := res.LastInsertId()
-	return uint(id), ae.NewSqlError(err)
+	return uint(id), ae.NewSqlE(err, query, args...)
 }
 
-func (d *DB) Update(ctx context.Context, query string, args ...interface{}) (int64, *ae.Error) {
+func (d *DB) Update(ctx context.Context, query string, args ...any) (int64, *ae.Error) {
 	res, e := d.Execute(ctx, query, args...)
 	if e != nil {
 		return 0, e
 	}
 	// 由于事务是先执行，后回滚或提交，所以可以先获取更新结果，后commit()
 	id, err := res.RowsAffected()
-	return id, ae.NewSqlError(err)
+	return id, ae.NewSqlE(err, query, args...)
 }
 
 // 批量查询
@@ -93,7 +93,7 @@ func (d *DB) Update(ctx context.Context, query string, args ...interface{}) (int
 		stmt.QueryRowContext(ctx, i).&Scan()
 	}
 */
-//func (d *DB) BatchQueryRow(ctx context.Context, query string, margs ...[]interface{}) ([]*sql.Row, *ae.Error) {
+//func (d *DB) BatchQueryRow(ctx context.Context, query string, margs ...[]any) ([]*sql.Row, *ae.Error) {
 //	stmt, e := d.Prepare(ctx, query)
 //	if e != nil {
 //		return nil, e
@@ -106,51 +106,51 @@ func (d *DB) Update(ctx context.Context, query string, args ...interface{}) (int
 //	return rows, nil
 //}
 
-func (d *DB) QueryRow(ctx context.Context, query string, args ...interface{}) (*sql.Row, *ae.Error) {
+func (d *DB) QueryRow(ctx context.Context, query string, args ...any) (*sql.Row, *ae.Error) {
 	row := d.DB.QueryRowContext(ctx, query, args...)
-	return row, ae.NewSqlError(row.Err())
+	return row, ae.NewSqlE(row.Err(), query, args...)
 }
 
-func (d *DB) ScanArgs(ctx context.Context, query string, args []interface{}, dest ...interface{}) *ae.Error {
+func (d *DB) ScanArgs(ctx context.Context, query string, args []any, dest ...any) *ae.Error {
 	row, e := d.QueryRow(ctx, query, args...)
 	if e != nil {
 		return e
 	}
-	return ae.NewSqlError(row.Scan(dest...))
+	return ae.NewSqlE(row.Scan(dest...), query, args...)
 }
-func (d *DB) ScanRow(ctx context.Context, query string, dest ...interface{}) *ae.Error {
+func (d *DB) ScanRow(ctx context.Context, query string, dest ...any) *ae.Error {
 	row, e := d.QueryRow(ctx, query)
 	if e != nil {
 		return e
 	}
-	return ae.NewSqlError(row.Scan(dest...))
+	return ae.NewSqlE(row.Scan(dest...), query)
 }
 
-func (d *DB) Scan(ctx context.Context, query string, id uint64, dest ...interface{}) *ae.Error {
+func (d *DB) Scan(ctx context.Context, query string, id uint64, dest ...any) *ae.Error {
 	row, e := d.QueryRow(ctx, query, id)
 	if e != nil {
 		return e
 	}
-	return ae.NewSqlError(row.Scan(dest...))
+	return ae.NewSqlE(row.Scan(dest...), query, id)
 }
-func (d *DB) ScanX(ctx context.Context, query string, id string, dest ...interface{}) *ae.Error {
+func (d *DB) ScanX(ctx context.Context, query string, id string, dest ...any) *ae.Error {
 	row, e := d.QueryRow(ctx, query, id)
 	if e != nil {
 		return e
 	}
-	return ae.NewSqlError(row.Scan(dest...))
+	return ae.NewSqlE(row.Scan(dest...), query, id)
 }
 
 // do not forget to close *sql.Rows
 // 不要忘了关闭 rows
 // 只有 QueryRow 找不到才会返回 ae.NotFound；Query 即使不存在，也是 nil
-func (d *DB) Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, *ae.Error) {
+func (d *DB) Query(ctx context.Context, query string, args ...any) (*sql.Rows, *ae.Error) {
 	rows, err := d.DB.QueryContext(ctx, query, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ae.NoRows
 		}
-		return nil, ae.NewSqlError(err)
+		return nil, ae.NewSqlE(err, query, args...)
 	}
 	return rows, nil
 }

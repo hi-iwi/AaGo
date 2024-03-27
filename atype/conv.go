@@ -8,7 +8,7 @@ import (
 
 // String convert into string
 // @warn byte is a built-in alias of uint8, String('A') returns "97"; String(Abyte('A')) returns "A"
-func String(d interface{}) string {
+func String(d any) string {
 	if d == nil {
 		return ""
 	}
@@ -58,11 +58,11 @@ func String(d interface{}) string {
 	return fmt.Sprint(d)
 }
 
-func Bytes(d interface{}) []byte {
+func Bytes(d any) []byte {
 	return []byte(String(d))
 }
 
-func Bool(d interface{}) (bool, error) {
+func Bool(d any) (bool, error) {
 	if d == nil {
 		return false, errors.New("nil to bool")
 	}
@@ -85,38 +85,38 @@ func Bool(d interface{}) (bool, error) {
 	return strconv.ParseBool(String(d))
 }
 
-func Slice(d interface{}) ([]interface{}, error) {
+func Slice(d any) ([]any, error) {
 	if d != nil {
-		if v, ok := d.([]interface{}); ok {
+		if v, ok := d.([]any); ok {
 			return v, nil
 		}
 	}
 	return nil, errors.New("cast type error")
 }
 
-func Int8(d interface{}) (int8, error) {
+func Int8(d any) (int8, error) {
 	v, err := BaseInt64(d, 8)
 	return int8(v), err
 }
 
-func Int16(d interface{}) (int16, error) {
+func Int16(d any) (int16, error) {
 	v, err := BaseInt64(d, 16)
 	return int16(v), err
 }
-func Int32(d interface{}) (int32, error) {
+func Int32(d any) (int32, error) {
 	v, err := BaseInt64(d, 32)
 	return int32(v), err
 }
 
-func Int(d interface{}) (int, error) {
+func Int(d any) (int, error) {
 	v, err := BaseInt64(d, 32)
 	return int(v), err
 }
-func Int64(d interface{}) (int64, error) {
+func Int64(d any) (int64, error) {
 	v, err := BaseInt64(d, 64)
 	return v, err
 }
-func BaseInt64(d interface{}, bitSize int) (int64, error) {
+func BaseInt64(d any, bitSize int) (int64, error) {
 	if d == nil {
 		return 0, errors.New("nil to integer")
 	}
@@ -164,32 +164,32 @@ func BaseInt64(d interface{}, bitSize int) (int64, error) {
 	return strconv.ParseInt(String(d), 10, bitSize)
 }
 
-func Uint8(d interface{}) (uint8, error) {
+func Uint8(d any) (uint8, error) {
 	v, err := BaseUint64(d, 8)
 	return uint8(v), err
 }
 
-func Uint16(d interface{}) (uint16, error) {
+func Uint16(d any) (uint16, error) {
 	v, err := BaseUint64(d, 16)
 	return uint16(v), err
 }
-func Uint24b(d interface{}) (Uint24, error) {
+func Uint24b(d any) (Uint24, error) {
 	v, err := BaseUint64(d, 24)
 	return Uint24(v), err
 }
-func Uint32(d interface{}) (uint32, error) {
+func Uint32(d any) (uint32, error) {
 	r, err := BaseUint64(d, 32)
 	return uint32(r), err
 }
 
-func Uint(d interface{}) (uint, error) {
+func Uint(d any) (uint, error) {
 	r, err := BaseUint64(d, 32)
 	return uint(r), err
 }
-func Uint64(d interface{}) (uint64, error) {
+func Uint64(d any) (uint64, error) {
 	return BaseUint64(d, 64)
 }
-func BaseUint64(d interface{}, bitSize int) (uint64, error) {
+func BaseUint64(d any, bitSize int) (uint64, error) {
 	if d == nil {
 		return 0, errors.New("nil to uint64")
 	}
@@ -236,7 +236,7 @@ func BaseUint64(d interface{}, bitSize int) (uint64, error) {
 	return strconv.ParseUint(String(d), 10, bitSize)
 }
 
-func Float64(d interface{}, bitSize int) (float64, error) {
+func Float64(d any, bitSize int) (float64, error) {
 	if d == nil {
 		return 0.0, errors.New("nil to float64")
 	}
@@ -283,21 +283,22 @@ func Float64(d interface{}, bitSize int) (float64, error) {
 	// 有些类型type vt uint  var a, b vt 这样就无法识别为 uint；所以尝试通过字符串方式转一下
 	return strconv.ParseFloat(String(d), bitSize)
 }
-func Float32(d interface{}) (float32, error) {
+func Float32(d any) (float32, error) {
 	f, err := Float64(d, 32)
 	if err != nil {
 		return 0.0, err
 	}
 	return float32(f), nil
 }
-func IsEmpty(d interface{}) bool {
+func IsEmpty(d any) bool {
 	return !NotEmpty(d)
 }
 
 // NotEmpty check if a value is empty
 // @warn NotEmpty(byte(0)) == false,  NotEmpty(byte('0')) == true
-//       NotEmpty(0) == false, NotEmpty(-1) == true, NotEmpty(1) == true
-func NotEmpty(d interface{}) bool {
+//
+//	NotEmpty(0) == false, NotEmpty(-1) == true, NotEmpty(1) == true
+func NotEmpty(d any) bool {
 	if d == nil {
 		return false
 	}

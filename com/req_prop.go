@@ -11,14 +11,14 @@ type ReqProp struct {
 	param string
 }
 
-func NewReqProp(param string, data interface{}) *ReqProp {
+func NewReqProp(param string, data any) *ReqProp {
 	var p ReqProp
 	p.Reload(data)
 	p.param = param
 	return &p
 }
 
-func (p *ReqProp) Default(v interface{}) {
+func (p *ReqProp) Default(v any) {
 	if p.IsEmpty() {
 		p.Reload(v)
 	}
@@ -28,7 +28,7 @@ func rexp(elems string) string {
 	return "^(" + elems + ")$"
 }
 
-func UintsRegExp(set ...interface{}) string {
+func UintsRegExp(set ...any) string {
 	elems := make([]string, len(set))
 	for i, v := range set {
 		w, err := atype.Uint64(v)
@@ -40,7 +40,7 @@ func UintsRegExp(set ...interface{}) string {
 	return StringsRegExp(elems)
 }
 
-func IntsRegExp(ies []interface{}) string {
+func IntsRegExp(ies []any) string {
 	elems := make([]string, len(ies))
 	for i, v := range ies {
 		w, err := atype.Int64(v)

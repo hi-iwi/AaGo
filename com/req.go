@@ -28,9 +28,9 @@ type reqData struct {
 	hlck   sync.RWMutex
 	blck   sync.RWMutex
 	uri    string
-	query  map[string]interface{}
-	header map[string]interface{}
-	body   map[string]interface{}
+	query  map[string]any
+	header map[string]any
+	body   map[string]any
 }
 
 type maxBytesReader struct {
@@ -92,7 +92,7 @@ func NewReq(ictx iris.Context) *Req {
 	req.Method = req.r.Method
 	if len(ictx.Params().Store) > 0 {
 		req.data.qlck.Lock()
-		req.data.query = make(map[string]interface{}, len(ictx.Params().Store))
+		req.data.query = make(map[string]any, len(ictx.Params().Store))
 		req.data.qlck.Unlock()
 	}
 	for _, v := range ictx.Params().Store {
@@ -124,7 +124,7 @@ func (r *Req) Uri() string {
 	return ""
 }
 
-func (r *Req) Headers() map[string]interface{} {
+func (r *Req) Headers() map[string]any {
 	if !r.parsed && r.r != nil {
 		r.data.hlck.Lock()
 		// @note 这里必须要判断 map[string]string 是否为空，并分配内存空间
@@ -138,7 +138,7 @@ func (r *Req) Headers() map[string]interface{} {
 	rh := r.r.Header
 	r.data.hlck.RUnlock()
 
-	headers := make(map[string]interface{}, len(rh)+len(h))
+	headers := make(map[string]any, len(rh)+len(h))
 	for k := range rh {
 		vs := rh[k]
 		for i := 0; i < len(vs); i++ {
@@ -154,7 +154,7 @@ func (r *Req) Headers() map[string]interface{} {
 	return headers
 }
 
-func (r *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
+func (r *Req) Header(param string, patterns ...any) (*ReqProp, *ae.Error) {
 	r.data.hlck.RLock()
 	h := r.data.header
 	r.data.hlck.RUnlock()
@@ -173,12 +173,12 @@ func (r *Req) Header(param string, patterns ...interface{}) (*ReqProp, *ae.Error
 	return p, p.Filter(patterns...)
 }
 
-func (r *Req) Queries() map[string]interface{} {
+func (r *Req) Queries() map[string]any {
 	r.data.qlck.RLock()
 	rq := r.r.URL.Query()
 	dq := r.data.query
 	r.data.qlck.RUnlock()
-	queries := make(map[string]interface{}, len(rq)+len(dq))
+	queries := make(map[string]any, len(rq)+len(dq))
 	for k := range rq {
 		vs := rq[k]
 		for i := 0; i < len(vs); i++ {
@@ -194,7 +194,7 @@ func (r *Req) Queries() map[string]interface{} {
 	return queries
 }
 
-func (r *Req) Query(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
+func (r *Req) Query(param string, patterns ...any) (*ReqProp, *ae.Error) {
 	r.data.qlck.RLock()
 	q := r.data.query
 	r.data.qlck.RUnlock()
@@ -219,7 +219,7 @@ func (r *Req) loadFormBody(d url.Values) {
 		return
 	}
 	if len(r.data.body) == 0 {
-		r.data.body = make(map[string]interface{}, len(d))
+		r.data.body = make(map[string]any, len(d))
 	}
 	for k, vs := range d {
 
@@ -230,7 +230,7 @@ func (r *Req) loadFormBody(d url.Values) {
 		}
 	}
 }
-func (r *Req) Body(param string, patterns ...interface{}) (*ReqProp, *ae.Error) {
+func (r *Req) Body(param string, patterns ...any) (*ReqProp, *ae.Error) {
 	ct := r.ContentType()
 	if !r.parsed {
 		// 参考 http.parsePostForm()  request.go  ParseForm()

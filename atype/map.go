@@ -6,49 +6,49 @@ import (
 	"strings"
 )
 
-// structs.Map(rsp) 可以将struct 转为 map[string]interface{}
+// structs.Map(rsp) 可以将struct 转为 map[string]any
 type Map struct {
-	Value interface{}
+	Value any
 }
 
-func NewMap(v interface{}) Map {
+func NewMap(v any) Map {
 	return Map{
 		Value: v,
 	}
 }
-func splitInterfaces(key interface{}) []interface{} {
+func splitInterfaces(key any) []any {
 	switch k := key.(type) {
 	case string:
 		arr := make([]string, 0)
 		arr = append(arr, strings.Split(k, ".")...)
-		n := make([]interface{}, len(arr))
+		n := make([]any, len(arr))
 		for i, a := range arr {
 			n[i] = a
 		}
 		return n
 	}
-	n := []interface{}{key}
+	n := []any{key}
 	return n
 }
 
-// Get get key from a map[string]interface{}
+// Get get key from a map[string]any
 // p.Get("users.1.name") is short for p.Get("user", "1", "name")
 // @warn p.Get("user", "1", "name") is diffirent with p.Get("user", 1, "name")
 
-func (m Map) Get(key interface{}, keys ...interface{}) (interface{}, error) {
+func (m Map) Get(key any, keys ...any) (any, error) {
 	value := m.Value
-	var val map[interface{}]interface{}
+	var val map[any]any
 	var ok bool
 
 	var rvalue reflect.Value
-	keys = append([]interface{}{key}, keys...)
+	keys = append([]any{key}, keys...)
 	if len(keys) == 1 {
 		keys = splitInterfaces(keys[0])
 	}
 
 	for i, k := range keys {
-		if val, ok = value.(map[interface{}]interface{}); !ok {
-			val = make(map[interface{}]interface{})
+		if val, ok = value.(map[any]any); !ok {
+			val = make(map[any]any)
 
 			rvalue = reflect.ValueOf(value)
 			switch rvalue.Kind() {

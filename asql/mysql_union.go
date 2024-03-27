@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func UnionAllQs(format string, ptbs []string, xargs func(ptb string) []interface{}) string {
+func UnionAllQs(format string, ptbs []string, xargs func(ptb string) []any) string {
 	var qs strings.Builder
 	for i, ptb := range ptbs {
 		if i > 0 {

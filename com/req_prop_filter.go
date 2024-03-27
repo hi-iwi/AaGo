@@ -15,7 +15,7 @@ Filter(pattern string)
 Filter(default atype.Atype)
 
 */
-func (p *ReqProp) Filter(patterns ...interface{}) *ae.Error {
+func (p *ReqProp) Filter(patterns ...any) *ae.Error {
 	required := true
 	pattern := ""
 

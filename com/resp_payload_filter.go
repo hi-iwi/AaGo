@@ -9,7 +9,7 @@ import (
 
 // @TODO
 // ?_field=time,service,connections:[name,scheme],server_id,test:{a,b,c}
-func (resp *RespStruct) filterPayload(a interface{}, tagname string) (interface{}, *ae.Error) {
+func (resp *RespStruct) filterPayload(a any, tagname string) (any, *ae.Error) {
 	xm, _ := resp.req.Query(ParamField, false)
 	if xm.IsEmpty() {
 		return a, nil
@@ -21,9 +21,9 @@ func (resp *RespStruct) filterPayload(a interface{}, tagname string) (interface{
 	return filterPayloadMap(a, tagname, strings.Split(m, ",")...)
 }
 
-func filterPayloadMap(u interface{}, tagname string, tags ...string) (map[string]interface{}, *ae.Error) {
+func filterPayloadMap(u any, tagname string, tags ...string) (map[string]any, *ae.Error) {
 	var found bool
-	ret := make(map[string]interface{}, 0)
+	ret := make(map[string]any, 0)
 	t := reflect.TypeOf(u)
 	if t.Kind() == reflect.Map {
 		for _, tag := range tags {
@@ -59,13 +59,13 @@ func filterPayloadMap(u interface{}, tagname string, tags ...string) (map[string
 	return ret, nil
 }
 
-func filterPayloadArray(w interface{}, tagname string, tags ...string) (ret []map[string]interface{}, e *ae.Error) {
+func filterPayloadArray(w any, tagname string, tags ...string) (ret []map[string]any, e *ae.Error) {
 	t := reflect.TypeOf(w).Kind()
 	if t != reflect.Slice && t != reflect.Array {
 		return nil, ae.NewError(401, "invalid `"+ParamField+"`, not an array")
 	}
 	v := reflect.ValueOf(w)
-	ret = make([]map[string]interface{}, v.Len())
+	ret = make([]map[string]any, v.Len())
 	for i := 0; i < v.Len(); i++ {
 		ret[i], e = filterPayloadMap(v.Index(i).Interface(), tagname, tags...)
 		if e != nil {

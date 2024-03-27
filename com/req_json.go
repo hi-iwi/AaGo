@@ -5,7 +5,7 @@ import (
 	"github.com/hi-iwi/AaGo/atype"
 )
 
-func (r *Req) BodyInterfaceMap(p string, requireds ...bool) (map[string]interface{}, *ae.Error) {
+func (r *Req) BodyInterfaceMap(p string, requireds ...bool) (map[string]any, *ae.Error) {
 	required := len(requireds) == 0 || requireds[0]
 	x, e := r.Body(p, required)
 	if e != nil {
@@ -18,7 +18,7 @@ func (r *Req) BodyInterfaceMap(p string, requireds ...bool) (map[string]interfac
 		return nil, nil
 	}
 	raw := x.Raw()
-	b, ok := raw.(map[string]interface{})
+	b, ok := raw.(map[string]any)
 	if !ok {
 		return nil, ae.BadParam(p)
 	}
@@ -31,7 +31,7 @@ func (r *Req) BodyInterfaceMap(p string, requireds ...bool) (map[string]interfac
 	return b, nil
 }
 
-func (r *Req) BodyInterfaces(p string, requireds ...bool) ([]interface{}, *ae.Error) {
+func (r *Req) BodyInterfaces(p string, requireds ...bool) ([]any, *ae.Error) {
 	required := len(requireds) == 0 || requireds[0]
 	x, e := r.Body(p, required)
 	if e != nil {
@@ -44,7 +44,7 @@ func (r *Req) BodyInterfaces(p string, requireds ...bool) ([]interface{}, *ae.Er
 		return nil, nil
 	}
 	raw := x.Raw()
-	b, ok := raw.([]interface{})
+	b, ok := raw.([]any)
 	if !ok {
 		return nil, ae.BadParam(p)
 	}
@@ -132,7 +132,7 @@ func (r *Req) BodyConvStringMaps(p string, requireds ...bool) ([]map[string]stri
 	return maps, nil
 }
 
-func (r *Req) BodyComplexMaps(p string, requireds ...bool) ([]map[string]interface{}, *ae.Error) {
+func (r *Req) BodyComplexMaps(p string, requireds ...bool) ([]map[string]any, *ae.Error) {
 	b, e := r.BodyInterfaces(p, requireds...)
 	if e != nil {
 		return nil, e

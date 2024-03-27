@@ -37,7 +37,7 @@ func xlogHeader(ctx context.Context, caller string, level ErrorLevel) string {
 	return b.String()
 }
 
-func xprintf(ctx context.Context, level ErrorLevel, msg string, args ...interface{}) {
+func xprintf(ctx context.Context, level ErrorLevel, msg string, args ...any) {
 	errlevel := errorlevel(ctx)
 	if errlevel != AllError && errlevel&level == 0 {
 		return
@@ -51,7 +51,7 @@ func xprintf(ctx context.Context, level ErrorLevel, msg string, args ...interfac
 		log.Printf(msg+"\n", args...)
 	}
 }
-func (l *xlog) New(prefix string, f func(context.Context, string, ...interface{}), suffix ...string) func(context.Context, string, ...interface{}) {
+func (l *xlog) New(prefix string, f func(context.Context, string, ...any), suffix ...string) func(context.Context, string, ...any) {
 	var s string
 	if len(suffix) > 0 {
 		s = " " + suffix[0]
@@ -59,43 +59,43 @@ func (l *xlog) New(prefix string, f func(context.Context, string, ...interface{}
 	if prefix != "" {
 		prefix += " "
 	}
-	return func(ctx context.Context, msg string, args ...interface{}) {
+	return func(ctx context.Context, msg string, args ...any) {
 		f(ctx, prefix+msg+s, args...)
 	}
 }
-func (l *xlog) Debug(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Debug(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Debug, msg, args...)
 }
 
-func (l *xlog) Info(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Info(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Info, msg, args...)
 }
 
-func (l *xlog) Notice(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Notice(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Notice, msg, args...)
 }
 
-func (l *xlog) Warn(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Warn(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Warn, msg, args...)
 }
 
-func (l *xlog) Error(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Error(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Err, msg, args...)
 }
 
-func (l *xlog) Crit(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Crit(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Crit, msg, args...)
 }
 
-func (l *xlog) Alert(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Alert(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Alert, msg, args...)
 }
 
-func (l *xlog) Emerg(ctx context.Context, msg string, args ...interface{}) {
+func (l *xlog) Emerg(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Emerg, msg, args...)
 }
 
-func (l *xlog) Println(ctx context.Context, msg ...interface{}) {
+func (l *xlog) Println(ctx context.Context, msg ...any) {
 	log.Println(xlogHeader(ctx, ae.Caller(1), AllError), fmt.Sprint(msg...))
 }
 

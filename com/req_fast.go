@@ -28,7 +28,7 @@ func (r *Req) Xhost() string {
 // 标准：Referer, VUser-Agent,
 // 自定义：X-Csrf-Token, X-Request-Vuid, X-From, X-Inviter
 // @warn 尽量不要通过自定义header传参，因为可能某个web server会基于安全禁止某些无法识别的header
-func (r *Req) XHeader(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
+func (r *Req) XHeader(name string, patterns ...any) (v *ReqProp, e *ae.Error) {
 	key := strings.Title(strings.ReplaceAll(name, "_", "-")) // 首字母大写
 	if v, e = r.Header(key, patterns...); e == nil && v.NotEmpty() {
 		return
@@ -40,11 +40,11 @@ func (r *Req) XHeader(name string, patterns ...interface{}) (v *ReqProp, e *ae.E
 	v = NewReqProp(name, "")
 	return v, v.Filter(patterns...)
 }
-func (r *Req) FastXheader(name string, patterns ...interface{}) *ReqProp {
+func (r *Req) FastXheader(name string, patterns ...any) *ReqProp {
 	v, _ := r.XHeader(name, patterns...)
 	return v
 }
-func (r *Req) Qparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
+func (r *Req) Qparam(name string, patterns ...any) (v *ReqProp, e *ae.Error) {
 	key := strings.ToLower(strings.ReplaceAll(name, "-", "_"))
 	if v, e = r.Query(name, patterns...); e == nil && v.NotEmpty() {
 		return
@@ -61,7 +61,7 @@ func (r *Req) Qparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Er
 
 // in url params -> in header? -> in cookie?
 // e.g.  csrf_token: in url params? -> Csrf-Token: in header?  X-Csrf-Token: in header-> csrf_token: in cookie
-func (r *Req) Xparam(name string, patterns ...interface{}) (v *ReqProp, e *ae.Error) {
+func (r *Req) Xparam(name string, patterns ...any) (v *ReqProp, e *ae.Error) {
 	if v, e = r.Qparam(name, patterns...); e == nil && v.NotEmpty() {
 		return
 	}
@@ -82,7 +82,7 @@ func (r *Req) FastXparam(name string) *ReqProp {
 	v, _ := r.Xparam(name, false)
 	return v
 }
-func reqDigit(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
+func reqDigit(method func(string, ...any) (*ReqProp, *ae.Error), p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	reg := `^[-\d]\d*$`
 	if positive {
 		reg = `^\d+$`
@@ -96,20 +96,20 @@ func (r *Req) BodyDigit(p string, positive bool, xargs ...bool) (*ReqProp, *ae.E
 	return reqDigit(r.Body, p, positive, xargs...)
 }
 
-func (r *Req) QueryString(p string, params ...interface{}) (string, *ae.Error) {
+func (r *Req) QueryString(p string, params ...any) (string, *ae.Error) {
 	x, e := r.Query(p, params...)
 	return x.String(), e
 }
-func (r *Req) BodyString(p string, required ...interface{}) (string, *ae.Error) {
+func (r *Req) BodyString(p string, required ...any) (string, *ae.Error) {
 	x, e := r.Body(p, required...)
 	return x.String(), e
 }
 
-func (r *Req) BodyText(p string, required ...interface{}) (atype.Text, *ae.Error) {
+func (r *Req) BodyText(p string, required ...any) (atype.Text, *ae.Error) {
 	x, e := r.Body(p, required...)
 	return atype.NewText(x.String(), false), e
 }
-func (r *Req) BodyHtml(p string, required ...interface{}) (template.HTML, *ae.Error) {
+func (r *Req) BodyHtml(p string, required ...any) (template.HTML, *ae.Error) {
 	x, e := r.Body(p, required...)
 	return template.HTML(x.String()), e
 }

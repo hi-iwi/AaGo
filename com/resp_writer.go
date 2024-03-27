@@ -58,7 +58,7 @@ func (resp *RespStruct) write(cs RespContentDTO) error {
 	return err
 }
 
-func (resp *RespStruct) WriteHeader(code interface{}) {
+func (resp *RespStruct) WriteHeader(code any) {
 
 	if c, ok := code.(int); ok {
 		resp.code = c
@@ -125,7 +125,7 @@ func (resp *RespStruct) trySetContentType() {
 	resp.headers.Store(ContentType, http.DetectContentType(resp.content)) // 这里需要解析 content，所以不要用 LoadOrStore()
 
 }
-func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
+func (resp *RespStruct) WriteRaw(ps ...any) (int, error) {
 	w := resp.writer
 	for i := 0; i < len(ps); i++ {
 		if bytes, ok := ps[i].([]byte); ok {
@@ -151,7 +151,7 @@ func (resp *RespStruct) WriteRaw(ps ...interface{}) (int, error) {
 	resp.DelHeader(ContentLength) // 因为内容变更了，必须要把content-length设为空，不然客户端会读取错误
 	resp.trySetContentType()
 
-	resp.headers.Range(func(k, v interface{}) bool {
+	resp.headers.Range(func(k, v any) bool {
 		s := v.(string)
 		if s != "" {
 			w.Header().Set(k.(string), s)
@@ -233,12 +233,12 @@ func (resp *RespStruct) TryWriteUintAliasId(alias string, id uint, e *ae.Error) 
 }
 
 // k1,v1, k2, v2, k3,v3
-func (resp *RespStruct) WriteJointId(args ...interface{}) error {
+func (resp *RespStruct) WriteJointId(args ...any) error {
 	l := len(args)
 	if l < 2 || l%2 == 1 {
 		return errors.New("no enough write joint id args  ")
 	}
-	id := make(map[string]interface{}, l/2)
+	id := make(map[string]any, l/2)
 	for i := 0; i < l; i += 2 {
 		id[args[i].(string)] = args[i+1]
 	}
@@ -267,7 +267,7 @@ func (resp *RespStruct) WriteError(err error) error {
 	return resp.write(cs)
 }
 
-func (resp *RespStruct) WriteErr(code int, msg string, args ...interface{}) error {
+func (resp *RespStruct) WriteErr(code int, msg string, args ...any) error {
 	cs := RespContentDTO{
 		Code: code,
 		Msg:  fmt.Sprintf(msg, args...),
@@ -282,7 +282,7 @@ func (resp *RespStruct) WriteCode(code int) error {
 	return resp.write(cs)
 }
 
-func (resp *RespStruct) WriteErrMsg(msg string, args ...interface{}) error {
+func (resp *RespStruct) WriteErrMsg(msg string, args ...any) error {
 	cs := RespContentDTO{
 		Code: 500,
 		Msg:  fmt.Sprintf(msg, args...),
@@ -290,7 +290,7 @@ func (resp *RespStruct) WriteErrMsg(msg string, args ...interface{}) error {
 	return resp.write(cs)
 }
 
-func (resp *RespStruct) Write(a interface{}) error {
+func (resp *RespStruct) Write(a any) error {
 
 	//
 	//v := reflect.ValueOf(a)
@@ -332,7 +332,7 @@ func (resp *RespStruct) Write(a interface{}) error {
 	})
 }
 
-func (resp *RespStruct) TryWrite(a interface{}, e *ae.Error) error {
+func (resp *RespStruct) TryWrite(a any, e *ae.Error) error {
 	if e != nil {
 		return resp.WriteE(e)
 	}
@@ -345,7 +345,7 @@ func (resp *RespStruct) Output(output string, e *ae.Error) error {
 	return resp.Write(map[string]string{"output": output})
 }
 
-func (resp *RespStruct) WriteJSONP(varname string, d map[string]interface{}) error {
+func (resp *RespStruct) WriteJSONP(varname string, d map[string]any) error {
 	cs := RespContentDTO{
 		Code: 200,
 		Msg:  dict.Code2Msg(200),

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func f0(i interface{}) reflect.Kind {
+func f0(i any) reflect.Kind {
 	return atype.PrimitiveType(&i)
 }
 

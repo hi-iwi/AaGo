@@ -71,7 +71,7 @@ func RegisterRespContentTypes(ctypes ...string) {
 */
 // @param as:  string 表示 Content-Type
 
-func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
+func Resp(ictx iris.Context, req *Req, as ...any) *RespStruct {
 	resp := &RespStruct{
 		req:    req,
 		code:   200,
@@ -101,7 +101,7 @@ func Resp(ictx iris.Context, req *Req, as ...interface{}) *RespStruct {
 	return resp
 }
 
-func AddGlbRespMidwares(mws ...interface{}) {
+func AddGlbRespMidwares(mws ...any) {
 	for _, a := range mws {
 		if mw, ok := a.(func(*RespStruct)); ok {
 			beforeFlush = append(beforeFlush, mw)
@@ -115,7 +115,7 @@ func AddGlbRespMidwares(mws ...interface{}) {
 	}
 }
 
-func (resp *RespStruct) AddMidwares(mws ...interface{}) {
+func (resp *RespStruct) AddMidwares(mws ...any) {
 	for _, a := range mws {
 		if mw, ok := a.(func(*RespStruct)); ok {
 			resp.beforeFlush = append(resp.beforeFlush, mw)

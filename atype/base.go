@@ -24,37 +24,37 @@ const MaxUint64Len = 20 // 0 ~ 18446744073709551615
 
 const MaxDistriLen = MaxUint24Len
 
-//Invalid Kind = iota
-//Bool
-//Int
-//Int8
-//Int16
-//Int32
-//Int64
-//Uint
-//Uint8
-//Uint16
-//Uint32
-//Uint64
-//Uintptr
-//Float32
-//Float64
-//Complex64
-//Complex128
-//Array
-//Chan
-//Func
-//Interface
-//Map
-//Ptr
-//Slice
-//String
-//Struct
-//UnsafePointer
+// Invalid Kind = iota
+// Bool
+// Int
+// Int8
+// Int16
+// Int32
+// Int64
+// Uint
+// Uint8
+// Uint16
+// Uint32
+// Uint64
+// Uintptr
+// Float32
+// Float64
+// Complex64
+// Complex128
+// Array
+// Chan
+// Func
+// Interface
+// Map
+// Ptr
+// Slice
+// String
+// Struct
+// UnsafePointer
 // 获取原始类型  i 用指针
 // @param i 必须为指针
 // @return 除了 reflect.Ptr 外其他类型；包括 interface
-func PrimitiveType(i interface{}) reflect.Kind {
+func PrimitiveType(i any) reflect.Kind {
 	if i == nil {
 		return reflect.Invalid // nil
 	}
@@ -84,7 +84,7 @@ func PrimitiveType(i interface{}) reflect.Kind {
 }
 
 // 可能为指针，或者其他
-func PType(i interface{}) reflect.Kind {
+func PType(i any) reflect.Kind {
 	if i == nil {
 		return reflect.UnsafePointer // nil
 	}
@@ -138,7 +138,7 @@ func MarshalBytes(x []byte) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// x =>  `['a','\'', ',']
+// x =>  `['a','\”, ',']
 func UnmarshalBytes(x []byte) ([]byte, error) {
 	if x == nil || len(x) < 2 {
 		return nil, nil

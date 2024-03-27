@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func jsons(v interface{}, e *ae.Error) string {
+func jsons(v any, e *ae.Error) string {
 	if e != nil {
 		fmt.Println(e.Text())
 		return ""

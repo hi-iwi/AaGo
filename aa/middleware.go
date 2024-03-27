@@ -33,7 +33,7 @@ func ContextWithTraceID(ctx context.Context, traceId string) context.Context {
 }
 
 // 使用 context.WithValue 会复制整个 context，会比较慢。尽量直接用 ictx.Values()
-//func SprintfTrace(ctx context.Context, msg string, args ...interface{}) string {
+//func SprintfTrace(ctx context.Context, msg string, args ...any) string {
 //	msg = fmt.Sprintf(msg, args...)
 //	return msg + " " + Sid(ctx)
 //}

@@ -27,7 +27,7 @@ type Condition struct {
 	And   map[string]ASQL
 	Or    map[string]ASQL
 }
-func Fields(u interface{}, fields ...string) string {
+func Fields(u any, fields ...string) string {
 	s := ""
 	if byAlias(fields...) {
 		s = atype.JoinByNames(u, atype.JoinKeys, ",", fields...)
@@ -38,7 +38,7 @@ func Fields(u interface{}, fields ...string) string {
 	return strings.Trim(s, " ")
 }
 
-func (r Condition) OrderByStmt(u interface{}) string {
+func (r Condition) OrderByStmt(u any) string {
 	if len(r.OrderByDesc) > 0 {
 		fs := strings.Split(r.OrderByDesc, ",")
 		return " ORDER BY " + Fields(u, fs...) + " DESC "
@@ -50,7 +50,7 @@ func (r Condition) OrderByStmt(u interface{}) string {
 }
 
 // name u struct; ele name name
-func name(u interface{}, ele string) string {
+func name(u any, ele string) string {
 	if !(ele[0] >= 'A' && ele[0] <= 'Z') {
 		return ele
 	}
@@ -91,8 +91,8 @@ func indexes(idx []string, asqls map[string]ASQL) []string {
 	return newIdx
 }
 
-// @param t interface{}  entity
-func (r Condition) WithWhere(t interface{}) string {
+// @param t any  entity
+func (r Condition) WithWhere(t any) string {
 	ands := ""
 	ors := ""
 

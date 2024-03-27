@@ -47,7 +47,7 @@ func toMySqlFieldName(k string) string {
 	return strings.Join(fields, ".")
 }
 
-func byJoinType(ty JoinType, k string, v interface{}) string {
+func byJoinType(ty JoinType, k string, v any) string {
 	var val string
 	// @TODO separate sql from here
 	if w, ok := v.(sql.NullBool); ok {
@@ -96,7 +96,7 @@ func byJoinType(ty JoinType, k string, v interface{}) string {
 }
 
 // JoinTagsByElements(stru, JoinUnsortedBit, " AND ", "json", "Name", "Age")
-func JoinTagsByElements(u interface{}, ty JoinType, sep string, tagname string, eles ...string) (ret string) {
+func JoinTagsByElements(u any, ty JoinType, sep string, tagname string, eles ...string) (ret string) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println(err)
@@ -118,7 +118,7 @@ func JoinTagsByElements(u interface{}, ty JoinType, sep string, tagname string, 
 }
 
 // JoinByTags(stru, JoinUnsortedBit, " AND ", "json", "name", "age")
-func JoinByTags(u interface{}, ty JoinType, sep string, tagname string, tags ...string) (ret string) {
+func JoinByTags(u any, ty JoinType, sep string, tagname string, tags ...string) (ret string) {
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -156,11 +156,11 @@ func JoinByTags(u interface{}, ty JoinType, sep string, tagname string, tags ...
 	return
 }
 
-func JoinByNames(u interface{}, ty JoinType, sep string, names ...string) string {
+func JoinByNames(u any, ty JoinType, sep string, names ...string) string {
 	return JoinByTags(u, ty, sep, "name", names...)
 }
 
-func JoinNamesByElements(u interface{}, ty JoinType, sep string, eles ...string) string {
+func JoinNamesByElements(u any, ty JoinType, sep string, eles ...string) string {
 	return JoinTagsByElements(u, ty, sep, "name", eles...)
 }
 

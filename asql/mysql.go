@@ -13,11 +13,11 @@ import (
 const InArgs = "(...)" // InArgs 占位符
 const MaxUint64IdLen = 20
 
-func isInArgsTag(t interface{}) bool {
+func isInArgsTag(t any) bool {
 	v, ok := t.(string)
 	return ok && v == InArgs
 }
-func uniqueKey(xargs []interface{}) string {
+func uniqueKey(xargs []any) string {
 	var k strings.Builder
 	for _, arg := range xargs {
 		if !isInArgsTag(arg) {
@@ -28,7 +28,7 @@ func uniqueKey(xargs []interface{}) string {
 }
 
 // 一定要记得close rows，释放连接资源
-func qsInUnion(ctx context.Context, db *DB, unionAll bool, format string, ids []uint64, demoTbLen int, args map[string][]interface{}, inArgs map[string][]uint64) (*sql.Rows, *ae.Error) {
+func qsInUnion(ctx context.Context, db *DB, unionAll bool, format string, ids []uint64, demoTbLen int, args map[string][]any, inArgs map[string][]uint64) (*sql.Rows, *ae.Error) {
 	l := len(ids)
 	var qs strings.Builder
 	qs.Grow((len(format) + demoTbLen + l*(MaxUint64IdLen+1)) * l)
@@ -70,8 +70,8 @@ func qsInUnion(ctx context.Context, db *DB, unionAll bool, format string, ids []
 // 尾部会自动添加 LIMIT ?
 // @warn 有些拆表表不一定依赖于该表id，可能是关联表id；
 // @note 这里会对重复表、重复参数的情况进行优化
-func InUnionAllTablesQs(ctx context.Context, db *DB, format string, ids []uint64, ptbs []string, xargs func(string, uint64) []interface{}) (*sql.Rows, *ae.Error) {
-	args := make(map[string][]interface{}, 0)
+func InUnionAllTablesQs(ctx context.Context, db *DB, format string, ids []uint64, ptbs []string, xargs func(string, uint64) []any) (*sql.Rows, *ae.Error) {
+	args := make(map[string][]any, 0)
 	inArgs := make(map[string][]uint64, 0)
 	var demoTable string
 	for _, id := range ids {
@@ -95,8 +95,8 @@ func InUnionAllTablesQs(ctx context.Context, db *DB, format string, ids []uint64
 // 处理按查询id分表的连表操作，不用全表union all
 // union 会过滤重复数据，性能稍差点；union all 不会过滤
 // @note 这里会对重复表、重复参数的情况进行优化
-func InUnionAllQs(ctx context.Context, db *DB, format string, ids []uint64, xargs func(uint64) []interface{}) (*sql.Rows, *ae.Error) {
-	args := make(map[string][]interface{}, 0)
+func InUnionAllQs(ctx context.Context, db *DB, format string, ids []uint64, xargs func(uint64) []any) (*sql.Rows, *ae.Error) {
+	args := make(map[string][]any, 0)
 	inArgs := make(map[string][]uint64, 0)
 	var demoTable string
 	for _, id := range ids {

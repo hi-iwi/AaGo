@@ -1,6 +1,6 @@
 package atype
 
-func ConvFloat64Map(mi map[string]interface{}) (map[string]float64, error) {
+func ConvFloat64Map(mi map[string]any) (map[string]float64, error) {
 	if len(mi) == 0 {
 		return nil, nil
 	}
@@ -15,7 +15,7 @@ func ConvFloat64Map(mi map[string]interface{}) (map[string]float64, error) {
 	return maps, nil
 }
 
-func ConvStrings(ai []interface{}) []string {
+func ConvStrings(ai []any) []string {
 	if len(ai) == 0 {
 		return nil
 	}
@@ -25,11 +25,11 @@ func ConvStrings(ai []interface{}) []string {
 	}
 	return a
 }
-func ConvStringsRaw(raw interface{}) []string {
+func ConvStringsRaw(raw any) []string {
 	if raw == nil {
 		return nil
 	}
-	ai, ok := raw.([]interface{})
+	ai, ok := raw.([]any)
 	if !ok {
 		return nil
 	}
@@ -42,7 +42,7 @@ func ConvStringsRaw(raw interface{}) []string {
 	}
 	return a
 }
-func ConvStringMap(mi map[string]interface{}) map[string]string {
+func ConvStringMap(mi map[string]any) map[string]string {
 	if len(mi) == 0 {
 		return nil
 	}
@@ -53,7 +53,7 @@ func ConvStringMap(mi map[string]interface{}) map[string]string {
 	return maps
 }
 
-func ConvStringsMap(mi map[string]interface{}) map[string][]string {
+func ConvStringsMap(mi map[string]any) map[string][]string {
 	if len(mi) == 0 {
 		return nil
 	}
@@ -63,25 +63,25 @@ func ConvStringsMap(mi map[string]interface{}) map[string][]string {
 	}
 	return maps
 }
-func ConvComplexStringMap(mi map[string]interface{}) map[string]map[string]string {
+func ConvComplexStringMap(mi map[string]any) map[string]map[string]string {
 	if len(mi) == 0 {
 		return nil
 	}
 	maps := make(map[string]map[string]string, len(mi))
 	for k, m := range mi {
-		if d, ok := m.(map[string]interface{}); ok {
+		if d, ok := m.(map[string]any); ok {
 			maps[k] = ConvStringMap(d)
 		}
 	}
 	return maps
 }
-func ConvComplexStringsMap(mi map[string]interface{}) map[string][][]string {
+func ConvComplexStringsMap(mi map[string]any) map[string][][]string {
 	if len(mi) == 0 {
 		return nil
 	}
 	maps := make(map[string][][]string, len(mi))
 	for k, m := range mi {
-		if d, ok := m.([]interface{}); ok {
+		if d, ok := m.([]any); ok {
 			u := make([][]string, len(d))
 			for i, v1 := range d {
 				u[i] = ConvStringsRaw(v1)
@@ -91,13 +91,13 @@ func ConvComplexStringsMap(mi map[string]interface{}) map[string][][]string {
 	}
 	return maps
 }
-func ConvStringMaps(ai []interface{}) []map[string]string {
+func ConvStringMaps(ai []any) []map[string]string {
 	if len(ai) == 0 {
 		return nil
 	}
 	maps := make([]map[string]string, 0, len(ai))
 	for _, m := range ai {
-		if d, ok := m.(map[string]interface{}); ok {
+		if d, ok := m.(map[string]any); ok {
 			maps = append(maps, ConvStringMap(d))
 		}
 	}
@@ -107,13 +107,13 @@ func ConvStringMaps(ai []interface{}) []map[string]string {
 	return maps
 }
 
-func ConvComplexMaps(ai []interface{}) []map[string]interface{} {
+func ConvComplexMaps(ai []any) []map[string]any {
 	if len(ai) == 0 {
 		return nil
 	}
-	maps := make([]map[string]interface{}, 0, len(ai))
+	maps := make([]map[string]any, 0, len(ai))
 	for _, m := range ai {
-		if d, ok := m.(map[string]interface{}); ok {
+		if d, ok := m.(map[string]any); ok {
 			maps = append(maps, d)
 		}
 	}
@@ -123,9 +123,9 @@ func ConvComplexMaps(ai []interface{}) []map[string]interface{} {
 	return maps
 }
 
-// []interface{} -> []map[string]interface{} -> []map[string][]interface{}
-// -> []map[string][]map[string]interface{} -> []map[string][]map[string]string
-//func ConvComplexStringMaps(ai []interface{}) []map[string][]map[string]string {
+// []any -> []map[string]any -> []map[string][]any
+// -> []map[string][]map[string]any -> []map[string][]map[string]string
+//func ConvComplexStringMaps(ai []any) []map[string][]map[string]string {
 //	if len(ai) == 0 {
 //		return nil
 //	}
@@ -136,7 +136,7 @@ func ConvComplexMaps(ai []interface{}) []map[string]interface{} {
 //
 //	maps := make([]map[string][]map[string]string, 0, len(ai))
 //	for _, m := range ai {
-//		if d, ok := m.(map[string]interface{}); ok {
+//		if d, ok := m.(map[string]any); ok {
 //			maps = append(maps, d)
 //		}
 //	}

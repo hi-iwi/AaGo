@@ -20,7 +20,7 @@ func (p *Atype) Strings() ([]string, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -41,7 +41,7 @@ func (p *Atype) Ints() ([]int, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -59,7 +59,7 @@ func (p *Atype) Uints() ([]uint, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -77,7 +77,7 @@ func (p *Atype) Int64s() ([]int64, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -95,7 +95,7 @@ func (p *Atype) Uint64s() ([]uint64, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -113,7 +113,7 @@ func (p *Atype) Float32s() ([]float32, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -131,7 +131,7 @@ func (p *Atype) Float64s() ([]float64, bool) {
 	if ok {
 		return v, true
 	}
-	ar, ok := p.raw.([]interface{})
+	ar, ok := p.raw.([]any)
 	if !ok {
 		return nil, false
 	}
@@ -161,7 +161,7 @@ func (p *Atype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 		return v, true
 	}
 
-	arr, ok := p.raw.([]interface{})
+	arr, ok := p.raw.([]any)
 	if ok {
 		v, _ := json.Marshal(arr)
 
@@ -178,7 +178,7 @@ func (p *Atype) ArrayJson(allowNil bool) (json.RawMessage, bool) {
 	return nil, false
 }
 func (p *Atype) MapJson(allowNil bool) (json.RawMessage, bool) {
-	arr, ok := p.raw.(map[string]interface{})
+	arr, ok := p.raw.(map[string]any)
 	if ok {
 		v, _ := json.Marshal(arr)
 		return v, true

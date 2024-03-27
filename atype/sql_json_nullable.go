@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-type NullJson struct{ sql.NullString }          // interface{}
+type NullJson struct{ sql.NullString }          // any
 type NullUint8s struct{ sql.NullString }        // uint8 json array
 type NullUint16s struct{ sql.NullString }       // uint16 json array
 type NullUint24s struct{ sql.NullString }       // Uint24 json array
@@ -22,7 +22,7 @@ type ComplexStringsMap struct{ sql.NullString } // map[string][][]string
 type StringMaps struct{ sql.NullString }        // []map[string]string
 type ComplexStringMaps struct{ sql.NullString } // []map[string][]map[string]string
 
-type ComplexMaps struct{ sql.NullString } // []map[string]interface{}
+type ComplexMaps struct{ sql.NullString } // []map[string]any
 
 func NewNullJson(s []byte) NullJson {
 	var x NullJson
@@ -32,7 +32,7 @@ func NewNullJson(s []byte) NullJson {
 	return x
 }
 
-func ToNullJson(v interface{}) NullJson {
+func ToNullJson(v any) NullJson {
 	if v == nil {
 		return NullJson{}
 	}
@@ -40,11 +40,11 @@ func ToNullJson(v interface{}) NullJson {
 	return NewNullJson(s)
 }
 
-func (t ComplexMaps) Interface() interface{} {
+func (t ComplexMaps) Interface() any {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v interface{}
+	var v any
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }
@@ -98,7 +98,7 @@ func (t NullUint16s) Uint16s() []uint16 {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
+	var v []any
 	json.Unmarshal([]byte(t.String), &v)
 	if len(v) == 0 {
 		return nil
@@ -131,7 +131,7 @@ func (t NullUint24s) Uint24s() []Uint24 {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
+	var v []any
 	json.Unmarshal([]byte(t.String), &v)
 	if len(v) == 0 {
 		return nil
@@ -164,7 +164,7 @@ func (t NullUint32s) Uint32s() []uint32 {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
+	var v []any
 	json.Unmarshal([]byte(t.String), &v)
 	if len(v) == 0 {
 		return nil
@@ -197,7 +197,7 @@ func (t NullInts) Ints() []int {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
+	var v []any
 	json.Unmarshal([]byte(t.String), &v)
 	if len(v) == 0 {
 		return nil
@@ -230,7 +230,7 @@ func (t NullUints) Uints() []uint {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
+	var v []any
 	json.Unmarshal([]byte(t.String), &v)
 	if len(v) == 0 {
 		return nil
@@ -265,7 +265,7 @@ func (t NullUint64s) Uint64s() []uint64 {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []interface{}
+	var v []any
 	json.Unmarshal([]byte(t.String), &v)
 	if len(v) == 0 {
 		return nil
@@ -498,7 +498,7 @@ func NewComplexMaps(s string) ComplexMaps {
 	}
 	return x
 }
-func ToComplexMaps(v []map[string]interface{}) ComplexMaps {
+func ToComplexMaps(v []map[string]any) ComplexMaps {
 	if len(v) == 0 {
 		return ComplexMaps{}
 	}
@@ -510,11 +510,11 @@ func ToComplexMaps(v []map[string]interface{}) ComplexMaps {
 	return NewComplexMaps(string(s))
 }
 
-func (t ComplexMaps) Maps() []map[string]interface{} {
+func (t ComplexMaps) Maps() []map[string]any {
 	if !t.Valid || t.String == "" {
 		return nil
 	}
-	var v []map[string]interface{}
+	var v []map[string]any
 	json.Unmarshal([]byte(t.String), &v)
 	return v
 }

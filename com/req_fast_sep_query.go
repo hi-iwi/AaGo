@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func reqSepStrings(method func(string, ...interface{}) (*ReqProp, *ae.Error), p string, sep string, required, allowEmptyString bool) ([]string, *ae.Error) {
+func reqSepStrings(method func(string, ...any) (*ReqProp, *ae.Error), p string, sep string, required, allowEmptyString bool) ([]string, *ae.Error) {
 	s, e := method(p, required)
 
 	if e != nil {
