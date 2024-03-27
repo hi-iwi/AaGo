@@ -18,6 +18,10 @@ func (r *Req) QueryId(p string, params ...any) (sid string, id uint64, e *ae.Err
 		return
 	}
 	for _, s := range sid {
+		if s < '0' || (s > '9' && s < 'A') || (s > 'Z' && s < '_') || (s > '_' && s <= 'a') || s > 'z' {
+			e = ae.BadParam(p)
+			return
+		}
 		if s < '0' || s > '9' {
 			return
 		}
@@ -88,14 +92,16 @@ func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) 
 }
 
 // 下面很少使用，就不要封装了。以后使用的时候，业务层直接组装就行
-//func (r *Req) BodyAudios(p string, required, allowEmptyString, filenameOnly bool) (atype.Audios, *ae.Error) {
-//	x, e := r.BodyStrings(p, required, allowEmptyString)
-//	return atype.ToAudios(x, filenameOnly), e
-//}
-//func (r *Req) BodyVideos(p string, required, allowEmptyString, filenameOnly bool) (atype.Videos, *ae.Error) {
-//	x, e := r.BodyStrings(p, required, allowEmptyString)
-//	return atype.ToVideos(x, filenameOnly), e
-//}
+//
+//	func (r *Req) BodyAudios(p string, required, allowEmptyString, filenameOnly bool) (atype.Audios, *ae.Error) {
+//		x, e := r.BodyStrings(p, required, allowEmptyString)
+//		return atype.ToAudios(x, filenameOnly), e
+//	}
+//
+//	func (r *Req) BodyVideos(p string, required, allowEmptyString, filenameOnly bool) (atype.Videos, *ae.Error) {
+//		x, e := r.BodyStrings(p, required, allowEmptyString)
+//		return atype.ToVideos(x, filenameOnly), e
+//	}
 func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae.Error) {
 	x, e := r.BodyFloat64Map(p, required...)
 	if e != nil || x == nil {

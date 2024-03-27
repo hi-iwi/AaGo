@@ -29,13 +29,13 @@ func Context(ictx iris.Context) context.Context {
 	vuser := ictx.Values().GetString(IctxParamVuser)
 	var trace string
 	if vuser == "" {
-		trace = fmt.Sprintf("{%s %s}", traceId, ip)
+		trace = fmt.Sprintf("%s %s", traceId, ip)
 	} else {
-		trace = fmt.Sprintf("{%s %s %s}", traceId, ip, vuser)
+		trace = fmt.Sprintf("%s %s %s", traceId, ip, vuser)
 	}
 	return context.WithValue(ictx.Request().Context(), CtxParamTraceKey, trace)
 }
-func traceInfo(ctx context.Context) string {
+func TraceInfo(ctx context.Context) string {
 	trace, _ := ctx.Value(CtxParamTraceKey).(string)
 	return trace
 }
@@ -45,7 +45,7 @@ func ContextWithTraceID(ctx context.Context, traceId string) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	return context.WithValue(ctx, CtxParamTraceKey, "{"+traceId+"}")
+	return context.WithValue(ctx, CtxParamTraceKey, traceId)
 }
 
 // 使用 context.WithValue 会复制整个 context，会比较慢。尽量直接用 ictx.Values()

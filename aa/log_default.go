@@ -24,7 +24,7 @@ func NewDefaultLog() Log {
 	return xlogInstance
 }
 func xlogHeader(ctx context.Context, caller string, level ErrorLevel) string {
-	traceInfo := traceInfo(ctx)
+	traceInfo := "{" + TraceInfo(ctx) + "}"
 	b := strings.Builder{}
 	b.Grow(15 + len(traceInfo))
 	b.WriteString(caller)
@@ -98,6 +98,6 @@ func (l *xlog) Println(ctx context.Context, msg ...any) {
 }
 
 func (l *xlog) Trace(ctx context.Context) {
-	traceInfo := traceInfo(ctx)
+	traceInfo := TraceInfo(ctx)
 	log.Printf("[TRACE]{%s} %s\n", traceInfo, ae.Caller(1))
 }
