@@ -75,10 +75,6 @@ type Log interface {
 	Trace(ctx context.Context)
 }
 
-func traceid(ctx context.Context) string {
-	id, _ := ctx.Value(TraceIdKey).(string)
-	return id
-}
 func errorlevel(ctx context.Context) ErrorLevel {
 	level, _ := ctx.Value(ErrorLevelKey).(ErrorLevel)
 	return level

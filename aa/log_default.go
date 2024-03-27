@@ -24,15 +24,13 @@ func NewDefaultLog() Log {
 	return xlogInstance
 }
 func xlogHeader(ctx context.Context, caller string, level ErrorLevel) string {
-	tid := traceid(ctx)
+	traceInfo := traceInfo(ctx)
 	b := strings.Builder{}
-	b.Grow(15 + len(tid))
+	b.Grow(15 + len(traceInfo))
 	b.WriteString(caller)
-	if tid != "" {
-		b.WriteString("{" + tid + "}")
-	}
+	b.WriteString(traceInfo)
 	if level != AllError {
-		b.WriteString("[" + level.Name() + "]")
+		b.WriteString(" [" + level.Name() + "] ")
 	}
 	return b.String()
 }
@@ -100,6 +98,6 @@ func (l *xlog) Println(ctx context.Context, msg ...any) {
 }
 
 func (l *xlog) Trace(ctx context.Context) {
-	tid := traceid(ctx)
-	log.Printf("[TRACE]{%s} %s\n", tid, ae.Caller(1))
+	traceInfo := traceInfo(ctx)
+	log.Printf("[TRACE]{%s} %s\n", traceInfo, ae.Caller(1))
 }

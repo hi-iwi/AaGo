@@ -28,8 +28,8 @@ func splitHost(addr string) string {
 	return addr
 }
 
-// RemoteIP 客户端真实IP地址
-func RemoteIP(r *http.Request) string {
+// RemoteIp 客户端真实IP地址
+func RemoteIp(r *http.Request) string {
 	var addr string
 	if addr = GetSelfDefinedHeader(r.Header, "X-Real-Ip"); addr != "" {
 		return splitHost(addr)
