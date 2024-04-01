@@ -81,7 +81,7 @@ func errorlevel(ctx context.Context) ErrorLevel {
 }
 
 // 快捷方式，对服务器错误记录日志
-func (app *App) Try(ctx context.Context, e *ae.Error) bool {
+func (app *App) Check(ctx context.Context, e *ae.Error) bool {
 	if e == nil {
 		return true
 	}
@@ -91,10 +91,25 @@ func (app *App) Try(ctx context.Context, e *ae.Error) bool {
 	return false
 }
 
+func (app *App) CheckError(ctx context.Context, err error) bool {
+	if err == nil {
+		return true
+	}
+	app.Log.Error(ctx, err.Error())
+	return false
+}
+
 // 快捷panic
-func (app *App) TryOrPanic(ctx context.Context, e *ae.Error) {
+func (app *App) Assert(ctx context.Context, e *ae.Error) {
 	if e != nil && e.IsServerError() {
 		app.Log.Error(ctx, e.Text())
 		panic(e.Text())
+	}
+}
+
+func (app *App) AssertError(ctx context.Context, err error) {
+	if err != nil {
+		app.Log.Error(ctx, err.Error())
+		panic(err.Error())
 	}
 }
