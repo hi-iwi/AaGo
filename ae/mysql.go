@@ -61,7 +61,7 @@ func NewSqlE(err error, query string, args ...any) *Error {
 	}
 
 	if len(args) > 0 {
-		query = "`" + fmt.Sprintf(strings.ReplaceAll(query, "?", "%v"), args...) + "`"
+		query = "{`" + fmt.Sprintf(strings.ReplaceAll(query, "?", `"%v"`), args...) + "`}"
 	}
 
 	e.Msg += " " + query
