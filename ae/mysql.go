@@ -56,11 +56,11 @@ func NewSqlError(err error) *Error {
 }
 func NewSqlE(err error, query string, args ...any) *Error {
 	e := NewSqlError(err)
-	if e == nil || query == "" {
+	if e == nil || !e.IsServerError() || query == "" {
 		return e
 	}
 
-	if len(args) > 0 && e.IsServerError() {
+	if len(args) > 0 {
 		query = "{`" + fmt.Sprintf(strings.ReplaceAll(query, "?", `"%v"`), args...) + "`}"
 	}
 
