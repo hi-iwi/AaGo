@@ -18,7 +18,7 @@ func (r *Req) QueryId(p string, params ...any) (sid string, id uint64, e *ae.Err
 		return
 	}
 	for _, s := range sid {
-		if s < '0' || (s > '9' && s < 'A') || (s > 'Z' && s < '_') || (s > '_' && s <= 'a') || s > 'z' {
+		if s < '0' || (s > '9' && s < 'A') || (s > 'Z' && s < '_') || (s > '_' && s < 'a') || s > 'z' {
 			e = ae.BadParam(p)
 			return
 		}

@@ -12,12 +12,6 @@ const IctxParamTraceId = "TraceId" // nginx 层传递过来
 const IctxParamRemoteAddress = "RemoteAddr"
 const IctxParamVuser = "TraceVuser"
 
-// tracePrefix should be captialized
-func (app *App) IrisMiddleware(ictx iris.Context) {
-	defer ictx.Next() // 这个是必须要存在的！！！
-	ictx.Values().Set(IctxParamRemoteAddress, ictx.RemoteAddr())
-}
-
 func SetIctxTraceInfoVuser(ictx iris.Context, vuser string) {
 	ictx.Values().Set(IctxParamVuser, vuser)
 }
