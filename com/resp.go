@@ -50,6 +50,9 @@ func defaultHideServerErr(ictx iris.Context, cs *RespContentDTO, r *Req) {
 
 func RegisterRespContentTypes(ctypes ...string) {
 	for _, ctype := range ctypes {
+		if ctype == "" {
+			continue
+		}
 		// 会同时把 ; charset=utf-8 一起注册进去
 		respContentTypes[ctype] = struct{}{}
 		if strings.IndexByte(ctype, ';') == 0 {

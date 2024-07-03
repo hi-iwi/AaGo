@@ -168,11 +168,7 @@ func (resp *RespStruct) WriteRaw(ps ...any) (int, error) {
 	return 0, nil
 }
 func (resp *RespStruct) WriteOK() error {
-	cs := RespContentDTO{
-		Code: 200,
-		Msg:  "OK",
-	}
-	return resp.write(cs)
+	return resp.write(OK(nil))
 }
 
 // 返回插入数据的ID，ID 可能是联合主键，或者字段不为id，那么就会以对象形式返回
@@ -325,11 +321,7 @@ func (resp *RespStruct) Write(a any) error {
 			Payload: nil,
 		})
 	}
-	return resp.write(RespContentDTO{
-		Code:    200,
-		Msg:     "OK",
-		Payload: payload,
-	})
+	return resp.write(OK(payload))
 }
 
 func (resp *RespStruct) TryWrite(a any, e *ae.Error) error {
