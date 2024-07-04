@@ -10,7 +10,8 @@ import (
 // 数据库有 money() 函数 money 支持正负；
 // SmallMoney:  UNSIGNED INT 范围：42万元左右；
 // Money:      BIGINT 范围：正负100亿元；
-type Money int64 // 有效范围：正负100亿元；  ±100 0000亿
+type Money int64  // 有效范围：正负100亿元；  ±100 0000亿
+type Currency int // 1 currency = 1 yuan
 
 const (
 	// 1 元 = 100 分 = 1000 毫 = 10000 money
@@ -34,6 +35,8 @@ const (
 	MinMoney    Money = -1 << 63
 	MaxMoney    Money = 1<<63 - 1
 )
+
+func (c Currency) Money() Money { return Money(c) * Yuan }
 
 func MoneyUnit(n float64) Money { return Money(math.Round(n * unitMoneyFloat64)) }
 func MoneyUnitN(n int64) Money  { return Money(n) * UnitMoney }
