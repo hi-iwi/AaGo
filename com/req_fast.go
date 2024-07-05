@@ -4,6 +4,8 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"html/template"
 	"strings"
 	"time"
@@ -23,13 +25,30 @@ func (r *Req) Xhost() string {
 	h := scheme + "//" + host
 	return h
 }
+func (r *Req) UserAgent() string {
+	r.data.hlck.RLock()
+	ua := r.userAgent
+	r.data.hlck.RUnlock()
+	if ua != "" {
+		return ua
+	}
+	ua = r.FastXparam("User-Agent").String()
+	if ua == "" {
+		return ""
+	}
+	r.data.hlck.Lock()
+	r.userAgent = ua
+	r.data.hlck.Unlock()
+	return ua
+}
 
 // 跟踪客户端数据，优先级：url --> header `X-***`  --> cookie
-// 标准：Referer, VUser-Agent,
+// 标准：Referer, User-Agent,
 // 自定义：X-Csrf-Token, X-Request-Vuid, X-From, X-Inviter
 // @warn 尽量不要通过自定义header传参，因为可能某个web server会基于安全禁止某些无法识别的header
 func (r *Req) XHeader(name string, patterns ...any) (v *ReqProp, e *ae.Error) {
-	key := strings.Title(strings.ReplaceAll(name, "_", "-")) // 首字母大写
+	caser := cases.Title(language.English)
+	key := caser.String(strings.ReplaceAll(name, "_", "-")) // 首字母大写
 	if v, e = r.Header(key, patterns...); e == nil && v.NotEmpty() {
 		return
 	}
@@ -82,6 +101,7 @@ func (r *Req) FastXparam(name string) *ReqProp {
 	v, _ := r.Xparam(name, false)
 	return v
 }
+
 func reqDigit(method func(string, ...any) (*ReqProp, *ae.Error), p string, positive bool, xargs ...bool) (*ReqProp, *ae.Error) {
 	reg := `^[-\d]\d*$`
 	if positive {

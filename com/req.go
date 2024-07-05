@@ -19,14 +19,15 @@ type Req struct {
 	Method      string
 	r           *http.Request
 	contentType string
+	userAgent   string
 	data        reqData
 	raw         string
 	parsed      bool
 }
 type reqData struct {
-	qlck   sync.RWMutex
-	hlck   sync.RWMutex
-	blck   sync.RWMutex
+	qlck   sync.RWMutex // query lock
+	hlck   sync.RWMutex // header lock
+	blck   sync.RWMutex // body lock
 	uri    string
 	query  map[string]any
 	header map[string]any
