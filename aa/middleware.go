@@ -19,7 +19,7 @@ func SetIctxTraceInfoVuser(ictx iris.Context, vuser string) {
 // 这里会整体clone一个context，性能并不好。但是为了代码美化，还是牺牲这点性能，换取统一的trace id传递
 func Context(ictx iris.Context) context.Context {
 	traceId := TraceId(ictx)
-	ip := RemoteAddr(ictx)
+	ip := ictx.RemoteAddr()
 	vuser := ictx.Values().GetString(IctxParamVuser)
 	var trace string
 	if vuser == "" {
@@ -58,15 +58,4 @@ func TraceId(ictx iris.Context) string {
 		ictx.Values().Set(IctxParamTraceId, traceId)
 	}
 	return traceId
-}
-func RemoteAddr(ictx iris.Context) string {
-	ip := ictx.Values().GetString(IctxParamRemoteAddress)
-	if ip != "" {
-		return ip
-	}
-	ip = ictx.RemoteAddr()
-	if ip != "" {
-		ictx.Values().Set(IctxParamRemoteAddress, ip)
-	}
-	return ip
 }
