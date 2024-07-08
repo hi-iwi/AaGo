@@ -4,12 +4,11 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 )
 
-func (resp *RespStruct) CatchErrors(es ...*ae.Error) (bool, *ae.Error) {
-	for i := 0; i < len(es); i++ {
-		if es[i] != nil {
-			resp.WriteE(es[i])
-			return true, es[i]
-		}
+func (resp *RespStruct) CatchErrors(es ...*ae.Error) *ae.Error {
+	e := ae.Check(es...)
+	if e != nil {
+		resp.WriteE(e)
+		return e
 	}
-	return false, nil
+	return nil
 }
