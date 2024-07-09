@@ -38,7 +38,7 @@ type Point struct {
 */
 type Position struct{ sql.NullString } // []byte // postion, coordinate or point
 
-// sql 可以使用 select *， cast(xxx as CHAR) AS ip_real from table_name   进行显示
+// sql 可以使用 select *， cast(ip as CHAR) from table_name   进行显示
 type Ip struct{ sql.NullString } //  VARBINARY(16) | BINARY(16) 固定16位长度 net.IP               // IP Address
 
 // https://en.wikipedia.org/wiki/Bit_numbering
@@ -222,7 +222,7 @@ func (p Position) Point() *Point {
 	}
 }
 
-// sql 可以使用 select *， cast(xxx as CHAR) AS ip_real from table_name   进行显示
+// sql 可以使用 select *， cast(ip as CHAR) from table_name   进行显示
 func ToIp(addr string) Ip {
 	var ip Ip
 	if addr == "" {
