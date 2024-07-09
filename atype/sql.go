@@ -37,7 +37,9 @@ type Point struct {
 一般point 需要建 spatial 索引，就需要单独到一个表里，不应该放在一起
 */
 type Position struct{ sql.NullString } // []byte // postion, coordinate or point
-type Ip struct{ sql.NullString }       //  VARBINARY(16) | BINARY(16) 固定16位长度 net.IP               // IP Address
+
+// sql 可以使用 select *， cast(xxx as CHAR) AS ip_real from table_name   进行显示
+type Ip struct{ sql.NullString } //  VARBINARY(16) | BINARY(16) 固定16位长度 net.IP               // IP Address
 
 // https://en.wikipedia.org/wiki/Bit_numbering
 type BitPos uint8       // bit position (in big endian)
@@ -219,6 +221,8 @@ func (p Position) Point() *Point {
 		Y: y,
 	}
 }
+
+// sql 可以使用 select *， cast(xxx as CHAR) AS ip_real from table_name   进行显示
 func ToIp(addr string) Ip {
 	var ip Ip
 	if addr == "" {
