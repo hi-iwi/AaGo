@@ -5,11 +5,20 @@ import (
 	"strconv"
 )
 
+// https://www.splashlearn.com/math-vocabulary/decimals/decimal-point
+// https://learn.microsoft.com/en-us/sql/t-sql/data-types/precision-scale-and-length-transact-sql?view=sql-server-ver16
+// [whole -> precision - scale][decimal point = .][mantissa -> scale]
+// mantissa // 小数值
+// whole // 整数值
+//precision   // 精度，如 12345.6789.precision   ==> 9 = len('12345') + len('6789')
+// scale = C.DecimalScale// 小数位数，如 12345.6789.scale  ==> 4 = len('6789')
+
 // Decimal 万分之一
-//   int    ---> [-214748.3648, 214748.3647]    [-21474836.48%, 21474836.47%]
-//   int24  ---> [-838.8608, 838.8607]        [-83886.08%, 83886.07%]
-//   uint16 ---> [0, 6.5535]                  [0%, 655.35%]
-//   int16  ---> [-3.2768, 3.2767]           [-327.68%, 327.67%]
+//
+//	int    ---> [-214748.3648, 214748.3647]    [-21474836.48%, 21474836.47%]
+//	int24  ---> [-838.8608, 838.8607]        [-83886.08%, 83886.07%]
+//	uint16 ---> [0, 6.5535]                  [0%, 655.35%]
+//	int16  ---> [-3.2768, 3.2767]           [-327.68%, 327.67%]
 type Decimal int64 // [ -922337203685477.5808,  -922337203685477.5807]
 
 const (
@@ -48,7 +57,8 @@ func (p Decimal) MulN(n int64) Decimal {
 	return p * Decimal(n)
 }
 
-//  0.8 * 0.8 = 0.64 (6400)   =====>   8000 * 8000  =  6400 [0000]
+//	0.8 * 0.8 = 0.64 (6400)   =====>   8000 * 8000  =  6400 [0000]
+//
 // 1.6 * 0.8 = 1.28 (12800)    =====>  16000 * 8000 = 12800 [0000]
 // 0.009 * 0.04 =0.0003[6] (3)   -->   90 * 400  = 3[6000]     舍去最后一位
 func (p Decimal) Mul(b Decimal, intHandler func(float64) float64) Decimal {
@@ -79,31 +89,31 @@ func (p Decimal) Sign() string {
 }
 
 // 整数部分
-func (p Decimal) Precision() int64 { return int64(p) / unitDecimalInt64 }
+func (p Decimal) Whole() int64 { return int64(p) / unitDecimalInt64 }
 
 // 小数部分
-func (p Decimal) Scale() uint16 {
+func (p Decimal) Mantissa() uint16 {
 	return uint16(int64(math.Abs(float64(p))) % unitDecimalInt64)
 }
 
 // 类型：  1,000,000 这种
-func (p Decimal) FmtPrecision(n int, delimiter string) string {
-	s := strconv.FormatInt(p.Precision(), 10)
+func (p Decimal) FormatWhole(n int, delimiter string) string {
+	s := strconv.FormatInt(p.Whole(), 10)
 	return fmtPrecision(s, n, delimiter)
 }
-func (p Decimal) FmtScale(decimals ...uint16) string {
-	return formatScale(p.Scale(), decimalN(decimals...), true)
+func (p Decimal) FmtMantissa(decimals ...uint16) string {
+	return formatScale(p.Mantissa(), decimalN(decimals...), true)
 }
-func (p Decimal) FormatScale(decimals ...uint16) string {
-	return formatScale(p.Scale(), decimalN(decimals...), false)
+func (p Decimal) FormatMantissa(decimals ...uint16) string {
+	return formatScale(p.Mantissa(), decimalN(decimals...), false)
 }
 func (p Decimal) Fmt(decimals ...uint16) string {
-	ys := strconv.FormatInt(p.Precision(), 10)
-	return ys + formatScale(p.Scale(), decimalN(decimals...), true)
+	ys := strconv.FormatInt(p.Whole(), 10)
+	return ys + formatScale(p.Mantissa(), decimalN(decimals...), true)
 }
 func (p Decimal) Format(decimals ...uint16) string {
-	ys := strconv.FormatInt(p.Precision(), 10)
-	return ys + formatScale(p.Scale(), decimalN(decimals...), false)
+	ys := strconv.FormatInt(p.Whole(), 10)
+	return ys + formatScale(p.Mantissa(), decimalN(decimals...), false)
 }
 
 func (p Decimal) FmtPercent() string {

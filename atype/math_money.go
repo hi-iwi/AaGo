@@ -102,28 +102,28 @@ func (a Money) Sign() string {
 }
 
 // 整数部分
-func (a Money) Precision() int64 { return int64(a) / int64(Yuan) }
-func (a Money) ToCent() int64    { return int64(a) / int64(Cent) }
+func (a Money) Whole() int64  { return int64(a) / int64(Yuan) }
+func (a Money) ToCent() int64 { return int64(a) / int64(Cent) }
 
 // 小数部分
-func (a Money) Scale() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
+func (a Money) Mantissa() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
 
 // 类型：  1,000,000 这种
-func (a Money) FmtPrecision(n int, delimiter string) string {
-	s := strconv.FormatInt(a.Precision(), 10)
+func (a Money) FormatWhole(n int, delimiter string) string {
+	s := strconv.FormatInt(a.Whole(), 10)
 	return fmtPrecision(s, n, delimiter)
 }
-func (a Money) FmtScale(decimals ...uint16) string {
-	return formatScale(a.Scale(), decimalN(decimals...), true)
+func (a Money) FmtMantissa(decimals ...uint16) string {
+	return formatScale(a.Mantissa(), decimalN(decimals...), true)
 }
-func (a Money) FormatScale(decimals ...uint16) string {
-	return formatScale(a.Scale(), decimalN(decimals...), false)
+func (a Money) FormatMantissa(decimals ...uint16) string {
+	return formatScale(a.Mantissa(), decimalN(decimals...), false)
 }
 func (a Money) Fmt(decimals ...uint16) string {
-	ys := strconv.FormatInt(a.Precision(), 10)
-	return ys + formatScale(a.Scale(), decimalN(decimals...), true)
+	ys := strconv.FormatInt(a.Whole(), 10)
+	return ys + formatScale(a.Mantissa(), decimalN(decimals...), true)
 }
 func (a Money) Format(decimals ...uint16) string {
-	ys := strconv.FormatInt(a.Precision(), 10)
-	return ys + formatScale(a.Scale(), decimalN(decimals...), false)
+	ys := strconv.FormatInt(a.Whole(), 10)
+	return ys + formatScale(a.Mantissa(), decimalN(decimals...), false)
 }
