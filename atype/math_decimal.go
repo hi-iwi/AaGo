@@ -139,6 +139,18 @@ func (p Decimal) Format(scale uint8, interval uint8) string {
 	return p.FormatWhole(interval) + p.FormatMantissa(scale)
 }
 
+// 无参数，提供给 go template 使用
+func (p Decimal) FmtWhole() string {
+	s := strconv.FormatInt(p.Whole(), 10)
+	return formatWhole(s, 0)
+}
+func (p Decimal) FmtMantissa() string {
+	return p.FormatMantissa(2)
+}
+func (p Decimal) Fmt() string {
+	return p.Format(2, 0)
+}
+
 //func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
 //
 //func (p Decimal) FormatPercent() string {

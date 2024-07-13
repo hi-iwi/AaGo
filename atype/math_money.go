@@ -139,3 +139,14 @@ func (a Money) FormatMantissa(scale uint8) string {
 func (a Money) Format(scale uint8, interval uint8) string {
 	return a.FormatWhole(interval) + a.FormatMantissa(scale)
 }
+
+func (a Money) FmtWhole() string {
+	s := strconv.FormatInt(a.Whole(), 10)
+	return formatWhole(s, 0)
+}
+func (a Money) FmtMantissa() string {
+	return a.FormatMantissa(2)
+}
+func (a Money) Fmt() string {
+	return a.Format(2, 0)
+}
