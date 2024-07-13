@@ -151,11 +151,11 @@ func (p Decimal) Fmt() string {
 	return p.Format(2, 0)
 }
 
-//func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
-//
-//func (p Decimal) FormatPercent() string {
-//	return strconv.FormatFloat(p.Percent(), 'f', -1, 32)
-//}
-//func (p Decimal) FormatPercentAbs() string {
-//	return strconv.FormatFloat(math.Abs(p.Percent()), 'f', -1, 32)
-//}
+func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
+
+func (p Decimal) FormatPercent() string {
+	return strconv.FormatFloat(p.Percent(), 'f', -1, 32)
+}
+func (p Decimal) FormatPercentAbs() string {
+	return strconv.FormatFloat(math.Abs(p.Percent()), 'f', -1, 32)
+}
