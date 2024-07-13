@@ -32,6 +32,11 @@ func TestDecimal(t *testing.T) {
 
 }
 func TestMoney(t *testing.T) {
+
+	if atype.Decimal(0).FmtMantissa() != ".00" {
+		t.Errorf("atype.Decimal(0).FmtMantissa() : %s != .00", atype.Decimal(0).FmtMantissa())
+	}
+
 	m := atype.YuanX(188.8)
 	if m.Format(0, 0) != "188.8" {
 		t.Errorf("atype.MoneyYuan(1888000).FormatPercent() : %s != 188.8", m.Format(0, 0))

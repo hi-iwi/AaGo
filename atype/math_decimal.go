@@ -126,8 +126,10 @@ func (p Decimal) FormatMantissa(scale uint8) string {
 	}
 	if scale == 0 {
 		s = strings.TrimRight(s, "0")
-	} else {
+	} else if len(s) > int(scale) {
 		s = s[:scale]
+	} else if int(scale) > len(s) {
+		s = padRight(s, "0", int(scale))
 	}
 	if s != "" {
 		s = "." + s

@@ -15,3 +15,15 @@ func formatWhole(s string, interval uint8) string {
 	}
 	return s2
 }
+
+func padRight(str string, pad string, minlen int) string {
+	if pad == "" || len(str) >= minlen {
+		return str
+	}
+	for {
+		str += pad
+		if len(str) >= minlen {
+			return str
+		}
+	}
+}
