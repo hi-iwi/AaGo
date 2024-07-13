@@ -100,6 +100,15 @@ func (a Money) Sign() string {
 	return ""
 }
 
+// 精度
+func (a Money) Precision() int {
+	n := len(strconv.FormatInt(a.Int64(), 10))
+	if a < 0 {
+		n--
+	}
+	return n
+}
+
 // 实数形式
 func (a Money) Real() float64 { return float64(a) / unitMoneyFloat64 }
 
@@ -107,48 +116,78 @@ func (a Money) Real() float64 { return float64(a) / unitMoneyFloat64 }
 func (a Money) Whole() int64  { return int64(a) / int64(Yuan) }
 func (a Money) ToCent() int64 { return int64(a) / int64(Cent) }
 
-// 小数部分
-func (a Money) Mantissa() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
-
-// 类型：  1,000,000 这种
-func (a Money) FormatWhole(interval uint8) string {
-	s := strconv.FormatInt(a.Whole(), 10)
-	return formatWhole(s, interval)
+// 小数部分   -->  使用小数表示，不能用整数，因为  123.0001   ---> 0001
+func (a Money) Mantissa(withSign bool) float64 {
+	mantissa := float64(a%UnitMoney) / unitMoneyFloat64
+	if !withSign && mantissa < 0 {
+		mantissa = -mantissa
+	}
+	return mantissa
 }
 
-func (a Money) FormatMantissa(scale uint8) string {
-	if scale > MoneyScale {
-		scale = MoneyScale
+// 类型：  1,000,000 这种
+func (a Money) FormatWhole(style *DecimalFormat) string {
+	s := strconv.FormatInt(a.Whole(), 10)
+	if style == nil {
+		return s
 	}
+	return formatWhole(s, style.SegmentSize, style.Separator)
+}
+
+// @warn 如果进位到整数，则只保留.999...；负数按正数部分round
+func (a Money) FormatMantissa(style *DecimalFormat) string {
+	style = NewDecimalFormat(style)
+	scale := int(style.Scale)
+
 	s := strconv.FormatInt(a.Int64(), 10)
 	g := len(s) - int(MoneyScale)
 	if g > 0 {
-		s = s[g:]
+		s = s[g:] // 取小数部分
 	}
-	if scale == 0 {
-		s = strings.TrimRight(s, "0")
-	} else if len(s) > int(scale) {
+	var ok bool
+	if s, ok = mantissaOk(s, scale, style.TrimScale); !ok {
+		return s
+	}
+	if len(s) > scale {
+		g := style.ScaleRound.IsCeil() || (style.ScaleRound.IsRound() && strings.IndexByte("0123456789", s[scale]) > 4)
 		s = s[:scale]
-	} else if int(scale) > len(s) {
-		s = padRight(s, "0", int(scale))
+		if g {
+			// 0.999... 就不用进位了
+			repeat9 := true
+			for _, ss := range s {
+				if ss != '9' {
+					repeat9 = false
+					break
+				}
+			}
+			if !repeat9 {
+				x, _ := strconv.ParseUint("1"+s, 10, 16)
+				s = strconv.FormatUint(x+1, 10)
+			}
+		}
+		// s 发生变化
+		if s, ok = mantissaOk(s, scale, style.TrimScale); !ok {
+			return s
+		}
 	}
-	if s != "" {
-		s = "." + s
+	if !style.TrimScale {
+		s = padRight(s, "0", scale)
 	}
-	return s
+	return "." + s
 }
 
-func (a Money) Format(scale uint8, interval uint8) string {
-	return a.FormatWhole(interval) + a.FormatMantissa(scale)
+func (a Money) Format(style *DecimalFormat) string {
+	style = NewDecimalFormat(style)
+	return a.FormatWhole(style) + a.FormatMantissa(style)
 }
 
 // 无参数，提供给 go template 使用
 func (a Money) FmtWhole() string {
-	return a.FormatWhole(0)
+	return a.FormatWhole(nil)
 }
 func (a Money) FmtMantissa() string {
-	return a.FormatMantissa(2)
+	return a.FormatMantissa(&DecimalFormat{Scale: 2})
 }
 func (a Money) Fmt() string {
-	return a.Format(2, 0)
+	return a.Format(&DecimalFormat{Scale: 2})
 }

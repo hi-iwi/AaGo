@@ -88,68 +88,107 @@ func (p Decimal) Sign() string {
 	return ""
 }
 
+// 精度
+func (p Decimal) Precision() int {
+	n := len(strconv.FormatInt(p.Int64(), 10))
+	if p < 0 {
+		n--
+	}
+	return n
+}
+
 func (p Decimal) Real() float64 { return float64(p) / unitDecimalFloat64 }
 
 // 整数部分
-func (p Decimal) Whole() int64 { return int64(p) / unitDecimalInt64 }
+func (p Decimal) Whole() int64 { return p.Int64() / unitDecimalInt64 }
 
-// 小数部分
-func (p Decimal) Mantissa(withSign bool) int16 {
-	m := int16(int64(math.Abs(float64(p))) % unitDecimalInt64)
-	if withSign && p < 0 {
-		m = -m
+// 小数部分   -->  使用小数表示，不能用整数，因为  123.0001   ---> 0001
+func (p Decimal) Mantissa(withSign bool) float64 {
+	mantissa := float64(p%UnitDecimal) / unitDecimalFloat64
+	if !withSign && mantissa < 0 {
+		mantissa = -mantissa
 	}
-	return m
+	return mantissa
 }
 
 // FormatWhole 格式化整数部分
 // 类型：  1,000,000 这种
-func (p Decimal) FormatWhole(interval uint8) string {
+func (p Decimal) FormatWhole(style *DecimalFormat) string {
 	s := strconv.FormatInt(p.Whole(), 10)
-	return formatWhole(s, interval)
+	if style == nil {
+		return s
+	}
+	return formatWhole(s, style.SegmentSize, style.Separator)
 }
 
-// FormatMantissa
-//
-//	@Description:
-//	@receiver p
-//	@param scale 保留小数位数；0 表示不限制
-//	@return string
-func (p Decimal) FormatMantissa(scale uint8) string {
-	if scale > DecimalScale {
-		scale = DecimalScale
-	}
-	s := strconv.FormatInt(p.Int64(), 10)
-	g := len(s) - int(DecimalScale)
-	if g > 0 {
-		s = s[g:]
-	}
-	if scale == 0 {
+func mantissaOk(s string, scale int, trimScale bool) (string, bool) {
+	if trimScale || scale == 0 {
 		s = strings.TrimRight(s, "0")
-	} else if len(s) > int(scale) {
+	} else if len(s) < scale {
+		s = padRight(s, "0", scale)
+	}
+
+	if s == "" {
+		return "", false
+	} else if scale == 0 || len(s) <= scale {
+		return "." + s, false
+	}
+	return s, true
+}
+func (p Decimal) FormatMantissa(style *DecimalFormat) string {
+	style = NewDecimalFormat(style)
+	scale := int(style.Scale)
+
+	s := strconv.FormatInt(p.Int64(), 10)
+	g := len(s) - int(MoneyScale)
+	if g > 0 {
+		s = s[g:] // 取小数部分
+	}
+
+	var ok bool
+	if s, ok = mantissaOk(s, scale, style.TrimScale); !ok {
+		return s
+	}
+
+	if len(s) > scale {
+		g := style.ScaleRound.IsCeil() || (style.ScaleRound.IsRound() && strings.IndexByte("0123456789", s[scale]) > 4)
 		s = s[:scale]
-	} else if int(scale) > len(s) {
-		s = padRight(s, "0", int(scale))
+		if g {
+			// 0.999... 就不用进位了
+			repeat9 := true
+			for _, ss := range s {
+				if ss != '9' {
+					repeat9 = false
+					break
+				}
+			}
+			if !repeat9 {
+				x, _ := strconv.ParseUint("1"+s, 10, 16)
+				s = strconv.FormatUint(x+1, 10)
+			}
+		}
+		// s 发生变化
+		if s, ok = mantissaOk(s, scale, style.TrimScale); !ok {
+			return s
+		}
 	}
-	if s != "" {
-		s = "." + s
-	}
-	return s
+	return "." + s
 }
 
-func (p Decimal) Format(scale uint8, interval uint8) string {
-	return p.FormatWhole(interval) + p.FormatMantissa(scale)
+func (p Decimal) Format(style *DecimalFormat) string {
+	style = NewDecimalFormat(style)
+	return p.FormatWhole(style) + p.FormatMantissa(style)
 }
 
 // 无参数，提供给 go template 使用
 func (p Decimal) FmtWhole() string {
-	return p.FormatWhole(0)
+	return p.FormatWhole(nil)
 }
 func (p Decimal) FmtMantissa() string {
-	return p.FormatMantissa(2)
+	return p.FormatMantissa(&DecimalFormat{Scale: 2})
 }
 func (p Decimal) Fmt() string {
-	return p.Format(2, 0)
+	return p.Format(&DecimalFormat{Scale: 2})
 }
 
 func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
