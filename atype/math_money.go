@@ -142,9 +142,9 @@ func (a Money) Format(scale uint8, interval uint8) string {
 	return a.FormatWhole(interval) + a.FormatMantissa(scale)
 }
 
+// 无参数，提供给 go template 使用
 func (a Money) FmtWhole() string {
-	s := strconv.FormatInt(a.Whole(), 10)
-	return formatWhole(s, 0)
+	return a.FormatWhole(0)
 }
 func (a Money) FmtMantissa() string {
 	return a.FormatMantissa(2)

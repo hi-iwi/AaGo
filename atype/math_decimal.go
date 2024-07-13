@@ -143,8 +143,7 @@ func (p Decimal) Format(scale uint8, interval uint8) string {
 
 // 无参数，提供给 go template 使用
 func (p Decimal) FmtWhole() string {
-	s := strconv.FormatInt(p.Whole(), 10)
-	return formatWhole(s, 0)
+	return p.FormatWhole(0)
 }
 func (p Decimal) FmtMantissa() string {
 	return p.FormatMantissa(2)
