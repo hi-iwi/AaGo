@@ -4,6 +4,7 @@ import "C"
 import (
 	"math"
 	"strconv"
+	"strings"
 )
 
 // 汇率一般保留4位小数，所以这里金额 * 10000
@@ -17,6 +18,7 @@ const (
 	// 1 元 = 100 分 = 1000 毫 = 10000 money
 	// 10 律币 = 100 律分 = 1000 律厘  = 1000 律毫 = 10000 coin
 
+	MoneyScale       uint8 = 4
 	Cent             Money = 100   // 分
 	Dime             Money = 1000  // 角
 	UnitMoney        Money = 10000 // 元
@@ -46,9 +48,6 @@ func DollarX(n float64) Money   { return MoneyUnit(n) }
 func DollarN(n int64) Money     { return MoneyUnitN(n) }
 
 func (a Money) Int64() int64 { return int64(a) }
-
-// 实数形式
-func (a Money) Real() float64 { return float64(a) / unitMoneyFloat64 }
 
 // 计算总价
 func (a Money) MulN(n uint) Money { return a * Money(n) }
@@ -101,6 +100,9 @@ func (a Money) Sign() string {
 	return ""
 }
 
+// 实数形式
+func (a Money) Real() float64 { return float64(a) / unitMoneyFloat64 }
+
 // 整数部分
 func (a Money) Whole() int64  { return int64(a) / int64(Yuan) }
 func (a Money) ToCent() int64 { return int64(a) / int64(Cent) }
@@ -109,21 +111,31 @@ func (a Money) ToCent() int64 { return int64(a) / int64(Cent) }
 func (a Money) Mantissa() uint16 { return uint16(int64(math.Abs(float64(a))) % int64(Yuan)) }
 
 // 类型：  1,000,000 这种
-func (a Money) FormatWhole(n int, delimiter string) string {
+func (a Money) FormatWhole(interval uint8) string {
 	s := strconv.FormatInt(a.Whole(), 10)
-	return fmtPrecision(s, n, delimiter)
+	return formatWhole(s, interval)
 }
-func (a Money) FmtMantissa(decimals ...uint16) string {
-	return formatScale(a.Mantissa(), decimalN(decimals...), true)
+
+func (a Money) FormatMantissa(scale uint8) string {
+	if scale > MoneyScale {
+		scale = MoneyScale
+	}
+	s := strconv.FormatInt(a.Int64(), 10)
+	g := len(s) - int(MoneyScale)
+	if g > 0 {
+		s = s[g:]
+	}
+	if scale == 0 {
+		s = strings.TrimRight(s, "0")
+	} else {
+		s = s[:scale]
+	}
+	if s != "" {
+		s = "." + s
+	}
+	return s
 }
-func (a Money) FormatMantissa(decimals ...uint16) string {
-	return formatScale(a.Mantissa(), decimalN(decimals...), false)
-}
-func (a Money) Fmt(decimals ...uint16) string {
-	ys := strconv.FormatInt(a.Whole(), 10)
-	return ys + formatScale(a.Mantissa(), decimalN(decimals...), true)
-}
-func (a Money) Format(decimals ...uint16) string {
-	ys := strconv.FormatInt(a.Whole(), 10)
-	return ys + formatScale(a.Mantissa(), decimalN(decimals...), false)
+
+func (a Money) Format(scale uint8, interval uint8) string {
+	return a.FormatWhole(interval) + a.FormatMantissa(scale)
 }

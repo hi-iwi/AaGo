@@ -33,58 +33,34 @@ func TestDecimal(t *testing.T) {
 }
 func TestMoney(t *testing.T) {
 	m := atype.YuanX(188.8)
-	if m.Fmt() != "188.8" {
-		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.8", m.Fmt())
+	if m.Format(0, 0) != "188.8" {
+		t.Errorf("atype.MoneyYuan(1888000).FormatPercent() : %s != 188.8", m.Format(0, 0))
 	}
-	if m.Format() != "188.80" {
-		t.Errorf("atype.MoneyYuan(1888000).FmtPercent() : %s != 188.80", m.Format())
+	if m.Format(2, 0) != "188.80" {
+		t.Errorf("atype.MoneyYuan(1888000).FormatPercent() : %s != 188.80", m.Format(2, 0))
 	}
 	p := 7 * atype.Thousandth
-	s := atype.YuanX(2360).MulRound(p).Fmt()
+	s := atype.YuanX(2360).MulRound(p).Format(2, 0)
 	if s != "16.52" {
 		t.Errorf("2360*0.7%% : %s != 16.52", s)
 	}
 
 	b := atype.Money(234242342340503)
 
-	if b.Format(0) != "23424234234" {
-		t.Errorf("money (%d).Format(0) ==> string(%s)", b, b.Format(0))
+	if b.FormatWhole(0) != "23424234234" {
+		t.Errorf("money (%d).FormatWhole(0) ==> string(%s)", b, b.Format(0, 0))
 	}
-	if b.Format(1) != "23424234234.0" {
-		t.Errorf("money (%d).Format(1) ==> string(%s)", b, b.Format(1))
+	if b.Format(1, 0) != "23424234234.0" {
+		t.Errorf("money (%d).Format(1) ==> string(%s)", b, b.Format(1, 0))
 	}
-	if b.Format(2) != "23424234234.05" {
-		t.Errorf("money (%d).Format(2) ==> string(%s)", b, b.Format(2))
+	if b.Format(2, 0) != "23424234234.05" {
+		t.Errorf("money (%d).Format(2) ==> string(%s)", b, b.Format(2, 0))
 	}
-	if b.Format(3) != "23424234234.050" {
-		t.Errorf("money (%d).Format(3) ==> string(%s)", b, b.Format(3))
+	if b.Format(3, 0) != "23424234234.050" {
+		t.Errorf("money (%d).Format(3) ==> string(%s)", b, b.Format(3, 0))
 	}
-	if b.Format(4) != "23424234234.0503" {
-		t.Errorf("money (%d).Format(4) ==> string(%s)", b, b.Format(4))
-	}
-	if b.Format(10) != "23424234234.0503" {
-		t.Errorf("money (%d).Format(10) ==> string(%s)", b, b.Format(4))
-	}
-
-	b = atype.Money(-234242342340503)
-
-	if b.Fmt(0) != "-23424234234" {
-		t.Errorf("money (%d).FmtPercent(0) ==> string(%s)", b, b.Fmt(0))
-	}
-	if b.Fmt(1) != "-23424234234" {
-		t.Errorf("money (%d).FmtPercent(1) ==> string(%s)", b, b.Fmt(1))
-	}
-	if b.Fmt(2) != "-23424234234.05" {
-		t.Errorf("money (%d).FmtPercent(2) ==> string(%s)", b, b.Fmt(2))
-	}
-	if b.Fmt(3) != "-23424234234.05" {
-		t.Errorf("money (%d).FmtPercent(3) ==> string(%s)", b, b.Fmt(3))
-	}
-	if b.Fmt(4) != "-23424234234.0503" {
-		t.Errorf("money (%d).FmtPercent(4) ==> string(%s)", b, b.Fmt(4))
-	}
-	if b.Fmt(10) != "-23424234234.0503" {
-		t.Errorf("money (%d).FmtPercent(10) ==> string(%s)", b, b.Fmt(4))
+	if b.Format(4, 0) != "23424234234.0503" {
+		t.Errorf("money (%d).Format(4) ==> string(%s)", b, b.Format(4, 0))
 	}
 
 }

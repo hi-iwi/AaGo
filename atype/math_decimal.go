@@ -3,6 +3,7 @@ package atype
 import (
 	"math"
 	"strconv"
+	"strings"
 )
 
 // https://www.splashlearn.com/math-vocabulary/decimals/decimal-point
@@ -25,9 +26,10 @@ const (
 	Thousandth Decimal = 10  // 千分比
 	Percent    Decimal = 100 // 百分比
 
-	unitDecimalInt64   = int64(10000)
-	unitDecimalFloat64 = float64(unitDecimalInt64)
-	UnitDecimal        = Decimal(unitDecimalInt64)
+	DecimalScale       uint8 = 4
+	unitDecimalInt64         = int64(10000)
+	unitDecimalFloat64       = float64(unitDecimalInt64)
+	UnitDecimal              = Decimal(unitDecimalInt64)
 
 	MinDecimal16  Decimal = -1 << 15
 	MaxDecimal16  Decimal = 1<<15 - 1
@@ -49,9 +51,7 @@ func Decimal64UnitN(n int64) Decimal { return Decimal(n) * UnitDecimal }
 // 如果是整数，直接  100 * Percent 即可
 func HundredPercent(n float64) Decimal { return Decimal(math.Round(n * 100.0)) }
 
-func (p Decimal) Int64() int64     { return int64(p) }
-func (p Decimal) Real() float64    { return float64(p) / unitDecimalFloat64 }
-func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
+func (p Decimal) Int64() int64 { return int64(p) }
 
 func (p Decimal) MulN(n int64) Decimal {
 	return p * Decimal(n)
@@ -88,37 +88,62 @@ func (p Decimal) Sign() string {
 	return ""
 }
 
+func (p Decimal) Real() float64 { return float64(p) / unitDecimalFloat64 }
+
 // 整数部分
 func (p Decimal) Whole() int64 { return int64(p) / unitDecimalInt64 }
 
 // 小数部分
-func (p Decimal) Mantissa() uint16 {
-	return uint16(int64(math.Abs(float64(p))) % unitDecimalInt64)
+func (p Decimal) Mantissa(withSign bool) int16 {
+	m := int16(int64(math.Abs(float64(p))) % unitDecimalInt64)
+	if withSign && p < 0 {
+		m = -m
+	}
+	return m
 }
 
+// FormatWhole 格式化整数部分
 // 类型：  1,000,000 这种
-func (p Decimal) FormatWhole(n int, delimiter string) string {
+func (p Decimal) FormatWhole(interval uint8) string {
 	s := strconv.FormatInt(p.Whole(), 10)
-	return fmtPrecision(s, n, delimiter)
-}
-func (p Decimal) FmtMantissa(decimals ...uint16) string {
-	return formatScale(p.Mantissa(), decimalN(decimals...), true)
-}
-func (p Decimal) FormatMantissa(decimals ...uint16) string {
-	return formatScale(p.Mantissa(), decimalN(decimals...), false)
-}
-func (p Decimal) Fmt(decimals ...uint16) string {
-	ys := strconv.FormatInt(p.Whole(), 10)
-	return ys + formatScale(p.Mantissa(), decimalN(decimals...), true)
-}
-func (p Decimal) Format(decimals ...uint16) string {
-	ys := strconv.FormatInt(p.Whole(), 10)
-	return ys + formatScale(p.Mantissa(), decimalN(decimals...), false)
+	return formatWhole(s, interval)
 }
 
-func (p Decimal) FmtPercent() string {
-	return strconv.FormatFloat(p.Percent(), 'f', -1, 32)
+// FormatMantissa
+//
+//	@Description:
+//	@receiver p
+//	@param scale 保留小数位数；0 表示不限制
+//	@return string
+func (p Decimal) FormatMantissa(scale uint8) string {
+	if scale > DecimalScale {
+		scale = DecimalScale
+	}
+	s := strconv.FormatInt(p.Int64(), 10)
+	g := len(s) - int(DecimalScale)
+	if g > 0 {
+		s = s[g:]
+	}
+	if scale == 0 {
+		s = strings.TrimRight(s, "0")
+	} else {
+		s = s[:scale]
+	}
+	if s != "" {
+		s = "." + s
+	}
+	return s
 }
-func (p Decimal) FmtPercentAbs() string {
-	return strconv.FormatFloat(math.Abs(p.Percent()), 'f', -1, 32)
+
+func (p Decimal) Format(scale uint8, interval uint8) string {
+	return p.FormatWhole(interval) + p.FormatMantissa(scale)
 }
+
+//func (p Decimal) Percent() float64 { return float64(p) / 100.0 }
+//
+//func (p Decimal) FormatPercent() string {
+//	return strconv.FormatFloat(p.Percent(), 'f', -1, 32)
+//}
+//func (p Decimal) FormatPercentAbs() string {
+//	return strconv.FormatFloat(math.Abs(p.Percent()), 'f', -1, 32)
+//}
