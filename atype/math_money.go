@@ -2,6 +2,7 @@ package atype
 
 import "C"
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -149,9 +150,13 @@ func (a Money) FormatMantissa(style *DecimalFormat) string {
 		return s
 	}
 	if len(s) > scale {
-		g := style.ScaleRound.IsCeil() || (style.ScaleRound.IsRound() && strings.IndexByte("0123456789", s[scale]) > 4)
+		b := s[len(s)-1]
+		if scale > 0 {
+			b = s[scale-1]
+		}
+		k := style.ScaleRound.IsCeil() || (style.ScaleRound.IsRound() && strings.IndexByte("0123456789", b) > 4)
 		s = s[:scale]
-		if g {
+		if k {
 			// 0.999... 就不用进位了
 			repeat9 := true
 			for _, ss := range s {
@@ -178,6 +183,7 @@ func (a Money) FormatMantissa(style *DecimalFormat) string {
 
 func (a Money) Format(style *DecimalFormat) string {
 	style = NewDecimalFormat(style)
+	fmt.Println(a.FormatWhole(style), a.FormatMantissa(style))
 	return a.FormatWhole(style) + a.FormatMantissa(style)
 }
 

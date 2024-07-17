@@ -48,7 +48,7 @@ func TestStringifyPayloadFields(t *testing.T) {
 	yy := 10000
 	y0 := y{Y: &yy, Images: ims}
 	a := x{A: "LOVE", B: 100, C: 300, Y: &y0}
-	as := `{"a":"LOVE","b":"100","c":300,"m":null,"money":"0","test":"","y":{"bad":{},"img":null,"ims":[{"allowed":null,"filetype":0,"fill":"","fit":"","height":0,"origin":"","path":"","processor":0,"size":0,"width":0}],"test":"","y":10000}}`
+	as := `{"a":"LOVE","b":"100","c":300,"m":null,"money":"0","test":"","y":{"bad":{},"img":null,"ims":[{"allowed":null,"crop_pattern":"","filetype":0,"height":0,"origin":"","path":"","provider":0,"resize_pattern":"","size":0,"width":0}],"test":"","y":10000}}`
 	s := jsons(com.StringifyPayloadFields(a, "json"))
 	if s != as {
 		t.Errorf("%s --> %s", s, as)

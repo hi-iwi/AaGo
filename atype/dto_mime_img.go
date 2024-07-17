@@ -8,7 +8,7 @@ import (
 
 // 存储在数据库里面，图片列表，为了节省空间，用数组来；具体见 atype.NullStrings or string
 type ImgSrc struct {
-	Processor     int    `json:"processor"`      // 图片处理ID，如阿里云图片处理、网易云图片处理等
+	Provider      int    `json:"provider"`       // 图片处理ID，如阿里云图片处理、网易云图片处理等
 	CropPattern   string `json:"crop_pattern"`   // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
 	ResizePattern string `json:"resize_pattern"` // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
 	Origin        string `json:"origin"`         // 不一定是真实的
@@ -18,16 +18,16 @@ type ImgSrc struct {
 	*/
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
 	Filetype aenum.FileType `json:"filetype"` // aenum.Filetype.Int8()
-	Size     Uint24         `json:"size"`     // atype.Uint24.Int8()
-	Width    uint16         `json:"width"`
-	Height   uint16         `json:"height"`
-	Allowed  [][2]uint16    `json:"allowed"` // 允许的width,height
+	Size     int            `json:"size"`     // atype.Uint24.Int8()
+	Width    int            `json:"width"`
+	Height   int            `json:"height"`
+	Allowed  [][2]int       `json:"allowed"` // 允许的width,height
 }
 
 func (s ImgSrc) Filename() Image { return NewImage(s.Path, true) }
 
-func (s ImgSrc) Crop(width, height uint16) string {
-	if s.Processor == 0 {
+func (s ImgSrc) Crop(width, height int) string {
+	if s.Provider == 0 {
 		return s.Origin
 	}
 	if width >= s.Width && height >= s.Height && s.Origin != "" {
@@ -35,7 +35,7 @@ func (s ImgSrc) Crop(width, height uint16) string {
 	}
 	if s.Allowed != nil {
 		var matched, found bool
-		var mw, mh uint16
+		var mw, mh int
 		w := width
 		h := height
 		for _, a := range s.Allowed {
@@ -83,8 +83,8 @@ func (s ImgSrc) Crop(width, height uint16) string {
 	return u
 }
 
-func (s ImgSrc) Resize(maxWidth uint16) string {
-	if s.Processor == 0 {
+func (s ImgSrc) Resize(maxWidth int) string {
+	if s.Provider == 0 {
 		return s.Origin
 	}
 	if maxWidth >= s.Width && s.Origin != "" {
@@ -93,7 +93,7 @@ func (s ImgSrc) Resize(maxWidth uint16) string {
 
 	if s.Allowed != nil {
 		var matched, found bool
-		var mw uint16
+		var mw int
 		w := maxWidth
 		for _, a := range s.Allowed {
 			aw := a[0]
