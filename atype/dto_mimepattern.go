@@ -8,18 +8,18 @@ import (
 type VideoPattern struct {
 }
 type ImagePattern struct {
-	Height    uint16 `json:"height"`
-	Width     uint16 `json:"width"`
+	Height    int    `json:"height"`
+	Width     int    `json:"width"`
 	Quality   uint8  `json:"quality"`
-	MaxWidth  uint16 `json:"max_width"`
-	MaxHeight uint16 `json:"max_height"`
+	MaxWidth  int    `json:"max_width"`
+	MaxHeight int    `json:"max_height"`
 	Watermark string `json:"watermark"`
 }
 
-func ImageFill(width uint16, height uint16) ImagePattern {
+func ImageFill(width, height int) ImagePattern {
 	return ImagePattern{Width: width, Height: height}
 }
-func ImageFitWidth(maxWidth uint16) ImagePattern {
+func ImageFitWidth(maxWidth int) ImagePattern {
 	return ImagePattern{MaxWidth: maxWidth}
 }
 func ToImagePattern(tag string) ImagePattern {
@@ -36,13 +36,13 @@ func ToImagePattern(tag string) ImagePattern {
 		t := match[1]
 		switch t {
 		case "h":
-			p.Height = uint16(v)
+			p.Height = v
 		case "w":
-			p.Width = uint16(v)
+			p.Width = v
 		case "g":
-			p.MaxHeight = uint16(v)
+			p.MaxHeight = v
 		case "v":
-			p.MaxWidth = uint16(v)
+			p.MaxWidth = v
 		case "q":
 			p.Quality = uint8(v)
 		case "k":
