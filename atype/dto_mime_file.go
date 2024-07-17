@@ -11,7 +11,6 @@ type FileSrc struct {
 	*/
 	//Filename  string `json:"filename"`  // basename + extension  直接交path给服务端处理
 	Filetype aenum.FileType `json:"filetype"` // aenum.Filetype.Int8()
-	Ext      string         `json:"ext"`      // 太多太杂，就用 ext表示。  ext 带 . 开头
 	Size     Uint24         `json:"size"`     // atype.Uint24.Int8()
 	Checksum string         `json:"checksum"` // 图片、视频、音频会被压缩，checksum 无意义；这类文件不能被压缩
 	Info     string         `json:"info"`     // 冗余数据

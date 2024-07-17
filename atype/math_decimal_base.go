@@ -1,33 +1,60 @@
 package atype
 
+import "math"
+
 type RoundType uint8
 
 const (
-	Floor        RoundType = 0 // math.Floor  -> floor(0.1) =0; floor(-0.1) = -1
-	Round        RoundType = 1 // math.Round
+	Round        RoundType = 0 // math.Round
+	Floor        RoundType = 1 // math.Floor  -> floor(0.1) =0; floor(-0.1) = -1
 	Ceil         RoundType = 2 // math.Ceil
-	RoundTrim    RoundType = 3 // negative ? math.Ceil : math.Floor  -> roundTrim(0.1)=0; roundTrim(-0.1) = 0
-	RoundReverse RoundType = 4 // negative ? 四入五舍 : 四舍五入
-	RoundUp      RoundType = 5 // negative ? math.Floor : math.Ceil
+	RoundReverse RoundType = 3 // v > 0 ? round(v) : -round(-v)
+	RoundTrim    RoundType = 4 // v > 0 ? floor(v) : ceil(v)    -> roundTrim(0.1)=0; roundTrim(-0.1) = 0
+	RoundAway    RoundType = 5 // round away from the origin point v > 0 ? math.ceil(v) : math.floor(v)
 )
 
+func (r RoundType) IsRound() bool {
+	return r == Round
+}
 func (r RoundType) IsFloor() bool {
 	return r == Floor
 }
 func (r RoundType) IsCeil() bool {
 	return r == Ceil
 }
-func (r RoundType) IsRound() bool {
-	return r == Round
+func (r RoundType) IsReverse() bool {
+	return r == RoundReverse
 }
 func (r RoundType) IsTrim() bool {
 	return r == RoundTrim
 }
-func (r RoundType) IsReverse() bool {
-	return r == RoundReverse
+func (r RoundType) IsAway() bool {
+	return r == RoundAway
 }
-func (r RoundType) IsUp() bool {
-	return r == RoundUp
+
+func (r RoundType) Round(x float64) float64 {
+	switch r {
+	case Floor:
+		return math.Floor(x)
+	case Ceil:
+		return math.Ceil(x)
+	case RoundReverse:
+		if x > 0 {
+			return math.Round(x)
+		}
+		return -math.Round(-x)
+	case RoundTrim:
+		if x > 0 {
+			return math.Floor(x)
+		}
+		return math.Ceil(x)
+	case RoundAway:
+		if x > 0 {
+			return math.Ceil(x)
+		}
+		return math.Floor(x)
+	}
+	return math.Round(x)
 }
 
 // separator:[计] 分隔符,倾向于可显示字符，通常单个字符或字符串

@@ -8,11 +8,11 @@ import (
 
 // 存储在数据库里面，图片列表，为了节省空间，用数组来；具体见 atype.NullStrings or string
 type ImgSrc struct {
-	Processor int    `json:"processor"` // 图片处理ID，如阿里云图片处理、网易云图片处理等
-	Fill      string `json:"fill"`      // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
-	Fit       string `json:"fit"`       // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
-	Origin    string `json:"origin"`    // 不一定是真实的
-	Path      string `json:"path"`      // path 可能是 filename，也可能是 带文件夹的文件名
+	Processor     int    `json:"processor"`      // 图片处理ID，如阿里云图片处理、网易云图片处理等
+	CropPattern   string `json:"crop_pattern"`   // e.g.  https://xxx/img.jpg?width=${WIDTH}&height=${HEIGHT}
+	ResizePattern string `json:"resize_pattern"` // e.g. https://xxx/img.jpg?maxwidth=${MAXWIDTH}
+	Origin        string `json:"origin"`         // 不一定是真实的
+	Path          string `json:"path"`           // path 可能是 filename，也可能是 带文件夹的文件名
 	/*
 	   不要独立出来 filename，一方面太多内容了；另一方面增加业务侧复杂度
 	*/
@@ -26,7 +26,7 @@ type ImgSrc struct {
 
 func (s ImgSrc) Filename() Image { return NewImage(s.Path, true) }
 
-func (s ImgSrc) FillTo(width, height uint16) string {
+func (s ImgSrc) Crop(width, height uint16) string {
 	if s.Processor == 0 {
 		return s.Origin
 	}
@@ -77,13 +77,13 @@ func (s ImgSrc) FillTo(width, height uint16) string {
 
 	sw := strconv.FormatUint(uint64(width), 10)
 	sh := strconv.FormatUint(uint64(height), 10)
-	u := s.Fill
+	u := s.CropPattern
 	u = strings.ReplaceAll(u, "${WIDTH}", sw)
 	u = strings.ReplaceAll(u, "${HEIGHT}", sh)
 	return u
 }
 
-func (s ImgSrc) FitTo(maxWidth uint16) string {
+func (s ImgSrc) Resize(maxWidth uint16) string {
 	if s.Processor == 0 {
 		return s.Origin
 	}
@@ -126,5 +126,5 @@ func (s ImgSrc) FitTo(maxWidth uint16) string {
 		}
 	}
 	sw := strconv.FormatUint(uint64(maxWidth), 10)
-	return strings.ReplaceAll(s.Fit, "${MAXWIDTH}", sw)
+	return strings.ReplaceAll(s.ResizePattern, "${MAXWIDTH}", sw)
 }
