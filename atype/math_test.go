@@ -22,11 +22,11 @@ func TestDecimal(t *testing.T) {
 		a := math.Floor(rand.Float64()*10000*10000) / 10000 // 保留4位小数
 		b := math.Floor(rand.Float64()*n*10000) / 10000     // 保留4位小数
 		c := a * b
-		x := atype.DecimalUnit(a).MulRound(atype.DecimalUnit(b))
-		if x != atype.DecimalUnit(c) {
+		x := atype.DecimalUnitsX(a).MulRound(atype.DecimalUnitsX(b))
+		if x != atype.DecimalUnitsX(c) {
 			t.Errorf("%f*%f=%f   %d", a, 10000.0, a*10000.0, int(a*10000.0))
 			t.Errorf("%f*%f=%f   %d", b, 10000.0, b*10000.0, int(b*10000.0))
-			t.Errorf("atype.Real %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Real(), atype.DecimalUnit(a), atype.DecimalUnit(b), x)
+			t.Errorf("atype.Real %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Real(), atype.DecimalUnitsX(a), atype.DecimalUnitsX(b), x)
 		}
 	}
 

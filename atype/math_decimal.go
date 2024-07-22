@@ -26,10 +26,10 @@ const (
 	Thousandth Decimal = 10  // 千分比
 	Percent    Decimal = 100 // 百分比
 
-	DecimalScale       uint8 = 4
-	unitDecimalInt64         = int64(10000)
-	unitDecimalFloat64       = float64(unitDecimalInt64)
-	UnitDecimal              = Decimal(unitDecimalInt64)
+	DecimalScale        uint8   = 4
+	decimalUnitsInt64   int64   = 10000
+	decimalUnitsFloat64 float64 = 10000.0
+	DecimalUnits        Decimal = 10000
 
 	MinDecimal16  Decimal = -1 << 15
 	MaxDecimal16  Decimal = 1<<15 - 1
@@ -45,8 +45,7 @@ const (
 )
 
 // 不要直接 int(float) 转换，否则容易出错。比如 int(60135.0000) == 60134
-func DecimalUnit(n float64) Decimal  { return Decimal(math.Round(n * unitDecimalFloat64)) }
-func Decimal64UnitN(n int64) Decimal { return Decimal(n) * UnitDecimal }
+func DecimalUnitsX(n float64) Decimal { return Decimal(math.Round(n * decimalUnitsFloat64)) }
 
 // 如果是整数，直接  100 * Percent 即可
 func HundredPercent(n float64) Decimal { return Decimal(math.Round(n * 100.0)) }
@@ -62,11 +61,11 @@ func (p Decimal) MulN(n int64) Decimal {
 // 1.6 * 0.8 = 1.28 (12800)    =====>  16000 * 8000 = 12800 [0000]
 // 0.009 * 0.04 =0.0003[6] (3)   -->   90 * 400  = 3[6000]     舍去最后一位
 func (p Decimal) Mul(b Decimal, intHandler func(float64) float64) Decimal {
-	return Decimal(intHandler(float64(p*b) / unitDecimalFloat64))
+	return Decimal(intHandler(float64(p*b) / decimalUnitsFloat64))
 }
 func (p Decimal) MulRound(b Decimal) Decimal { return p.Mul(b, math.Round) }
 func (p Decimal) MulCeil(b Decimal) Decimal  { return p.Mul(b, math.Ceil) }
-func (p Decimal) MulFloor(b Decimal) Decimal { return p * b / UnitDecimal }
+func (p Decimal) MulFloor(b Decimal) Decimal { return p * b / DecimalUnits }
 
 func (p Decimal) DivN(n int64, intHandler func(float64) float64) Decimal {
 	return Decimal(intHandler(float64(p) / float64(n)))
@@ -76,11 +75,11 @@ func (p Decimal) DivCeilN(n int64) Decimal  { return p.DivN(n, math.Ceil) }
 func (p Decimal) DivFloorN(n int64) Decimal { return p / Decimal(n) }
 
 func (p Decimal) Div(b Decimal, intHandler func(float64) float64) Decimal {
-	return Decimal(intHandler(float64(p) * unitDecimalFloat64 / float64(b)))
+	return Decimal(intHandler(float64(p) * decimalUnitsFloat64 / float64(b)))
 }
 func (p Decimal) DivRound(b Decimal) Decimal { return p.Div(b, math.Round) }
 func (p Decimal) DivCeil(b Decimal) Decimal  { return p.Div(b, math.Ceil) }
-func (p Decimal) DivFloor(b Decimal) Decimal { return p * UnitDecimal / b }
+func (p Decimal) DivFloor(b Decimal) Decimal { return p * DecimalUnits / b }
 func (p Decimal) Sign() string {
 	if p > 0 {
 		return "-"
@@ -97,14 +96,14 @@ func (p Decimal) Precision() int {
 	return n
 }
 
-func (p Decimal) Real() float64 { return float64(p) / unitDecimalFloat64 }
+func (p Decimal) Real() float64 { return float64(p) / decimalUnitsFloat64 }
 
 // 整数部分
-func (p Decimal) Whole() int64 { return p.Int64() / unitDecimalInt64 }
+func (p Decimal) Whole() int64 { return p.Int64() / decimalUnitsInt64 }
 
 // 小数部分   -->  使用小数表示，不能用整数，因为  123.0001   ---> 0001
 func (p Decimal) Mantissa(withSign bool) float64 {
-	mantissa := float64(p%UnitDecimal) / unitDecimalFloat64
+	mantissa := float64(p%DecimalUnits) / decimalUnitsFloat64
 	if !withSign && mantissa < 0 {
 		mantissa = -mantissa
 	}
