@@ -31,7 +31,7 @@ func splitHost(addr string) string {
 // RemoteIp 客户端真实IP地址
 func RemoteIp(r *http.Request) string {
 	var addr string
-	if addr = GetSelfDefinedHeader(r.Header, "X-Real-Ip"); addr != "" {
+	if addr = GetSelfDefinedHeader(r.Header, "X-toReal-Ip"); addr != "" {
 		return splitHost(addr)
 	}
 	if addr = GetSelfDefinedHeader(r.Header, "X-Forwarded-For"); addr != "" {

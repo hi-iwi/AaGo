@@ -17,7 +17,7 @@ const (
 )
 
 func VmoneyUnitsX(n float64) VMoney { return VMoney(math.Round(n * vmoneyUnitsFloat64)) }
- 
+
 func (c VMoney) Int64() int64 { return int64(c) }
 
 // 实数形式
@@ -34,7 +34,7 @@ func (c VMoney) P() Money { return Money(c) }
 
 // 该数量金币，对应商品购买数量
 // 金币 sku 中，exchange_rate<Decimal> 表示单件商品兑换金币数量比例
-// 单件商品可兑换金币 unit_coin<VMoney> = exchange_rate.Real * VMoneyUnits = exchange_rate * VMoneyUnits / DecimalUnits
+// 单件商品可兑换金币 unit_coin<VMoney> = exchange_rate.ToReal * VMoneyUnits = exchange_rate * VMoneyUnits / DecimalUnits
 // 总兑换数量 total_coin = unit_coin * qty
 // qty = total_coin / unit_coin = (total_coin * DecimalUnits) / (exchange_rate * VMoneyUnits)
 func ExchangeVMoney(exchangeRate Decimal, qty uint) VMoney {

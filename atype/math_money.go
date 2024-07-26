@@ -106,7 +106,7 @@ func (a Money) Precision() int {
 }
 
 // 实数形式
-func (a Money) Real() float64 { return float64(a) / moneyUnitsFloat64 }
+func (a Money) ToReal() float64 { return float64(a) / moneyUnitsFloat64 }
 
 // 整数部分
 func (a Money) Whole() int64  { return int64(a) / int64(Yuan) }

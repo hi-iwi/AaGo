@@ -96,7 +96,7 @@ func (p Decimal) Precision() int {
 	return n
 }
 
-func (p Decimal) Real() float64 { return float64(p) / decimalUnitsFloat64 }
+func (p Decimal) ToReal() float64 { return float64(p) / decimalUnitsFloat64 }
 
 // 整数部分
 func (p Decimal) Whole() int64 { return p.Int64() / decimalUnitsInt64 }

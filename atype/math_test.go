@@ -26,7 +26,7 @@ func TestDecimal(t *testing.T) {
 		if x != atype.DecimalUnitsX(c) {
 			t.Errorf("%f*%f=%f   %d", a, 10000.0, a*10000.0, int(a*10000.0))
 			t.Errorf("%f*%f=%f   %d", b, 10000.0, b*10000.0, int(b*10000.0))
-			t.Errorf("atype.Real %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.Real(), atype.DecimalUnitsX(a), atype.DecimalUnitsX(b), x)
+			t.Errorf("atype.ToReal %f*%f=%f  != %f (%d*%d=%d) error", a, b, c, x.ToReal(), atype.DecimalUnitsX(a), atype.DecimalUnitsX(b), x)
 		}
 	}
 
