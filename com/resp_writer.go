@@ -240,6 +240,13 @@ func (resp *RespStruct) WriteJointId(args ...any) error {
 	}
 	return resp.Write(id)
 }
+func (resp *RespStruct) StatusCode(e *ae.Error) {
+	code := 200
+	if e != nil {
+		code = e.Code
+	}
+	resp.ictx.StatusCode(code)
+}
 
 func (resp *RespStruct) WriteE(e *ae.Error) error {
 	if e == nil {
