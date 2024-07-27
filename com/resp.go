@@ -53,6 +53,9 @@ func RegisterRespContentTypes(ctypes ...string) {
 		if ctype == "" {
 			continue
 		}
+		if respContentTypes == nil {
+			respContentTypes = make(map[string]struct{})
+		}
 		// 会同时把 ; charset=utf-8 一起注册进去
 		respContentTypes[ctype] = struct{}{}
 		if strings.IndexByte(ctype, ';') == 0 {
