@@ -46,34 +46,26 @@ func (r *Req) QueryPage() atype.Paging {
 }
 
 func (r *Req) BodyImage(p string, required ...bool) (atype.Image, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
+	x, e := r.BodyString(p, `^([\w-\/\.]+)$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", e
 	}
-	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-		return "", ae.BadParam(p)
-	}
-
 	return atype.NewImage(x, true), nil
 }
 func (r *Req) BodyAudio(p string, required ...bool) (atype.Audio, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
+	x, e := r.BodyString(p, `^([\w-\/\.]+)$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", e
 	}
-	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-		return "", ae.BadParam(p)
-	}
+
 	return atype.NewAudio(x, true), e
 }
 func (r *Req) BodyVideo(p string, required ...bool) (atype.Video, *ae.Error) {
-	x, e := r.BodyString(p, len(required) == 0 || required[0])
+	x, e := r.BodyString(p, `^([\w-\/\.]+)$`, len(required) == 0 || required[0])
 	if e != nil {
 		return "", e
 	}
-	if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
-		return "", ae.BadParam(p)
-	}
+
 	return atype.NewVideo(x, true), e
 }
 func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) {
@@ -83,7 +75,7 @@ func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) 
 	}
 	imgs := make([]atype.Image, len(xx))
 	for i, x := range xx {
-		if x != "" && (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
+		if x == "" || (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
 			return nil, ae.BadParam(p)
 		}
 		imgs[i] = atype.NewImage(x, true)
