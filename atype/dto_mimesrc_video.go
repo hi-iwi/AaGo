@@ -18,6 +18,7 @@ type VideoSrc struct {
 	Height   int            `json:"height"`
 	Duration int            `json:"duration"` // 时长，秒
 	Allowed  [][2]int       `json:"allowed"`  // 限定允许的width,height
+	Jsonkey  string         `json:"jsonkey"`  // 特殊约定字段
 }
 
 func (s VideoSrc) Filename() Video { return NewVideo(s.Path, true) }

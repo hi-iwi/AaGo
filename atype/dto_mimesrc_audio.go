@@ -14,6 +14,7 @@ type AudioSrc struct {
 	Filetype aenum.FileType `json:"filetype"` // aenum.Filetype.Int8()
 	Size     int            `json:"size"`     // atype.Uint24.Int8()
 	Duration int            `json:"duration"` // 时长，秒
+	Jsonkey  string         `json:"jsonkey"`  // 特殊约定字段
 }
 
 func (s AudioSrc) Filename() Audio { return NewAudio(s.Path, true) }

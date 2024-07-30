@@ -22,6 +22,7 @@ type ImgSrc struct {
 	Width    int            `json:"width"`
 	Height   int            `json:"height"`
 	Allowed  [][2]int       `json:"allowed"` // 允许的width,height
+	Jsonkey  string         `json:"jsonkey"` // 特殊约定字段
 }
 
 func (s ImgSrc) Filename() Image { return NewImage(s.Path, true) }
