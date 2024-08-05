@@ -12,9 +12,9 @@ var (
 	PaymentRequired = &Error{402, "Payment Required"}
 	//403 Forbidden
 	//服务器已经理解请求，但是拒绝执行它。与401响应不同的是，身份验证并不能提供任何帮助，而且这个请求也不应该被重复提交。如果这不是一个 HEAD 请求，而且服务器希望能够讲清楚为何请求不能被执行，那么就应该在实体内描述拒绝的原因。当然服务器也可以返回一个404响应，假如它不希望让客户端获得任何信息。
-	Forbidden = &Error{403, "Forbidden"}
-	NotFound  = &Error{404, "Not Found"} // refer to redis.Nil, sql.ErrNoRows
-	//NotAcceptable = &Error{406, "Not Acceptable"} //
+	Forbidden     = &Error{403, "Forbidden"}
+	NotFound      = &Error{404, "Not Found"}      // refer to redis.Nil, sql.ErrNoRows
+	NotAcceptable = &Error{406, "Not Acceptable"} //
 	// 空数组返回 422
 	//409 Conflict
 	//由于和被请求的资源的当前状态之间存在冲突，请求无法完成。这个代码只允许用在这样的情况下才能被使用：用户被认为能够解决冲突，并且会重新提交新的请求。该响应应当包含足够的信息以便用户发现冲突的源头。
@@ -30,7 +30,7 @@ var (
 	// 若是 code:204, data:[]  空数组，表示查询到了数据，但是数据过滤完了，可以尝试下一页查询
 	NoRows = &Error{444, "No Rows"}
 
-	//RetryWith = &Error{449, "Locked"}
+	//RetryWith = &Error{449, "Locked"}  见下面
 
 	Locked           = &Error{423, "Locked"}
 	FailedDependency = &Error{424, "Failed Dependency"} // 之前发生错误
