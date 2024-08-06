@@ -61,6 +61,13 @@ func (l *xlog) New(prefix string, f func(context.Context, string, ...any), suffi
 		f(ctx, prefix+msg+s, args...)
 	}
 }
+
+func (l *xlog) Assert(ctx context.Context, condition bool, msg string, args ...any) {
+	if condition {
+		xprintf(ctx, Debug, msg, args...)
+	}
+}
+
 func (l *xlog) Debug(ctx context.Context, msg string, args ...any) {
 	xprintf(ctx, Debug, msg, args...)
 }

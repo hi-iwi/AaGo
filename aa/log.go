@@ -45,6 +45,8 @@ type Log interface {
 	// 添加前缀、后缀到输出
 	New(prefix string, f func(context.Context, string, ...any), suffix ...string) func(context.Context, string, ...any)
 
+	Assert(ctx context.Context, condition bool, msg string, args ...any)
+
 	// AuthDebug 包含详细的开发情报的信息，通常只在调试一个程序时使用
 	Debug(ctx context.Context, msg string, args ...any)
 
