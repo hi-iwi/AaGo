@@ -84,7 +84,7 @@ func (p Audio) Src(filler func(string) *AudioSrc) *AudioSrc { return filler(p.St
 
 func NewFiles(s string) Files {
 	var x Files
-	if s != "" {
+	if s != "" && strings.ToLower(s) != "null" {
 		x.Scan(s)
 	}
 	return x
@@ -124,7 +124,7 @@ func (im Files) Srcs(filler func(path string) *FileSrc) []FileSrc {
 
 func NewImages(s string) Images {
 	var x Images
-	if s != "" {
+	if s != "" && strings.ToLower(s) != "null" {
 		x.Scan(s)
 	}
 	return x
@@ -192,7 +192,7 @@ func (im Images) Srcs(filler func(path string) *ImgSrc) []ImgSrc {
 
 func NewVideos(s string) Videos {
 	var x Videos
-	if s != "" {
+	if s != "" && strings.ToLower(s) != "null" {
 		x.Scan(s)
 	}
 	return x
@@ -216,7 +216,7 @@ func ToVideos(v []string, filenameOnly bool) Videos {
 
 func NewAudios(s string) Audios {
 	var x Audios
-	if s != "" {
+	if s != "" && strings.ToLower(s) != "null" {
 		x.Scan(s)
 	}
 	return x
