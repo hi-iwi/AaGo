@@ -6,9 +6,9 @@ import (
 )
 
 type File string
-type Image string // varchar(55)   45 + 5(.webp) + 5 扩展
-type Video string // varchar(55)
-type Audio string // varchar(55)
+type Image string
+type Video string
+type Audio string
 type Files struct{ NullStrings }
 type Images struct{ NullStrings }
 type Videos struct{ NullStrings }

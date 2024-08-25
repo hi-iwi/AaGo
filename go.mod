@@ -7,7 +7,7 @@ toolchain go1.22.5
 require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/kataras/iris/v12 v12.2.11
-	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
+	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948
 	golang.org/x/text v0.17.0
 	gopkg.in/ini.v1 v1.67.0
 )
