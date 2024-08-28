@@ -2,7 +2,7 @@
 
 # 更新 Go mod 
 
-readonly root="../"
+readonly root=$(pwd)"/../"
 comment="NO_COMMENT"
 upgrade=0
 incrTag=1
@@ -23,6 +23,12 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+build(){
+  cd build || exit 1
+  go run build.go
+  cd ..
+}
 
 pushAndUpgradeMod(){
   cd "$root/$1" || exit
@@ -68,8 +74,10 @@ pushAndUpgradeMod(){
 }
 
 
-
+build
 pushAndUpgradeMod 'AaGo'
 
 
 
+
+}

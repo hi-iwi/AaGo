@@ -1,0 +1,60 @@
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+// IANA　官方标准MIME
+// 不使用json的原因是：json不支持注释，而且要求key必须是字符串。
+const AaFileTypeEnum = {
+    // 图片范围：1~999
+    Image: {
+        Jpeg: [1, ".jpg", "image/jpeg", [".jpeg"]],
+        Png : [2, ".png", "image/png"],
+        Gif : [3, ".gif", "image/gif"],
+        Webp: [4, ".webp", "image/webp"],
+        // iPhone 拍摄的照片
+        Heic: [5, ".heic", "image/heic", [".heif", ".avci", "image/heif"]],
+        Ico : [6, ".ico", "image/vnd.microsoft.icon", ["image/x-icon"]],
+        Svg : [7, ".svg", "image/svg+xml"],
+    },
+    // 音频类型范围：1000-1999
+    Audio: {
+        Mp3       : [1000, ".mp3", "audio/mpeg", ["audio/mp3"]],
+        Audio3gpp : [1001, ".3gp", "audio/3gpp"],
+        Audio3gpp2: [1002, ".3g2", "audio/3gpp2"],
+        Aiff      : [1003, ".aiff", "audio/aiff", [".aif", ".aifc", "audio/x-aiff"]],
+        AudioWebm : [1004, ".wav", "audio/wav"],
+        AudioWav  : [1005, ".webm", "audio/webm"],
+    },
+    // 视频范围：2000-2999
+    Video: {
+        Avi: [2000, ".avi", "video/x-msvideo"],
+        // Apple QuickTime
+        Mov      : [2001, ".mov", "video/quicktime"],
+        Mpeg     : [2002, ".mpeg", "video/mpeg"],
+        Mp4      : [2003, ".mp4", "video/mp4"],
+        Video3gp : [2004, ".3gp", "video/3gpp"],
+        Video3gp2: [2005, ".3g2", "video/3gpp2"],
+        Webm     : [2006, ".webm", "video/webm"],
+        Wav      : [2007, ".wav", "video/x-wav"],
+    },
+    // 文本类文件范围：3000-
+    Text      : {
+        Pdf : [3001, ".pdf", "application/pdf"],
+        Txt : [3002, ".txt", "text/plain"],
+        Md  : [3003, ".md", "text/markdown"],
+        Doc : [3004, ".doc", "application/msword"],
+        Docx: [3005, ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+        Xls : [3006, ".xls", "application/vnd.ms-excel"],
+        Xlsx: [3007, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+        Ppt : [3008, ".ppt", "application/vnd.ms-powerpoint"],
+        Pptx: [3009, ".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+        Json: [3010, ".json", "application/json"],
+    },
+    Compressed: {
+        // executable
+
+        // 压缩类文件：7000
+        Zip  : [7000, ".zip", "application/zip", ["application/x-zip-compressed", "multipart/x-zip"]],
+        Rar  : [7001, ".rar", "application/vnd.rar", ["application/x-rar-compressed"]],
+        Bzip : [7002, ".bz", "application/x-bzip"],
+        Bzip2: [7003, ".bz2", "application/x-bzip2"],
+        Gzip : [7004, ".gz", "application/gzip", ["application/x-gzip"]],
+    },
+}

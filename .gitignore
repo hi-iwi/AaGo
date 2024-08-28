@@ -17,3 +17,6 @@
 .DS_Store
 .idea
 go.sum
+
+
+build/*.js
