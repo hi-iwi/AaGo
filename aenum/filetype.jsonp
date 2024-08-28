@@ -35,7 +35,7 @@ const AaFileTypeEnum = {
         Wav      : [2007, ".wav", "video/x-wav"],
     },
     // 文本类文件范围：3000-
-    Text      : {
+    Document       : {
         Pdf : [3001, ".pdf", "application/pdf"],
         Txt : [3002, ".txt", "text/plain"],
         Md  : [3003, ".md", "text/markdown"],
