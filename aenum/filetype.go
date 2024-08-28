@@ -12,10 +12,6 @@ func ParseFileType(mime string, types map[FileType][]string) (FileType, bool) {
 	if mime == "" {
 		return 0, false
 	}
-	if mime[0] == '.' {
-		mime = mime[1:]
-	}
-
 	for ft, mimes := range types {
 		for _, m := range mimes {
 			if m == mime {
