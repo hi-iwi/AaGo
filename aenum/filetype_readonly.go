@@ -33,13 +33,22 @@ const (
     Xlsx        FileType = 3007
     Ppt         FileType = 3008
     Pptx        FileType = 3009
-    Json        FileType = 3010
     Zip         FileType = 7000
     Rar         FileType = 7001
     Bzip        FileType = 7002
     Bzip2       FileType = 7003
     Gzip        FileType = 7004
+    Json        FileType = 10000
 )
+var ImageTypes = map[FileType][]string{
+    Gif         : {".gif", "image/gif"},
+    Heic        : {".heic", "image/heic", ".heif", ".avci", "image/heif"},
+    Ico         : {".ico", "image/vnd.microsoft.icon", "image/x-icon"},
+    Jpeg        : {".jpg", "image/jpeg", ".jpeg"},
+    Png         : {".png", "image/png"},
+    Svg         : {".svg", "image/svg+xml"},
+    Webp        : {".webp", "image/webp"},
+}
 var AudioTypes = map[FileType][]string{
     Aiff        : {".aiff", "audio/aiff", ".aif", ".aifc", "audio/x-aiff"},
     Audio3gpp   : {".3gp", "audio/3gpp"},
@@ -61,7 +70,6 @@ var VideoTypes = map[FileType][]string{
 var DocumentTypes = map[FileType][]string{
     Doc         : {".doc", "application/msword"},
     Docx        : {".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
-    Json        : {".json", "application/json"},
     Md          : {".md", "text/markdown"},
     Pdf         : {".pdf", "application/pdf"},
     Ppt         : {".ppt", "application/vnd.ms-powerpoint"},
@@ -77,34 +85,31 @@ var CompressedTypes = map[FileType][]string{
     Rar         : {".rar", "application/vnd.rar", "application/x-rar-compressed"},
     Zip         : {".zip", "application/zip", "application/x-zip-compressed", "multipart/x-zip"},
 }
-var ImageTypes = map[FileType][]string{
-    Gif         : {".gif", "image/gif"},
-    Heic        : {".heic", "image/heic", ".heif", ".avci", "image/heif"},
-    Ico         : {".ico", "image/vnd.microsoft.icon", "image/x-icon"},
-    Jpeg        : {".jpg", "image/jpeg", ".jpeg"},
-    Png         : {".png", "image/png"},
-    Svg         : {".svg", "image/svg+xml"},
-    Webp        : {".webp", "image/webp"},
+var DataTypes = map[FileType][]string{
+    Json        : {".json", "application/json"},
 }
+func NewImageType(mime string) (FileType, bool) {return ParseFileType(mime, ImageTypes)}
 func NewAudioType(mime string) (FileType, bool) {return ParseFileType(mime, AudioTypes)}
 func NewVideoType(mime string) (FileType, bool) {return ParseFileType(mime, VideoTypes)}
 func NewDocumentType(mime string) (FileType, bool) {return ParseFileType(mime, DocumentTypes)}
 func NewCompressedType(mime string) (FileType, bool) {return ParseFileType(mime, CompressedTypes)}
-func NewImageType(mime string) (FileType, bool) {return ParseFileType(mime, ImageTypes)}
+func NewDataType(mime string) (FileType, bool) {return ParseFileType(mime, DataTypes)}
 func (t FileType) ContentType() string {
+    if d, ok := ImageTypes[t]; ok {return d[1]}
     if d, ok := AudioTypes[t]; ok {return d[1]}
     if d, ok := VideoTypes[t]; ok {return d[1]}
     if d, ok := DocumentTypes[t]; ok {return d[1]}
     if d, ok := CompressedTypes[t]; ok {return d[1]}
-    if d, ok := ImageTypes[t]; ok {return d[1]}
+    if d, ok := DataTypes[t]; ok {return d[1]}
     return ""
 }
 func (t FileType) Ext() string {
+    if d, ok := ImageTypes[t]; ok {return d[0]}
     if d, ok := AudioTypes[t]; ok {return d[0]}
     if d, ok := VideoTypes[t]; ok {return d[0]}
     if d, ok := DocumentTypes[t]; ok {return d[0]}
     if d, ok := CompressedTypes[t]; ok {return d[0]}
-    if d, ok := ImageTypes[t]; ok {return d[0]}
+    if d, ok := DataTypes[t]; ok {return d[0]}
     return ""
 }
 func (t FileType) Name() string {return strings.TrimPrefix(t.Ext(), ".")}

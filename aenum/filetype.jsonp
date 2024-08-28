@@ -45,16 +45,16 @@ const AaFileTypeEnum = {
         Xlsx: [3007, ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
         Ppt : [3008, ".ppt", "application/vnd.ms-powerpoint"],
         Pptx: [3009, ".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
-        Json: [3010, ".json", "application/json"],
     },
     Compressed: {
-        // executable
-
         // 压缩类文件：7000
         Zip  : [7000, ".zip", "application/zip", ["application/x-zip-compressed", "multipart/x-zip"]],
         Rar  : [7001, ".rar", "application/vnd.rar", ["application/x-rar-compressed"]],
         Bzip : [7002, ".bz", "application/x-bzip"],
         Bzip2: [7003, ".bz2", "application/x-bzip2"],
         Gzip : [7004, ".gz", "application/gzip", ["application/x-gzip"]],
+    },
+    Data :{
+        Json: [10000, ".json", "application/json"],
     },
 }
