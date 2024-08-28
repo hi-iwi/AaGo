@@ -25,7 +25,7 @@ type ImgSrc struct {
 	Jsonkey  string         `json:"jsonkey"` // 特殊约定字段
 }
 
-func (s ImgSrc) Filename() Image { return NewImage(s.Path, true) }
+func (s ImgSrc) Filename() Image { return Image(s.Path) }
 
 func (s ImgSrc) Crop(width, height int) string {
 	if s.Provider == 0 {

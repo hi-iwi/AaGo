@@ -17,4 +17,4 @@ type FileSrc struct {
 	Jsonkey  string         `json:"jsonkey"`  // 特殊约定字段
 }
 
-func (s FileSrc) Filename() File { return NewFile(s.Path, true) }
+func (s FileSrc) Filename() File { return File(s.Path) }

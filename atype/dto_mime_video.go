@@ -21,7 +21,7 @@ type VideoSrc struct {
 	Jsonkey  string         `json:"jsonkey"`  // 特殊约定字段
 }
 
-func (s VideoSrc) Filename() Video { return NewVideo(s.Path, true) }
+func (s VideoSrc) Filename() Video { return Video(s.Path) }
 func (s VideoSrc) Adjust(quality string) string {
 	return strings.ReplaceAll(s.Pattern, "${QUALITY}", quality)
 }

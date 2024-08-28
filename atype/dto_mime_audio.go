@@ -17,7 +17,7 @@ type AudioSrc struct {
 	Jsonkey  string         `json:"jsonkey"`  // 特殊约定字段
 }
 
-func (s AudioSrc) Filename() Audio { return NewAudio(s.Path, true) }
+func (s AudioSrc) Filename() Audio { return Audio(s.Path) }
 
 func (s AudioSrc) Adjust(quality string) string {
 	return strings.ReplaceAll(s.Pattern, "${QUALITY}", quality)
