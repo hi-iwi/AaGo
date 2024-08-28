@@ -28,16 +28,16 @@ func trimDir(p string) string {
 	return p[i+1:]
 }
 
-func (p File) String() string                                { return string(p) }
-func (p File) Src(filler func(string) *FileSrc) *FileSrc     { return filler(p.String()) }
-func (p Document) String() string                            { return string(p) }
-func (p Document) Src(filler func(string) *FileSrc) *FileSrc { return filler(p.String()) }
-func (p Image) String() string                               { return string(p) }
-func (p Image) Src(filler func(string) *ImgSrc) *ImgSrc      { return filler(p.String()) }
-func (p Video) String() string                               { return string(p) }
-func (p Video) Src(filler func(string) *VideoSrc) *VideoSrc  { return filler(p.String()) }
-func (p Audio) String() string                               { return string(p) }
-func (p Audio) Src(filler func(string) *AudioSrc) *AudioSrc  { return filler(p.String()) }
+func (p File) String() string                                        { return string(p) }
+func (p File) Src(filler func(string) *FileSrc) *FileSrc             { return filler(p.String()) }
+func (p Document) String() string                                    { return string(p) }
+func (p Document) Src(filler func(string) *DocumentSrc) *DocumentSrc { return filler(p.String()) }
+func (p Image) String() string                                       { return string(p) }
+func (p Image) Src(filler func(string) *ImgSrc) *ImgSrc              { return filler(p.String()) }
+func (p Video) String() string                                       { return string(p) }
+func (p Video) Src(filler func(string) *VideoSrc) *VideoSrc          { return filler(p.String()) }
+func (p Audio) String() string                                       { return string(p) }
+func (p Audio) Src(filler func(string) *AudioSrc) *AudioSrc          { return filler(p.String()) }
 
 func NewFiles(s string) Files {
 	var x Files
