@@ -5,9 +5,9 @@
 ### 服务调用
 
 * rservice 不能调用任何其他service, model/entity
-* service 可以调用 rservice, aservice, 所有 mservice，不能调用 model/entity
-* aservice 可以调用 rservice, 所有 model/entity
-* mservice 可以调用 rservice, aservice, 所有 model/entity
+* service 可以调用 rservice, aservice, 所有 mservice，不能调用 model/dao/po
+* aservice 可以调用 rservice, 所有 model/dao/po
+* mservice 可以调用 rservice, aservice, 所有 model/dao/po
 * sdk 临时mservice之间调用，未来方便修改成RPC调用
 * cns.Service 可以调用 ss.Service/bs.Service
 * cns.Model 可以调用 ss.Model/bs.Model
@@ -42,14 +42,15 @@ AaGo
     + infr   infrastructure 基础设施
 
 Application
+  
     + app
         + app_name  微服务的某个服务 
             + cache       # 缓存
             + conf       # app_name 内写死的配置
-            + do          # dynamic object，app_name 内通用数据传递对象
+            + dao        # Data Access Object 数据访问对象 --> 数据库表的映射
+            + bo          # Business Object，app_name 内通用数据传递对象
             + dic           # 放置翻译文件；   
-            + entity      # data entity 数据实体
-            + enum      APP 内enum  # 放常量、枚举 huodongerconf  和  ienum 区别是： huodongerconf 纯服务端用到；ienum 客户端也需要用到
+            + enum      APP 内enum  # 放常量、枚举 conf  和  ienum 区别是： conf 纯服务端用到；ienum 客户端也需要用到
                         # 定时任务/后台任务   job/ cron/daemon     listener 需要后缀为 Listener.go 直接放到 service里面，用Listner后缀
             + job
                 + queue
@@ -59,18 +60,21 @@ Application
                 + cms                       # 内容管理系统
                 + bs                        # B/S架构，Browser/Server
                     + controller
-                        + dto                   # 对外开放的
+                        + dto                   # 对外开放的，API Object
+                        + vo                    # View Object
                     + model
                     + pad                    # pad view
                         + dto                   # 对外开放的
+                        + vo
                     + pc                     + pc view
-                        + dto                   # 对外开放的
+                        + dto                    
                     + phone                  # phone view
-                        + dto                   # 对外开放的
+                        + dto                   
                     + task
                     service.go
                     xxxx   
                 + ss          # S/S架构，Server/Server
+            + po    Persistant Object  持久对象。service/业务层与DAO中间的数据转换
             + service   # app_name 内通用 service  
         + app_name2 ....  其他微服务应用
         + router                 # 路由
@@ -476,7 +480,7 @@ func (c *Controller) PostFastBills(ictx iris.Context) {
 
 ```
 
-## entity Demo
+## dao Demo
 ```golang
 // 商品必须要全部记录进 Redis
 type Sku struct {
