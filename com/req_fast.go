@@ -4,6 +4,7 @@ import (
 	"github.com/hi-iwi/AaGo/ae"
 	"github.com/hi-iwi/AaGo/aenum"
 	"github.com/hi-iwi/AaGo/atype"
+	"github.com/hi-iwi/AaGo/util"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"html/template"
@@ -354,4 +355,42 @@ func (r *Req) BodyDatetime(p string, loc *time.Location, required ...bool) (atyp
 		return "", ae.NewError(400, "invalid datetime ("+p+"): "+x.String())
 	}
 	return atype.NewDatetime(x.String(), loc), nil
+}
+
+func (r *Req) QueryTel(p string, required ...bool) (string, *ae.Error) {
+	tel, e := r.QueryString(p)
+	if e != nil {
+		return "", ae.BadParam(p)
+	}
+	optional := len(required) > 0 && !required[0]
+	if tel == "" {
+		if !optional {
+			return "", ae.BadParam(p)
+		}
+		return "", nil
+	}
+	formattedTel, ok := util.FormatTel(tel)
+	if !ok {
+		return "", ae.BadParam(p)
+	}
+	return formattedTel, nil
+}
+
+func (r *Req) BodyTel(p string, required ...bool) (string, *ae.Error) {
+	tel, e := r.BodyString(p)
+	if e != nil {
+		return "", ae.BadParam(p)
+	}
+	optional := len(required) > 0 && !required[0]
+	if tel == "" {
+		if !optional {
+			return "", ae.BadParam(p)
+		}
+		return "", nil
+	}
+	formattedTel, ok := util.FormatTel(tel)
+	if !ok {
+		return "", ae.BadParam(p)
+	}
+	return formattedTel, nil
 }
