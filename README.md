@@ -48,6 +48,7 @@ Application
             + cache       # 缓存
             + conf       # app_name 内写死的配置
             + dao        # Data Access Object 数据访问对象 --> 数据库表的映射
+                + po    Persistant Object  持久对象。service/业务层与DAO中间的数据转换
             + bo          # Business Object，app_name 内通用数据传递对象
             + dic           # 放置翻译文件；   
             + enum      APP 内enum  # 放常量、枚举 conf  和  ienum 区别是： conf 纯服务端用到；ienum 客户端也需要用到
@@ -74,7 +75,7 @@ Application
                     service.go
                     xxxx   
                 + ss          # S/S架构，Server/Server
-            + po    Persistant Object  持久对象。service/业务层与DAO中间的数据转换
+ 
             + service   # app_name 内通用 service  
         + app_name2 ....  其他微服务应用
         + router                 # 路由

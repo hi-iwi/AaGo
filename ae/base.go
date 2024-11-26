@@ -17,3 +17,14 @@ func CheckError(es ...error) error {
 	}
 	return nil
 }
+
+func PanicIf(cond bool) {
+	if cond {
+		panic("PanicIf")
+	}
+}
+func PanicOn(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
