@@ -18,8 +18,11 @@ func CheckError(es ...error) error {
 	return nil
 }
 
-func PanicIf(cond bool) {
+func PanicIf(cond bool, tip ...any) {
 	if cond {
+		if len(tip) > 0 {
+			panic(tip)
+		}
 		panic("PanicIf")
 	}
 }
