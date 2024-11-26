@@ -53,7 +53,7 @@ pushAndUpgradeMod(){
   echo ">>> git commit -m  $comment"
   git add -A .
   git commit -m "$comment"
-  git push origin master
+  git push origin main
   # 自增tag
   if [ $incrTag -eq 1 ]; then
     echo "adding tag..."

@@ -88,28 +88,28 @@ var AudioTypes = map[FileType][]string{
     AudioWebm   : {".wav", "audio/wav"},
     Mp3         : {".mp3", "audio/mpeg", "audio/mp3"},
 }
-func NewAudioType(mime string) (FileType, bool) {return ParseFileType(mime, AudioTypes)}
-func NewVideoType(mime string) (FileType, bool) {return ParseFileType(mime, VideoTypes)}
-func NewDocumentType(mime string) (FileType, bool) {return ParseFileType(mime, DocumentTypes)}
 func NewCompressedType(mime string) (FileType, bool) {return ParseFileType(mime, CompressedTypes)}
 func NewDataType(mime string) (FileType, bool) {return ParseFileType(mime, DataTypes)}
 func NewImageType(mime string) (FileType, bool) {return ParseFileType(mime, ImageTypes)}
+func NewAudioType(mime string) (FileType, bool) {return ParseFileType(mime, AudioTypes)}
+func NewVideoType(mime string) (FileType, bool) {return ParseFileType(mime, VideoTypes)}
+func NewDocumentType(mime string) (FileType, bool) {return ParseFileType(mime, DocumentTypes)}
 func (t FileType) ContentType() string {
+    if d, ok := DataTypes[t]; ok {return d[1]}
     if d, ok := ImageTypes[t]; ok {return d[1]}
     if d, ok := AudioTypes[t]; ok {return d[1]}
     if d, ok := VideoTypes[t]; ok {return d[1]}
     if d, ok := DocumentTypes[t]; ok {return d[1]}
     if d, ok := CompressedTypes[t]; ok {return d[1]}
-    if d, ok := DataTypes[t]; ok {return d[1]}
     return ""
 }
 func (t FileType) Ext() string {
-    if d, ok := DocumentTypes[t]; ok {return d[0]}
     if d, ok := CompressedTypes[t]; ok {return d[0]}
     if d, ok := DataTypes[t]; ok {return d[0]}
     if d, ok := ImageTypes[t]; ok {return d[0]}
     if d, ok := AudioTypes[t]; ok {return d[0]}
     if d, ok := VideoTypes[t]; ok {return d[0]}
+    if d, ok := DocumentTypes[t]; ok {return d[0]}
     return ""
 }
 func (t FileType) Name() string {return strings.TrimPrefix(t.Ext(), ".")}
