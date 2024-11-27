@@ -22,7 +22,7 @@ func (r *Req) QueryId(p string, params ...any) (sid string, id uint64, e *ae.Err
 			e = ae.BadParam(p)
 			return
 		}
-		if s < '0' || s > '9' {
+		if s > '9' {
 			return
 		}
 	}
@@ -82,18 +82,35 @@ func (r *Req) BodyImages(p string, required ...bool) ([]atype.Image, *ae.Error) 
 	}
 	return imgs, e
 }
+func (r *Req) BodyAudios(p string, required ...bool) ([]atype.Audio, *ae.Error) {
+	xx, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
+	if e != nil || len(xx) == 0 {
+		return nil, e
+	}
+	audios := make([]atype.Audio, len(xx))
+	for i, x := range xx {
+		if x == "" || (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
+			return nil, ae.BadParam(p)
+		}
+		audios[i] = atype.Audio(x)
+	}
+	return audios, e
+}
+func (r *Req) BodyVideos(p string, required ...bool) ([]atype.Video, *ae.Error) {
+	xx, e := r.BodyStrings(p, len(required) == 0 || required[0], false)
+	if e != nil || len(xx) == 0 {
+		return nil, e
+	}
+	videos := make([]atype.Video, len(xx))
+	for i, x := range xx {
+		if x == "" || (strings.LastIndexByte(x, '.') < 0 || strings.IndexByte(x, ' ') > -1 || strings.IndexByte(x, '?') > -1 || strings.IndexByte(x, '=') > -1) {
+			return nil, ae.BadParam(p)
+		}
+		videos[i] = atype.Video(x)
+	}
+	return videos, e
+}
 
-// 下面很少使用，就不要封装了。以后使用的时候，业务层直接组装就行
-//
-//	func (r *Req) BodyAudios(p string, required, allowEmptyString, filenameOnly bool) (atype.Audios, *ae.Error) {
-//		x, e := r.BodyStrings(p, required, allowEmptyString)
-//		return atype.ToAudios(x, filenameOnly), e
-//	}
-//
-//	func (r *Req) BodyVideos(p string, required, allowEmptyString, filenameOnly bool) (atype.Videos, *ae.Error) {
-//		x, e := r.BodyStrings(p, required, allowEmptyString)
-//		return atype.ToVideos(x, filenameOnly), e
-//	}
 func (r *Req) BodyCoordinate(p string, required ...bool) (*atype.Coordinate, *ae.Error) {
 	x, e := r.BodyFloat64Map(p, required...)
 	if e != nil || x == nil {
