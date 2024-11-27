@@ -46,7 +46,7 @@ func NewFiles(s string) Files {
 	}
 	return x
 }
-func ToFiles(v []string) Files {
+func ToFiles(v []File) Files {
 	if len(v) == 0 {
 		return Files{}
 	}
@@ -81,7 +81,7 @@ func NewDocuments(s string) Documents {
 	}
 	return x
 }
-func ToDocuments(v []string) Documents {
+func ToDocuments(v []Document) Documents {
 	if len(v) == 0 {
 		return Documents{}
 	}
@@ -124,34 +124,7 @@ func ToImages(v []Image) Images {
 
 	return NewImages(string(s))
 }
-func ToImages2(v []string) Images {
-	if len(v) == 0 {
-		return Images{}
-	}
-	s, _ := json.Marshal(v)
-	if len(s) == 0 {
-		return Images{}
-	}
 
-	return NewImages(string(s))
-}
-func ToImages3(v []ImgSrc) Images {
-	if len(v) == 0 {
-		return Images{}
-	}
-	imgs := make([]string, len(v))
-
-	for i, s := range v {
-		imgs[i] = s.Path
-	}
-
-	s, _ := json.Marshal(imgs)
-	if len(s) == 0 {
-		return Images{}
-	}
-
-	return NewImages(string(s))
-}
 func (im Images) Srcs(filler func(path string) *ImgSrc) []ImgSrc {
 	if !im.Valid || im.String == "" {
 		return nil
@@ -175,7 +148,7 @@ func NewVideos(s string) Videos {
 	}
 	return x
 }
-func ToVideos(v []string) Videos {
+func ToVideos(v []Video) Videos {
 	if len(v) == 0 {
 		return Videos{}
 	}
@@ -194,7 +167,7 @@ func NewAudios(s string) Audios {
 	}
 	return x
 }
-func ToAudios(v []string) Audios {
+func ToAudios(v []Audio) Audios {
 	if len(v) == 0 {
 		return Audios{}
 	}
